@@ -13,43 +13,74 @@ log_err()  { echo -e "\e[1;31m[X] ERROR:\e[0m $1"; exit 1; }
 log_success() { echo -e "\e[1;32m[v] ÉXITO:\e[0m $1"; }
 
 # ============================================
-# Argumentos
+# Detección de Recursos
 # ============================================
-FORCE=0
-for arg in "$@"; do
-    if [ "$arg" == "--force" ]; then
-        FORCE=1
-        log_info "Modo --force activado. Se sobrescribirán las descargas existentes."
-    fi
-done
-
-# ============================================
-# Detección de recursos y validación
-# ============================================
-# Detectar idioma (basado en LANG, asumiendo 'es' por defecto)
-SYS_LANG=$(echo "${LANG:-es}" | cut -d'_' -f1)
-log_info "Idioma detectado para el sistema: $SYS_LANG"
-
-# Detectar el tamaño del sistema de ficheros raíz (/) en MB
 TOTAL_MB=$(df -m / | awk 'NR==2 {print $2}')
 FREE_MB=$(df -m / | awk 'NR==2 {print $4}')
+SYS_LANG=$(echo "${LANG:-es}" | cut -d'_' -f1)
 
-log_info "Espacio total asignado en raíz: ${TOTAL_MB} MB. Libre: ${FREE_MB} MB."
+log_info "Espacio asignado en raíz: ${TOTAL_MB} MB. Libre: ${FREE_MB} MB."
 
-if [ "$TOTAL_MB" -lt 15000 ]; then
-    echo -e "\e[1;33m[!] ADVERTENCIA: Se ha detectado un tamaño de disco muy pequeño (menos de 15 GB asignados).\e[0m"
-    echo "Es probable que estés ejecutando este Live USB sin haber creado una imagen permanente"
-    echo "asignando todo el disco disponible como espacio libre, o te faltó usar 'persistent'."
-    echo "Puedes experimentar fallos de despacio con bases de datos grandes."
-    echo "Revisa la Guía de Ensamblaje en el README."
-    read -p "¿Deseas continuar bajo tu propio riesgo? (s/n): " confirm_space < /dev/tty
-    if [ "$confirm_space" != "s" ] && [ "$confirm_space" != "S" ]; then 
-        log_err "Instalación cancelada para ajustar el tamaño del disco."
-    fi
+# Autoselección según capacidad (menor a 25GB -> modo Lite)
+if [ "$TOTAL_MB" -lt 25000 ]; then
+    DEF_WIKI="2" # Top Mini
+    DEF_IA="2"   # Omitir IA
+    log_info "Capacidad reducida detectada. Se recomendarán versiones ligeras."
+else
+    DEF_WIKI="1" # All NoPic
+    DEF_IA="1"   # Incluir IA
+    log_info "Capacidad óptima detectada. Se recomendarán versiones completas."
 fi
 
-read -p "Este script preparará tu sistema. ¿Continuar? (s/n): " confirm < /dev/tty
-if [ "$confirm" != "s" ] && [ "$confirm" != "S" ]; then 
+# ============================================
+# Menú Interactivo de Instalación
+# ============================================
+echo ""
+echo -e "\e[1;36m=== CONFIGURACIÓN DE REFUGIOS ===\e[0m"
+
+# 1. Fuerza
+read -p "¿Deseas FORZAR la redescarga de archivos que ya existan? (s/N): " menu_force < /dev/tty
+if [ "${menu_force,,}" == "s" ]; then FORCE=1; else FORCE=0; fi
+
+# 2. Idioma
+echo ""
+echo "Selecciona el idioma principal para los datos offline (sistema: $SYS_LANG):"
+echo "  1) Español (es)"
+echo "  2) Inglés (en)"
+echo "  3) Francés (fr)"
+read -p "Opción [1-3] (Enter para autodetectado): " menu_lang < /dev/tty
+case "$menu_lang" in
+    1) WIKI_LANG="es" ;;
+    2) WIKI_LANG="en" ;;
+    3) WIKI_LANG="fr" ;;
+    *) WIKI_LANG="$SYS_LANG" ;;
+esac
+if [[ ! "$WIKI_LANG" =~ ^(es|en|fr)$ ]]; then WIKI_LANG="es"; fi
+
+# 3. Tamaño Wikipedia
+echo ""
+echo "¿Qué versión de la Wikipedia deseas descargar?"
+echo "  1) Completa sin imágenes (~11 GB)"
+echo "  2) Top Mini (~200 MB)"
+read -p "Opción [1-2] (Enter para la recomendada: $DEF_WIKI): " menu_wiki < /dev/tty
+menu_wiki=${menu_wiki:-$DEF_WIKI}
+if [ "$menu_wiki" == "1" ]; then
+    WIKI_TYPE="all_nopic"
+else
+    WIKI_TYPE="top_mini"
+fi
+
+# 4. Inteligencia Artificial
+echo ""
+echo "¿Deseas descargar el motor de Inteligencia Artificial Phi-3.5 (~2.4 GB)?"
+echo "  1) Sí"
+echo "  2) No, omitir IA"
+read -p "Opción [1-2] (Enter para la recomendada: $DEF_IA): " menu_ia < /dev/tty
+menu_ia=${menu_ia:-$DEF_IA}
+
+echo ""
+read -p "Configuración lista. ¿Comenzar el ensamblaje táctico? (s/n): " confirm < /dev/tty
+if [ "${confirm,,}" != "s" ]; then 
     log_err "Instalación cancelada por el usuario."
 fi
 
@@ -78,11 +109,15 @@ log_info "Instalando dependencias críticas y paquetes de soporte de idioma loca
 sudo apt-get update -y
 sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common < /dev/null
 
-lang_pkgs=$(check-language-support -l "$SYS_LANG" 2>/dev/null || echo "")
-if [ -n "$lang_pkgs" ]; then
-    log_info "Instalando los paquetes de idioma para $SYS_LANG..."
-    sudo apt-get install -y $lang_pkgs < /dev/null || true
-fi
+# Intentar instalar soporte de idioma para el autodetectado y el elegido en el menú
+log_info "Verificando paquetes de soporte de idiomas ($SYS_LANG y $WIKI_LANG)..."
+for l in "$SYS_LANG" "$WIKI_LANG"; do
+    lang_pkgs=$(check-language-support -l "$l" 2>/dev/null || echo "")
+    if [ -n "$lang_pkgs" ]; then
+        log_info "Instalando paquetes de idioma para '$l'..."
+        sudo apt-get install -y $lang_pkgs < /dev/null || true
+    fi
+done
 
 # ------------------------------------------------------------------------------
 # 2. Descarga de Kiwix Desktop (AppImage)
@@ -111,26 +146,26 @@ ln -sf "$BASE_DIR/Apps/versiones/$KIWIX_FILE" "$BASE_DIR/Apps/kiwix-desktop.appi
 # ------------------------------------------------------------------------------
 # 3. Base de Datos Desconectada (Archivos ZIM)
 # ------------------------------------------------------------------------------
-log_info "Rastreando enciclopedias en español actualizadas..."
+log_info "Rastreando enciclopedias para el idioma '$WIKI_LANG'..."
 
-    LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_medicine_maxi_[0-9-]*\.zim' | sort -V | tail -n 1)
-    LATEST_WIKI_NOPIC=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_top_mini_[0-9-]*\.zim' | sort -V | tail -n 1)
+    LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_medicine_maxi_[0-9-]*\.zim" | sort -V | tail -n 1)
+    LATEST_WIKI=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_${WIKI_TYPE}_[0-9-]*\.zim" | sort -V | tail -n 1)
 
-    if [ -z "$LATEST_MED" ] || [ -z "$LATEST_WIKI_NOPIC" ]; then
-        log_err "Los repositorios ZIM de Kiwix no respondieron como se esperaba."
+    if [ -z "$LATEST_MED" ] || [ -z "$LATEST_WIKI" ]; then
+        log_err "Fallo al localizar las enciclopedias ZIM para el idioma seleccionado: $WIKI_LANG."
     fi
 
-if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI_NOPIC" ] && [ "$FORCE" -eq 0 ]; then
+if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" ] && [ "$FORCE" -eq 0 ]; then
     log_info "Enciclopedias ZIM ya existen en versiones. Omitiendo la descarga."
 else
-    log_info "Descargando WikiMed: $LATEST_MED (~2GB)"
+    log_info "Descargando WikiMed: $LATEST_MED"
     aria2c -x 4 --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
 
-    log_info "Descargando Wikipedia (Top Mini - Pruebas): $LATEST_WIKI_NOPIC (~183MB)"
-    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI_NOPIC" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI_NOPIC"
+    log_info "Descargando Wikipedia Principal ($WIKI_TYPE): $LATEST_WIKI"
+    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
 fi
 ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" "$BASE_DIR/Conocimiento/wikimed.zim"
-ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI_NOPIC" "$BASE_DIR/Conocimiento/wikipedia.zim"
+ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" "$BASE_DIR/Conocimiento/wikipedia.zim"
 
 cat << EOF > "$ESCRITORIO/Conocimiento_Offline.desktop"
 [Desktop Entry]
@@ -166,7 +201,8 @@ chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
 # ------------------------------------------------------------------------------
 # 5. Inteligencia Artificial Residente
 # ------------------------------------------------------------------------------
-log_info "Resolviendo dependencias del Motor de IA Llamafile..."
+if [ "$menu_ia" == "1" ]; then
+    log_info "Resolviendo dependencias del Motor de IA Llamafile..."
 
     # En este caso sí usamos la API de GitHub combinada con grep nativo para evadir fallos de compatibilidad en JQ
     LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets[].browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
@@ -176,25 +212,25 @@ log_info "Resolviendo dependencias del Motor de IA Llamafile..."
     fi
     LLAMA_FILE=$(basename "$LLAMAFILE_URL")
 
-if [ -f "$BASE_DIR/IA/versiones/$LLAMA_FILE" ] && [ "$FORCE" -eq 0 ]; then
-    log_info "Motor de IA Llamafile ($LLAMA_FILE) ya existe. Omitiendo."
-else
-    log_info "Descargando Llamafile Engine..."
-    wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/versiones/$LLAMA_FILE"
-    chmod +x "$BASE_DIR/IA/versiones/$LLAMA_FILE"
-fi
-ln -sf "$BASE_DIR/IA/versiones/$LLAMA_FILE" "$BASE_DIR/IA/llamafile"
+    if [ -f "$BASE_DIR/IA/versiones/$LLAMA_FILE" ] && [ "$FORCE" -eq 0 ]; then
+        log_info "Motor de IA Llamafile ($LLAMA_FILE) ya existe. Omitiendo."
+    else
+        log_info "Descargando Llamafile Engine..."
+        wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/versiones/$LLAMA_FILE"
+        chmod +x "$BASE_DIR/IA/versiones/$LLAMA_FILE"
+    fi
+    ln -sf "$BASE_DIR/IA/versiones/$LLAMA_FILE" "$BASE_DIR/IA/llamafile"
 
-PHI_FILE="Phi-3.5-mini-instruct-Q4_K_M.gguf"
-if [ -f "$BASE_DIR/IA/versiones/$PHI_FILE" ] && [ "$FORCE" -eq 0 ]; then
-    log_info "Modelo cognitivo Phi-3.5 Mini ya existe. Omitiendo descarga."
-else
-    log_info "Descargando modelo cognitivo Phi-3.5 Mini (Altamente Optimizado)..."
-    wget -c "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/$PHI_FILE" -O "$BASE_DIR/IA/versiones/$PHI_FILE"
-fi
-ln -sf "$BASE_DIR/IA/versiones/$PHI_FILE" "$BASE_DIR/IA/Phi-3.5-mini.gguf"
+    PHI_FILE="Phi-3.5-mini-instruct-Q4_K_M.gguf"
+    if [ -f "$BASE_DIR/IA/versiones/$PHI_FILE" ] && [ "$FORCE" -eq 0 ]; then
+        log_info "Modelo cognitivo Phi-3.5 Mini ya existe. Omitiendo descarga."
+    else
+        log_info "Descargando modelo cognitivo Phi-3.5 Mini (Altamente Optimizado)..."
+        wget -c "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/$PHI_FILE" -O "$BASE_DIR/IA/versiones/$PHI_FILE"
+    fi
+    ln -sf "$BASE_DIR/IA/versiones/$PHI_FILE" "$BASE_DIR/IA/Phi-3.5-mini.gguf"
 
-cat << EOF > "$ESCRITORIO/Asistente_IA.desktop"
+    cat << EOF > "$ESCRITORIO/Asistente_IA.desktop"
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -202,10 +238,13 @@ Name=Asistente IA de Supervivencia
 Comment=Lanza el LLM y abre el navegador
 Exec=bash -c "cd $BASE_DIR/IA &&./llamafile -m Phi-3.5-mini.gguf --server & sleep 5 && xdg-open http://localhost:8080"
 Icon=utilities-terminal
-Terminal=true
+Terminal=false
 EOF
-chmod +x "$ESCRITORIO/Asistente_IA.desktop"
-log_success "Motor de IA configurado."
+    chmod +x "$ESCRITORIO/Asistente_IA.desktop"
+    log_success "Motor de IA configurado."
+else
+    log_info "Omitiendo instalación de Inteligencia Artificial."
+fi
 
 # ------------------------------------------------------------------------------
 # 6. Forjado del Santuario Criptográfico (LUKS)
