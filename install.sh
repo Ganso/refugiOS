@@ -169,7 +169,7 @@ if [ -f "$BASE_DIR/IA/llamafile" ] && [ "$FORCE" -eq 0 ]; then
     log_info "Motor de IA Llamafile ya existe. Omitiendo descarga."
 else
     # En este caso sí usamos la API de GitHub combinada con grep nativo para evadir fallos de compatibilidad en JQ
-    LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets.browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
+    LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets[].browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
 
     if [ -z "$LLAMAFILE_URL" ] || [ "$LLAMAFILE_URL" == "null" ]; then
         log_err "No se pudo resolver la URL del ejecutable de Llamafile."
