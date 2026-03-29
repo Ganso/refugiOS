@@ -130,7 +130,7 @@ else
 fi
 
 cat << EOF > "$ESCRITORIO/Conocimiento_Offline.desktop"
-
+[Desktop Entry]
 Version=1.0
 Type=Application
 Name=Conocimiento Offline (Kiwix)
@@ -150,7 +150,7 @@ sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub
 sudo flatpak install flathub app.organicmaps.desktop -y < /dev/null
 
 cat << EOF > "$ESCRITORIO/Mapas_Offline.desktop"
-
+[Desktop Entry]
 Version=1.0
 Type=Application
 Name=Mapas GPS (Organic Maps)
@@ -188,7 +188,7 @@ else
 fi
 
 cat << EOF > "$ESCRITORIO/Asistente_IA.desktop"
-
+[Desktop Entry]
 Version=1.0
 Type=Application
 Name=Asistente IA de Supervivencia
@@ -261,7 +261,7 @@ chmod +x "$BASE_DIR/Scripts/"*.sh
 
 # Inyección de lanzadores gráficos
 cat << EOF > "$ESCRITORIO/1_Crear_Boveda.desktop"
-
+[Desktop Entry]
 Type=Application
 Name=1. Inicializar Bóveda (Una sola vez)
 Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-vault-create.sh"
@@ -270,7 +270,7 @@ Terminal=false
 EOF
 
 cat << EOF > "$ESCRITORIO/2_Abrir_Boveda.desktop"
-
+[Desktop Entry]
 Type=Application
 Name=2. Desbloquear Bóveda
 Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-vault-open.sh"
@@ -279,7 +279,7 @@ Terminal=false
 EOF
 
 cat << EOF > "$ESCRITORIO/3_Cerrar_Boveda.desktop"
-
+[Desktop Entry]
 Type=Application
 Name=3. Sellar Bóveda
 Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-vault-close.sh"
