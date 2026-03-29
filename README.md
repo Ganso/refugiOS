@@ -37,7 +37,7 @@ Ante un eventual colapso de las rutas eléctricas globales, eventos catastrófic
 *(Para la pre-recolección física u armado de USB previo a toda caída web de infraestructura. En el SO base anfitrión y pendrive con entorno Linux recién iniciado de la familia Xubuntu, conectar a Internet y abrir terminal):*
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/usuario/refugios/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
 ```
 > [!NOTE] 
 > Se desplegará el gestor principal, midiendo geométricamente con encuestas el límite y la densidad de bibliotecas ZIM admisibles para ese dispositivo flash USB actual.
