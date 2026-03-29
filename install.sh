@@ -184,7 +184,7 @@ if [ -f "$BASE_DIR/IA/Phi-3.5-mini.gguf" ] && [ "$FORCE" -eq 0 ]; then
     log_info "Modelo cognitivo Phi-3.5 Mini ya existe. Omitiendo descarga."
 else
     log_info "Descargando modelo cognitivo Phi-3.5 Mini (Altamente Optimizado)..."
-    wget -c "https://huggingface.co/microsoft/Phi-3.5-mini-instruct-gguf/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf" -O "$BASE_DIR/IA/Phi-3.5-mini.gguf"
+    wget -c "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf" -O "$BASE_DIR/IA/Phi-3.5-mini.gguf"
 fi
 
 cat << EOF > "$ESCRITORIO/Asistente_IA.desktop"
