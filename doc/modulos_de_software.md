@@ -1,38 +1,43 @@
-# Modulos de Software Principal y Bases de Conocimiento
+# Aplicaciones y Contenidos Incluidos
 
-Un componente central de toda experiencia con refugiOS radica en su arsenal intelectual. Descargado mediante instaladores dinámicos y comandos `curl`, `grep` y llamadas API a repositorios (Kiwix / Github) de modo que si las versiones estallan, el script recolecte automáticamente la última ISO del milisegundo de la compilación de forma ciega y perfecta, evitando fallos de URLs muertas (enlaces 404).
+refugiOS incluye una selección cuidadosa de herramientas y conocimientos diseñados para funcionar totalmente sin conexión a Internet.
 
-## 1. La Biblioteca Universitaria Offline (Formato ZIM)
+## 1. Biblioteca y Enciclopedias Offline (Kiwix)
 
-Sostenido mediante el binario universal **Kiwix Desktop (Formato AppImage)**, un proyecto de alta compresión suizo multilingüe, uniendo archivos ZIM, un derivado extremo del empaquetado HTML.
+Utilizamos el formato **ZIM** y la aplicación **Kiwix** para ofrecerte acceso a bases de datos masivas. Todo lo que ves se descarga directamente a tu USB:
 
-*   **Wikipedia Principal (Generalista):** Se dispone el ZIM Máximo. Para la lengua inglesa pesa >115 GB y el compendio en idioma español suele medrar los ~50 GB de datos e incluye toda la librería textual junto con miniaturas ricas en fotografías topográficas, diagramas lógicos, etc. (`wikipedia_es_all_maxi.zim`). El usuario también dispondrá de la variante simplificada si sus pendrives son menores a 32GB (`_nopic.zim` o `_mini`).
-*   **WikiMed (Emergencia Sanitaria Humana):** La enciclopedia de Medicina de alta celeridad (\~2 GB) respaldando una curaduría de emergencia que supera los 75.000 artículos en profundidad quirúrgica. Un hospital de campo indispensable.
-*   **WikiHow (Supervivencia y Mecánica Práctica):** Toda la información de reensamblaje lógico en ilustraciones paso a paso sobre purificación térmica de agua o destilación y nudos de escalada (\~25 GB).
-*   **Survivor Library (Biblioteca de Tecnología Pre-Industrial):** Enorme acervo anglosajón, concentrado históricamente en replicar saberes del Siglo XVIII y Siglo XIX: metalurgia primaria, agricultura sin abonos petroquímicos, o forjado, para el re-establecimiento de subsistencia material en entornos catastróficos (\~250 GB de tamaño requerido).
+*   **Wikipedia Principal:** Incluye millones de artículos sobre cualquier tema. Si tu USB es grande (64GB+), incluiremos también todas las imágenes y diagramas. Si es pequeño, incluiremos una versión de solo texto para ahorrar espacio.
+*   **WikiMed:** Una enciclopedia médica completa con más de 75,000 artículos detallados sobre primeros auxilios, enfermedades y tratamientos. Es como tener un manual médico de emergencia siempre a mano.
+*   **Enciclopedias de Supervivencia y Oficios:** Guías prácticas sobre cómo purificar agua, hacer nudos, agricultura básica y mecánica.
+*   **Biblioteca de Tecnología Preindustrial:** Documentación sobre cómo fabricar herramientas, trabajar el metal o cultivar alimentos sin necesidad de tecnología moderna.
 
-## 2. Navegación Topográfica Táctica (Mapas sin Servidores)
+---
 
-Se dota de la interfaz de la aplicación civil para Linux Desktop **Organic Maps**.
+## 2. Mapas y Navegación (Organic Maps)
 
-*   Es de código abierto absoluto (FOSS), concebida para una alta provisión de la intimidad operando sus algoritmos de ruteo _exclusivamente offline_.
-*   Está sustentada en el mapeo de **OpenStreetMap** descargando el entorno cartográfico vectorizado del globo para permitir cálculos instantáneos ahorrando Gigabytes sobre versiones rasterizadas de la web.
-*   Capaz de operar rastreo altitudinal, fuentes de agua, hospitales, o senderos montañosos lejanos. Con descargas parceladas por continentes o sub-naciones para adaptar el vector ISO a la variable USB elegida. El usuario indica la región a compilar en `install.sh`.
+Para la navegación usamos **Organic Maps**, una de las mejores aplicaciones de mapas de código abierto:
 
-## 3. Inteligencia Artificial como Mecánico Local (Llamafile)
+*   **100% Offline:** Una vez descargados los mapas de tu región, no necesitas GPS ni datos para buscar direcciones o calcular rutas a pie o en coche.
+*   **Privacidad:** La aplicación no rastrea tu posición ni envía datos a servidores externos.
+*   **Detalle:** Incluye senderos, fuentes de agua, hospitales, gasolineras y curvas de nivel para montaña.
 
-Desechamos implementaciones onerosas como Ollama y las pesadillas de dependencias anidadas de entornos virtuales Python, usando un ejecutable agnóstico y compilado globalmente: **Llamafile**. Se consolida tanto el motor lógico de inferencia binario (`llama.cpp`) como todo el archivo neuronal (.GGUF) dentro del mismo y único ejecutable. 
+---
 
-Funciona de "Doble-click", con rendimientos masivos para CPUs de viejos portátiles utilizando Small Language Models (SLMs) con una simple huella de ~4GB RAM base.
-Se seleccionarán modelos compactos pero sofisticados:
+## 3. Asistente de Inteligencia Artificial (IA Local)
 
-*   **Microsoft Phi-3.5 Mini (3.8 Mil Millones Parámetros):** Especializado universalmente para procesar manuales. Brilla en tener uno de los _context windows_ (Ventanas de retención de atención) de hasta 128.000 tokens asimilando guías mecánicas inyectadas mediante lectura lateral, respondiendo e internamente traduciendo el español y otros 22 idiomas con razonamiento primario.
-*   **DeepSeek R1 / Qwen (Versión de 1.5B):** Micro-modulo especialista para entornos restrictivos. Muy poderoso frente al peso del modelo y de extremada profundidad computacional algorítmica para matemáticas, química o lógica combinatoria básica a costa del carisma interactivo.
+refugiOS incluye un asistente inteligente que funciona **dentro de tu ordenador**, sin conectarse a la nube (como ChatGPT, pero privado y offline):
 
-## 4. Estaciones de Trabajo y Educación Opcionales
+*   **¿Para qué sirve?** Puedes hacerle preguntas sobre cómo reparar algo de lo que no tienes manual, pedirle que te resuma un texto largo o que te ayude a traducir algo.
+*   **Motor Llamafile:** Es una tecnología moderna que permite ejecutar modelos de lenguaje potentes en ordenadores normales. Solo tienes que hacer doble clic y empezar a chatear en tu navegador.
+*   **Modelo Phi-3.5:** Es el "cerebro" que hemos elegido. Es muy inteligente, entiende perfectamente el español y otros 20 idiomas, y cabe en unos pocos gigabytes de espacio.
 
-Ya estemos bajo un árbol en ruta, o atrincherados, la terminal apt de Linux descargará al USB la paquetería de repos oficial por si se precisan. Un sistema necesita poder editar listas y escribir testamentos así como leer PDF ajenos.
+---
 
-*   **Paquetería Base Integrada por defecto:** `libreoffice` calc/writer para finanzas del grupo, `vlc` universal sin problemas de renderizado para videos extraídos, software como `evince` u otros (PDF) y visor de imágenes.
-*   **Entornos de Sincronización (Syncthing):** Para crear redes de intercambio P2P mediante un punto de acceso LAN improvisado entre varios refugiados, comunicándonos sin internet de servidor central.
-*   **Pack Desarrollo y Educación (A demanda):** Si en el menú se aceptan, instala constructores para software industrial o chips en placa: `build-essential`, `python3`, `git`, o la interfaz para niños escolares `gcompris` junto a repositorios FOSS extra de Khan Academy con plataformas educacionales como **Kolibri**.
+## 4. Herramientas de Trabajo y Educación
+
+Además de lo anterior, el sistema incluye programas estándar para que puedas trabajar con total normalidad:
+
+*   **Ofimática:** Suite completa (**LibreOffice**) para escribir documentos, crear hojas de cálculo de gastos o hacer presentaciones.
+*   **Multimedia:** Reproductor universal (**VLC**) para ver vídeos o escuchar música, y visores de fotos y documentos PDF.
+*   **Intercambio de archivos:** Herramientas (**Syncthing**) para compartir archivos entre varios ordenadores de forma inalámbrica sin necesidad de router ni Internet.
+*   **Educación:** Si lo deseas, puedes añadir plataformas educativas (**Kolibri**) o juegos educativos para niños.

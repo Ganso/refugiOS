@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
-# refugiOS - Script de Ensamblaje Táctico 
-# (versión de prueba para unidades de 32 GB)
+# refugiOS - Instalador del Sistema
+# (Preparación del entorno y aplicaciones)
 # ============================================
 
 # Detener la ejecución si hay errores críticos o variables sin definir
@@ -38,8 +38,8 @@ fi
 echo ""
 echo -e "\e[1;36m=== CONFIGURACIÓN DE REFUGIOS ===\e[0m"
 
-# 1. Fuerza
-read -p "¿Deseas FORZAR la redescarga de archivos que ya existan? (s/N): " menu_force < /dev/tty
+# 1. Forzar descargas
+read -p "¿Quieres volver a descargar los archivos que ya existen? (s/N): " menu_force < /dev/tty
 if [ "${menu_force,,}" == "s" ]; then FORCE=1; else FORCE=0; fi
 
 # 2. Idioma
@@ -79,9 +79,9 @@ read -p "Opción [1-2] (Enter para la recomendada: $DEF_IA): " menu_ia < /dev/tt
 menu_ia=${menu_ia:-$DEF_IA}
 
 echo ""
-read -p "Configuración lista. ¿Comenzar el ensamblaje táctico? (s/n): " confirm < /dev/tty
+read -p "Todo listo. ¿Comenzar la instalación? (s/n): " confirm < /dev/tty
 if [ "${confirm,,}" != "s" ]; then 
-    log_err "Instalación cancelada por el usuario."
+    log_err "Instalación cancelada."
 fi
 
 # Detectar el nombre correcto del directorio de Escritorio (Desktop/Escritorio)
@@ -99,13 +99,13 @@ mkdir -p "$ESCRITORIO"
 # ------------------------------------------------------------------------------
 # 1. Resolución de Bloqueos de Paquetes e Instalación de Dependencias
 # ------------------------------------------------------------------------------
-# En entornos Live recién iniciados, 'unattended-upgrades' a menudo bloquea apt.
-log_info "Neutralizando bloqueos automáticos de dpkg/apt..."
+# En entornos Live recién iniciados, hay procesos automáticos que pueden bloquear el gestor de paquetes.
+log_info "Preparando el sistema para instalar nuevos paquetes..."
 sudo systemctl stop unattended-upgrades 2>/dev/null || true
 sudo dpkg --configure -a || true
 sudo apt-get install -f -y < /dev/null || true
-
-log_info "Instalando dependencias críticas y paquetes de soporte de idioma local..."
+ 
+log_info "Instalando herramientas base y de soporte..."
 sudo apt-get update -y
 sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common < /dev/null
 
@@ -120,9 +120,9 @@ for l in "$SYS_LANG" "$WIKI_LANG"; do
 done
 
 # ------------------------------------------------------------------------------
-# 2. Descarga de Kiwix Desktop (AppImage)
+# 2. Aplicaciones (Kiwix Desktop)
 # ------------------------------------------------------------------------------
-log_info "Extrayendo el binario más reciente de Kiwix Desktop..."
+log_info "Instalando Kiwix Desktop..."
 
     # NOTA TÉCNICA: Kiwix no adjunta sus binarios (assets) en la API de GitHub para la versión de Desktop.
     # Hacer una llamada a la API allí devuelve una lista vacía. Por tanto, raspamos su servidor oficial:
@@ -144,9 +144,9 @@ fi
 ln -sf "$BASE_DIR/Apps/versiones/$KIWIX_FILE" "$BASE_DIR/Apps/kiwix-desktop.appimage"
 
 # ------------------------------------------------------------------------------
-# 3. Base de Datos Desconectada (Archivos ZIM)
+# 3. Base de Datos (Enciclopedias Offline)
 # ------------------------------------------------------------------------------
-log_info "Rastreando enciclopedias para el idioma '$WIKI_LANG'..."
+log_info "Buscando las últimas enciclopedias disponibles..."
 
     LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_medicine_maxi_[0-9-]*\.zim" | sort -V | tail -n 1)
     LATEST_WIKI=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_${WIKI_TYPE}_[0-9-]*\.zim" | sort -V | tail -n 1)
@@ -202,20 +202,20 @@ chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
 # 5. Inteligencia Artificial Residente
 # ------------------------------------------------------------------------------
 if [ "$menu_ia" == "1" ]; then
-    log_info "Resolviendo dependencias del Motor de IA Llamafile..."
-
-    # En este caso sí usamos la API de GitHub combinada con grep nativo para evadir fallos de compatibilidad en JQ
+    log_info "Preparando el asistente de Inteligencia Artificial..."
+ 
+    # Buscamos la descarga más reciente del motor Llamafile
     LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets[].browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
-
+ 
     if [ -z "$LLAMAFILE_URL" ] || [ "$LLAMAFILE_URL" == "null" ]; then
-        log_err "No se pudo resolver la URL del ejecutable de Llamafile."
+        log_err "No se pudo encontrar el enlace de descarga de la IA."
     fi
     LLAMA_FILE=$(basename "$LLAMAFILE_URL")
 
     if [ -f "$BASE_DIR/IA/versiones/$LLAMA_FILE" ] && [ "$FORCE" -eq 0 ]; then
-        log_info "Motor de IA Llamafile ($LLAMA_FILE) ya existe. Omitiendo."
+        log_info "El motor de IA ya está descargado ($LLAMA_FILE)."
     else
-        log_info "Descargando Llamafile Engine..."
+        log_info "Descargando motor de IA..."
         wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/versiones/$LLAMA_FILE"
         chmod +x "$BASE_DIR/IA/versiones/$LLAMA_FILE"
     fi
@@ -223,9 +223,9 @@ if [ "$menu_ia" == "1" ]; then
 
     PHI_FILE="Phi-3.5-mini-instruct-Q4_K_M.gguf"
     if [ -f "$BASE_DIR/IA/versiones/$PHI_FILE" ] && [ "$FORCE" -eq 0 ]; then
-        log_info "Modelo cognitivo Phi-3.5 Mini ya existe. Omitiendo descarga."
+        log_info "El modelo de lenguaje ya existe. Omitiendo."
     else
-        log_info "Descargando modelo cognitivo Phi-3.5 Mini (Altamente Optimizado)..."
+        log_info "Descargando modelo de lenguaje Phi-3.5..."
         wget -c "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/$PHI_FILE" -O "$BASE_DIR/IA/versiones/$PHI_FILE"
     fi
     ln -sf "$BASE_DIR/IA/versiones/$PHI_FILE" "$BASE_DIR/IA/Phi-3.5-mini.gguf"
@@ -241,15 +241,15 @@ Icon=utilities-terminal
 Terminal=false
 EOF
     chmod +x "$ESCRITORIO/Asistente_IA.desktop"
-    log_success "Motor de IA configurado."
+    log_success "Asistente de IA configurado."
 else
-    log_info "Omitiendo instalación de Inteligencia Artificial."
+    log_info "Instalación de IA omitida."
 fi
 
 # ------------------------------------------------------------------------------
-# 6. Forjado del Santuario Criptográfico (LUKS)
+# 6. Bóveda Segura (Datos cifrados)
 # ------------------------------------------------------------------------------
-log_info "Generando rutinas lógicas para Bóveda Criptográfica..."
+log_info "Configurando herramientas para la Bóveda Segura..."
 
 # NOTA: Usamos comillas simples 'EOF' para evitar la expansión de las variables del usuario
 # antes de que se creen los scripts internos.
@@ -339,6 +339,19 @@ if command -v gio >/dev/null 2>&1; then
     for f in "$ESCRITORIO"/*.desktop; do
         gio set "$f" metadata::trusted yes 2>/dev/null || true
     done
+fi
+
+# ------------------------------------------------------------------------------
+# 7. Diagnóstico de Persistencia (Advertencia Segura)
+# ------------------------------------------------------------------------------
+if ! grep -q "persistent" /proc/cmdline; then
+    echo -e "\n\e[1;33m[!] ADVERTENCIA DE PERSISTENCIA:\e[0m"
+    echo "Se ha detectado que el sistema NO está corriendo con el flag 'persistent'."
+    echo "Si estás en un Live USB, tus cambios se perderán al reiniciar."
+    echo "Consulta la documentación del proyecto para saber cómo activar la"
+    echo "persistencia permanente en el menú de arranque (GRUB)."
+    echo ""
+    sleep 2
 fi
 
 echo "============================================================"
