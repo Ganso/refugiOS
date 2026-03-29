@@ -40,6 +40,10 @@ Si ya tienes un USB con una base de Linux (Xubuntu) recién instalada, solo tien
 curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
 ```
 
+> [!IMPORTANT] 
+> **¿Aún no tienes el USB de Linux preparado?** 
+> Si estás empezando de cero, sigue primero nuestra **[Guía de Instalación Manual](doc/instalacion_manual.md)** para preparar tu pendrive desde Windows o Linux.
+
 > [!NOTE] 
 > El instalador te guiará paso a paso y te preguntará qué contenidos quieres incluir según el tamaño de tu USB.
 
@@ -52,7 +56,6 @@ Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido
 *   **[Aplicaciones y Software](doc/modulos_de_software.md):** Información sobre Kiwix, Mapas e Inteligencia Artificial.
 *   **[Arquitectura del Sistema](doc/arquitectura.md):** Detalles técnicos sobre la base Linux y su rendimiento.
 *   **[Bóvedas de Seguridad](doc/bovedas_criptograficas.md):** Cómo funciona el cifrado de tus archivos personales.
-*   **[Guía de Instalación Manual](doc/instalacion_manual.md):** Instrucciones paso a paso para expertos y pruebas en máquinas virtuales.
 
 ---
 

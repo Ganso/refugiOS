@@ -80,6 +80,7 @@ Si usas máquinas virtuales, recuerda que refugiOS arranca en modo **UEFI**. Por
 Apaga tu PC y arranca desde el USB (F12/F8/Esc).
 
 1.  **Parche de Persistencia:** Si el sistema no guarda los cambios solo, al ver el menú de "Try Xubuntu", pulsa la tecla **`e`**. Busca la línea que empieza por `linux` y añade la palabra `persistent` justo antes de los tres guiones `---`. Luego pulsa **F10** o **Ctrl+X** para arrancar.
+    *   **Tip:** Para no tener que hacer esto cada vez, consulta [cómo activar la persistencia permanente](persistencia_permanente.md).
 2.  **Lanzar el Instalador:** Una vez dentro del escritorio, conéctate a la red y pega esto en la terminal:
     ```bash
     curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
