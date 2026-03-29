@@ -13,6 +13,17 @@ log_err()  { echo -e "\e[1;31m[X] ERROR:\e[0m $1"; exit 1; }
 log_success() { echo -e "\e[1;32m[v] ÉXITO:\e[0m $1"; }
 
 # ============================================
+# Argumentos
+# ============================================
+FORCE=0
+for arg in "$@"; do
+    if [ "$arg" == "--force" ]; then
+        FORCE=1
+        log_info "Modo --force activado. Se sobrescribirán las descargas existentes."
+    fi
+done
+
+# ============================================
 # Detección de recursos y validación
 # ============================================
 # Detectar idioma (basado en LANG, asumiendo 'es' por defecto)
@@ -61,16 +72,16 @@ mkdir -p "$ESCRITORIO"
 log_info "Neutralizando bloqueos automáticos de dpkg/apt..."
 sudo systemctl stop unattended-upgrades 2>/dev/null || true
 sudo dpkg --configure -a || true
-sudo apt-get install -f -y || true
+sudo apt-get install -f -y < /dev/null || true
 
 log_info "Instalando dependencias críticas y paquetes de soporte de idioma local..."
 sudo apt-get update -y
-sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common 
+sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common < /dev/null
 
 lang_pkgs=$(check-language-support -l "$SYS_LANG" 2>/dev/null || echo "")
 if [ -n "$lang_pkgs" ]; then
     log_info "Instalando los paquetes de idioma para $SYS_LANG..."
-    sudo apt-get install -y $lang_pkgs || true
+    sudo apt-get install -y $lang_pkgs < /dev/null || true
 fi
 
 # ------------------------------------------------------------------------------
@@ -78,37 +89,45 @@ fi
 # ------------------------------------------------------------------------------
 log_info "Extrayendo el binario más reciente de Kiwix Desktop..."
 
-# NOTA TÉCNICA: Kiwix no adjunta sus binarios (assets) en la API de GitHub para la versión de Desktop.
-# Hacer una llamada a la API allí devuelve una lista vacía. Por tanto, raspamos su servidor oficial:
-KIWIX_FILE=$(curl -sL https://download.kiwix.org/release/kiwix-desktop/ | grep -o 'kiwix-desktop_x86_64_[0-9.-]*\.appimage' | sort -V | tail -n 1)
+if [ -f "$BASE_DIR/Apps/kiwix-desktop.appimage" ] && [ "$FORCE" -eq 0 ]; then
+    log_info "Kiwix Desktop ya existe. Omitiendo descarga (usa --force para forzar)."
+else
+    # NOTA TÉCNICA: Kiwix no adjunta sus binarios (assets) en la API de GitHub para la versión de Desktop.
+    # Hacer una llamada a la API allí devuelve una lista vacía. Por tanto, raspamos su servidor oficial:
+    KIWIX_FILE=$(curl -sL https://download.kiwix.org/release/kiwix-desktop/ | grep -o 'kiwix-desktop_x86_64_[0-9.-]*\.appimage' | sort -V | tail -n 1)
 
-if [ -z "$KIWIX_FILE" ]; then
-    log_err "Fallo al localizar la versión de Kiwix en los servidores."
+    if [ -z "$KIWIX_FILE" ]; then
+        log_err "Fallo al localizar la versión de Kiwix en los servidores."
+    fi
+
+    KIWIX_URL="https://download.kiwix.org/release/kiwix-desktop/${KIWIX_FILE}"
+    log_info "Descargando: $KIWIX_FILE"
+    wget -c "$KIWIX_URL" -O "$BASE_DIR/Apps/kiwix-desktop.appimage"
+    chmod +x "$BASE_DIR/Apps/kiwix-desktop.appimage"
+    log_success "Kiwix Desktop instalado con éxito."
 fi
-
-KIWIX_URL="https://download.kiwix.org/release/kiwix-desktop/${KIWIX_FILE}"
-log_info "Descargando: $KIWIX_FILE"
-wget -c "$KIWIX_URL" -O "$BASE_DIR/Apps/kiwix-desktop.appimage"
-chmod +x "$BASE_DIR/Apps/kiwix-desktop.appimage"
-log_success "Kiwix Desktop instalado con éxito."
 
 # ------------------------------------------------------------------------------
 # 3. Base de Datos Desconectada (Archivos ZIM)
 # ------------------------------------------------------------------------------
 log_info "Rastreando enciclopedias en español actualizadas..."
 
-LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_medicine_maxi_[0-9-]*\.zim' | sort -V | tail -n 1)
-LATEST_WIKI_NOPIC=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_top_mini_[0-9-]*\.zim' | sort -V | tail -n 1)
+if [ -f "$BASE_DIR/Conocimiento/wikimed.zim" ] && [ -f "$BASE_DIR/Conocimiento/wikipedia.zim" ] && [ "$FORCE" -eq 0 ]; then
+    log_info "Enciclopedias ZIM ya existen. Omitiendo descarga conjunta (usa --force para forzar)."
+else
+    LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_medicine_maxi_[0-9-]*\.zim' | sort -V | tail -n 1)
+    LATEST_WIKI_NOPIC=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_top_mini_[0-9-]*\.zim' | sort -V | tail -n 1)
 
-if [ -z "$LATEST_MED" ] || [ -z "$LATEST_WIKI_NOPIC" ]; then
-    log_err "Los repositorios ZIM de Kiwix no respondieron como se esperaba."
+    if [ -z "$LATEST_MED" ] || [ -z "$LATEST_WIKI_NOPIC" ]; then
+        log_err "Los repositorios ZIM de Kiwix no respondieron como se esperaba."
+    fi
+
+    log_info "Descargando WikiMed: $LATEST_MED (~2GB)"
+    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/" -o "wikimed.zim" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
+
+    log_info "Descargando Wikipedia (Top Mini - Pruebas): $LATEST_WIKI_NOPIC (~183MB)"
+    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/" -o "wikipedia.zim" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI_NOPIC"
 fi
-
-log_info "Descargando WikiMed: $LATEST_MED (~2GB)"
-aria2c -x 4 --dir="$BASE_DIR/Conocimiento/" -o "wikimed.zim" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
-
-log_info "Descargando Wikipedia (Top Mini - Pruebas): $LATEST_WIKI_NOPIC (~183MB)"
-aria2c -x 4 --dir="$BASE_DIR/Conocimiento/" -o "wikipedia.zim" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI_NOPIC"
 
 cat << EOF > "$ESCRITORIO/Conocimiento_Offline.desktop"
 
@@ -127,8 +146,8 @@ log_success "Corpus de conocimiento garantizado."
 # 4. Módulo Cartográfico Offline
 # ------------------------------------------------------------------------------
 log_info "Instalando motor cartográfico Organic Maps..."
-sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-sudo flatpak install flathub app.organicmaps.desktop -y
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo < /dev/null
+sudo flatpak install flathub app.organicmaps.desktop -y < /dev/null
 
 cat << EOF > "$ESCRITORIO/Mapas_Offline.desktop"
 
@@ -146,19 +165,27 @@ chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
 # ------------------------------------------------------------------------------
 log_info "Resolviendo dependencias del Motor de IA Llamafile..."
 
-# En este caso sí usamos la API de GitHub combinada con grep nativo para evadir fallos de compatibilidad en JQ
-LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets.browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
+if [ -f "$BASE_DIR/IA/llamafile" ] && [ "$FORCE" -eq 0 ]; then
+    log_info "Motor de IA Llamafile ya existe. Omitiendo descarga."
+else
+    # En este caso sí usamos la API de GitHub combinada con grep nativo para evadir fallos de compatibilidad en JQ
+    LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets.browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
 
-if [ -z "$LLAMAFILE_URL" ] || [ "$LLAMAFILE_URL" == "null" ]; then
-    log_err "No se pudo resolver la URL del ejecutable de Llamafile."
+    if [ -z "$LLAMAFILE_URL" ] || [ "$LLAMAFILE_URL" == "null" ]; then
+        log_err "No se pudo resolver la URL del ejecutable de Llamafile."
+    fi
+
+    log_info "Descargando Llamafile Engine..."
+    wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/llamafile"
+    chmod +x "$BASE_DIR/IA/llamafile"
 fi
 
-log_info "Descargando Llamafile Engine..."
-wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/llamafile"
-chmod +x "$BASE_DIR/IA/llamafile"
-
-log_info "Descargando modelo cognitivo Phi-3.5 Mini (Altamente Optimizado)..."
-wget -c "https://huggingface.co/microsoft/Phi-3.5-mini-instruct-gguf/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf" -O "$BASE_DIR/IA/Phi-3.5-mini.gguf"
+if [ -f "$BASE_DIR/IA/Phi-3.5-mini.gguf" ] && [ "$FORCE" -eq 0 ]; then
+    log_info "Modelo cognitivo Phi-3.5 Mini ya existe. Omitiendo descarga."
+else
+    log_info "Descargando modelo cognitivo Phi-3.5 Mini (Altamente Optimizado)..."
+    wget -c "https://huggingface.co/microsoft/Phi-3.5-mini-instruct-gguf/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf" -O "$BASE_DIR/IA/Phi-3.5-mini.gguf"
+fi
 
 cat << EOF > "$ESCRITORIO/Asistente_IA.desktop"
 
