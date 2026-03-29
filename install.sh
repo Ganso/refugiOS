@@ -62,7 +62,7 @@ fi
 
 BASE_DIR="$HOME/refugiOS"
 log_info "Creando estructura de directorios en $BASE_DIR..."
-mkdir -p "$BASE_DIR"/{Apps,Conocimiento,Mapas,IA,Bovedas,Scripts}
+mkdir -p "$BASE_DIR"/{Apps/versiones,Conocimiento/versiones,Mapas,IA/versiones,Bovedas,Scripts}
 mkdir -p "$ESCRITORIO"
 
 # ------------------------------------------------------------------------------
@@ -89,9 +89,6 @@ fi
 # ------------------------------------------------------------------------------
 log_info "Extrayendo el binario más reciente de Kiwix Desktop..."
 
-if [ -f "$BASE_DIR/Apps/kiwix-desktop.appimage" ] && [ "$FORCE" -eq 0 ]; then
-    log_info "Kiwix Desktop ya existe. Omitiendo descarga (usa --force para forzar)."
-else
     # NOTA TÉCNICA: Kiwix no adjunta sus binarios (assets) en la API de GitHub para la versión de Desktop.
     # Hacer una llamada a la API allí devuelve una lista vacía. Por tanto, raspamos su servidor oficial:
     KIWIX_FILE=$(curl -sL https://download.kiwix.org/release/kiwix-desktop/ | grep -o 'kiwix-desktop_x86_64_[0-9.-]*\.appimage' | sort -V | tail -n 1)
@@ -100,21 +97,22 @@ else
         log_err "Fallo al localizar la versión de Kiwix en los servidores."
     fi
 
+if [ -f "$BASE_DIR/Apps/versiones/$KIWIX_FILE" ] && [ "$FORCE" -eq 0 ]; then
+    log_info "Kiwix Desktop ($KIWIX_FILE) ya existe. Omitiendo descarga."
+else
     KIWIX_URL="https://download.kiwix.org/release/kiwix-desktop/${KIWIX_FILE}"
     log_info "Descargando: $KIWIX_FILE"
-    wget -c "$KIWIX_URL" -O "$BASE_DIR/Apps/kiwix-desktop.appimage"
-    chmod +x "$BASE_DIR/Apps/kiwix-desktop.appimage"
-    log_success "Kiwix Desktop instalado con éxito."
+    wget -c "$KIWIX_URL" -O "$BASE_DIR/Apps/versiones/$KIWIX_FILE"
+    chmod +x "$BASE_DIR/Apps/versiones/$KIWIX_FILE"
+    log_success "Kiwix Desktop descargado con éxito."
 fi
+ln -sf "$BASE_DIR/Apps/versiones/$KIWIX_FILE" "$BASE_DIR/Apps/kiwix-desktop.appimage"
 
 # ------------------------------------------------------------------------------
 # 3. Base de Datos Desconectada (Archivos ZIM)
 # ------------------------------------------------------------------------------
 log_info "Rastreando enciclopedias en español actualizadas..."
 
-if [ -f "$BASE_DIR/Conocimiento/wikimed.zim" ] && [ -f "$BASE_DIR/Conocimiento/wikipedia.zim" ] && [ "$FORCE" -eq 0 ]; then
-    log_info "Enciclopedias ZIM ya existen. Omitiendo descarga conjunta (usa --force para forzar)."
-else
     LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_medicine_maxi_[0-9-]*\.zim' | sort -V | tail -n 1)
     LATEST_WIKI_NOPIC=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o 'wikipedia_es_top_mini_[0-9-]*\.zim' | sort -V | tail -n 1)
 
@@ -122,12 +120,17 @@ else
         log_err "Los repositorios ZIM de Kiwix no respondieron como se esperaba."
     fi
 
+if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI_NOPIC" ] && [ "$FORCE" -eq 0 ]; then
+    log_info "Enciclopedias ZIM ya existen en versiones. Omitiendo la descarga."
+else
     log_info "Descargando WikiMed: $LATEST_MED (~2GB)"
-    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/" -o "wikimed.zim" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
+    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
 
     log_info "Descargando Wikipedia (Top Mini - Pruebas): $LATEST_WIKI_NOPIC (~183MB)"
-    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/" -o "wikipedia.zim" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI_NOPIC"
+    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI_NOPIC" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI_NOPIC"
 fi
+ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" "$BASE_DIR/Conocimiento/wikimed.zim"
+ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI_NOPIC" "$BASE_DIR/Conocimiento/wikipedia.zim"
 
 cat << EOF > "$ESCRITORIO/Conocimiento_Offline.desktop"
 [Desktop Entry]
@@ -165,27 +168,31 @@ chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
 # ------------------------------------------------------------------------------
 log_info "Resolviendo dependencias del Motor de IA Llamafile..."
 
-if [ -f "$BASE_DIR/IA/llamafile" ] && [ "$FORCE" -eq 0 ]; then
-    log_info "Motor de IA Llamafile ya existe. Omitiendo descarga."
-else
     # En este caso sí usamos la API de GitHub combinada con grep nativo para evadir fallos de compatibilidad en JQ
     LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets[].browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
 
     if [ -z "$LLAMAFILE_URL" ] || [ "$LLAMAFILE_URL" == "null" ]; then
         log_err "No se pudo resolver la URL del ejecutable de Llamafile."
     fi
+    LLAMA_FILE=$(basename "$LLAMAFILE_URL")
 
+if [ -f "$BASE_DIR/IA/versiones/$LLAMA_FILE" ] && [ "$FORCE" -eq 0 ]; then
+    log_info "Motor de IA Llamafile ($LLAMA_FILE) ya existe. Omitiendo."
+else
     log_info "Descargando Llamafile Engine..."
-    wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/llamafile"
-    chmod +x "$BASE_DIR/IA/llamafile"
+    wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/versiones/$LLAMA_FILE"
+    chmod +x "$BASE_DIR/IA/versiones/$LLAMA_FILE"
 fi
+ln -sf "$BASE_DIR/IA/versiones/$LLAMA_FILE" "$BASE_DIR/IA/llamafile"
 
-if [ -f "$BASE_DIR/IA/Phi-3.5-mini.gguf" ] && [ "$FORCE" -eq 0 ]; then
+PHI_FILE="Phi-3.5-mini-instruct-Q4_K_M.gguf"
+if [ -f "$BASE_DIR/IA/versiones/$PHI_FILE" ] && [ "$FORCE" -eq 0 ]; then
     log_info "Modelo cognitivo Phi-3.5 Mini ya existe. Omitiendo descarga."
 else
     log_info "Descargando modelo cognitivo Phi-3.5 Mini (Altamente Optimizado)..."
-    wget -c "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/Phi-3.5-mini-instruct-Q4_K_M.gguf" -O "$BASE_DIR/IA/Phi-3.5-mini.gguf"
+    wget -c "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/$PHI_FILE" -O "$BASE_DIR/IA/versiones/$PHI_FILE"
 fi
+ln -sf "$BASE_DIR/IA/versiones/$PHI_FILE" "$BASE_DIR/IA/Phi-3.5-mini.gguf"
 
 cat << EOF > "$ESCRITORIO/Asistente_IA.desktop"
 [Desktop Entry]
@@ -288,6 +295,12 @@ Terminal=false
 EOF
 
 chmod +x "$ESCRITORIO"/*.desktop
+# Marcar como confiables en entornos como XFCE/MATE/GNOME para evitar la advertencia de "Untrusted launcher"
+if command -v gio >/dev/null 2>&1; then
+    for f in "$ESCRITORIO"/*.desktop; do
+        gio set "$f" metadata::trusted yes 2>/dev/null || true
+    done
+fi
 
 echo "============================================================"
 echo " EXCELENTE: Instalación Completa. Verifica tu escritorio."
