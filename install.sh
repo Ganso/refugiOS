@@ -31,13 +31,13 @@ if [ "$TOTAL_MB" -lt 15000 ]; then
     echo "asignando todo el disco disponible como espacio libre, o te faltó usar 'persistent'."
     echo "Puedes experimentar fallos de despacio con bases de datos grandes."
     echo "Revisa la Guía de Ensamblaje en el README."
-    read -p "¿Deseas continuar bajo tu propio riesgo? (s/n): " confirm_space
+    read -p "¿Deseas continuar bajo tu propio riesgo? (s/n): " confirm_space < /dev/tty
     if [ "$confirm_space" != "s" ] && [ "$confirm_space" != "S" ]; then 
         log_err "Instalación cancelada para ajustar el tamaño del disco."
     fi
 fi
 
-read -p "Este script preparará tu sistema. ¿Continuar? (s/n): " confirm
+read -p "Este script preparará tu sistema. ¿Continuar? (s/n): " confirm < /dev/tty
 if [ "$confirm" != "s" ] && [ "$confirm" != "S" ]; then 
     log_err "Instalación cancelada por el usuario."
 fi
