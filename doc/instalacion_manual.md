@@ -43,7 +43,7 @@ El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios 
     sudo apt update && sudo apt install mkusb usb-pack-efi
     ```
 *   **Otros Linux (Manual con `dd`):**
-    Si grabas la imagen directamente, deberás crear la partición de datos a mano:
+    Si grabas la imagen directamente, deberas crear la partición de datos y configurar el arranque a mano:
     ```bash
     # 1. Grabar ISO (sdX es tu USB)
     sudo dd if=xubuntu-minimal.iso of=/dev/sdX bs=4M status=progress
@@ -53,6 +53,10 @@ El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios 
     # 3. Formatear con la etiqueta obligatoria "writable"
     sudo mkfs.ext4 -L writable /dev/sdX3
     ```
+    > [!IMPORTANT] 
+    > **Arranque con `dd`:** Al arrancar por primera vez desde un USB creado con `dd`, verás el menú de inicio (GRUB). Debes pulsar la tecla **`e`**, buscar la línea `linux` y añadir la palabra `persistent` antes de los tres guiones `---`. Pulsa **F10** para arrancar.
+    > 
+    > Una vez dentro del sistema, te recomendamos seguir la guía de **[Persistencia Permanente](persistencia_permanente.md)** para no tener que repetir este paso cada vez.
 
 ### Opción B: Instalación Nativa (Solo expertos)
 No recomendamos este método en USBs convencionales porque el "journaling" de Linux los destruirá en pocos meses. **Úsalo solo si tienes un SSD por USB.**
@@ -79,12 +83,10 @@ Si usas máquinas virtuales, recuerda que refugiOS arranca en modo **UEFI**. Por
 
 Apaga tu PC y arranca desde el USB (F12/F8/Esc).
 
-1.  **Parche de Persistencia:** Si el sistema no guarda los cambios solo, al ver el menú de "Try Xubuntu", pulsa la tecla **`e`**. Busca la línea que empieza por `linux` y añade la palabra `persistent` justo antes de los tres guiones `---`. Luego pulsa **F10** o **Ctrl+X** para arrancar.
-    *   **Tip:** Para no tener que hacer esto cada vez, consulta [cómo activar la persistencia permanente](persistencia_permanente.md).
-2.  **Lanzar el Instalador:** Una vez dentro del escritorio, conéctate a la red y pega esto en la terminal:
+1.  **Lanzar el Instalador:** Una vez dentro del escritorio de Xubuntu, conéctate a la red y pega esto en la terminal:
     ```bash
     curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
     ```
-3.  **Configuración:** El asistente detectará tu hardware y te sugerirá las mejores bibliotecas ZIM para tu capacidad.
+2.  **Configuración:** El asistente detectará tu hardware y te sugerirá las mejores bibliotecas ZIM para tu capacidad.
 
 Al finalizar, tu dispositivo refugiOS será **totalmente autónomo**, privado y capaz de funcionar sin Internet para siempre.

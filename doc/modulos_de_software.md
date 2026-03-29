@@ -1,43 +1,55 @@
-# Aplicaciones y Contenidos Incluidos
+# Aplicaciones y Contenidos Incluidos (Actual y Futuro)
 
-refugiOS incluye una selección cuidadosa de herramientas y conocimientos diseñados para funcionar totalmente sin conexión a Internet.
-
-## 1. Biblioteca y Enciclopedias Offline (Kiwix)
-
-Utilizamos el formato **ZIM** y la aplicación **Kiwix** para ofrecerte acceso a bases de datos masivas. Todo lo que ves se descarga directamente a tu USB:
-
-*   **Wikipedia Principal:** Incluye millones de artículos sobre cualquier tema. Si tu USB es grande (64GB+), incluiremos también todas las imágenes y diagramas. Si es pequeño, incluiremos una versión de solo texto para ahorrar espacio.
-*   **WikiMed:** Una enciclopedia médica completa con más de 75,000 artículos detallados sobre primeros auxilios, enfermedades y tratamientos. Es como tener un manual médico de emergencia siempre a mano.
-*   **Enciclopedias de Supervivencia y Oficios:** Guías prácticas sobre cómo purificar agua, hacer nudos, agricultura básica y mecánica.
-*   **Biblioteca de Tecnología Preindustrial:** Documentación sobre cómo fabricar herramientas, trabajar el metal o cultivar alimentos sin necesidad de tecnología moderna.
+refugiOS incluye una selección de herramientas diseñadas para funcionar totalmente sin conexión a Internet. A continuación se detallan los módulos ya disponibles y los que planeamos añadir próximamente.
 
 ---
 
-## 2. Mapas y Navegación (Organic Maps)
+## 🚀 Módulos Actuales (Ya disponibles)
 
-Para la navegación usamos **Organic Maps**, una de las mejores aplicaciones de mapas de código abierto:
+Estos componentes se instalan automáticamente o mediante el asistente de bienvenida:
 
-*   **100% Offline:** Una vez descargados los mapas de tu región, no necesitas GPS ni datos para buscar direcciones o calcular rutas a pie o en coche.
-*   **Privacidad:** La aplicación no rastrea tu posición ni envía datos a servidores externos.
-*   **Detalle:** Incluye senderos, fuentes de agua, hospitales, gasolineras y curvas de nivel para montaña.
+### 1. Biblioteca y Enciclopedias Offline (Kiwix)
+Acceso a bases de datos masivas mediante el formato ZIM.
+*   **Contenidos:** Wikipedia (General), WikiMed (Medicina), WikiHow (Guías prácticas).
+*   **Idioma:** 🌐 **Multilingüe.** El instalador descarga los archivos específicamente en el idioma que elijas (es, en, fr, etc.).
+
+### 2. Mapas y Navegación (Organic Maps)
+Mapas vectoriales detallados con búsqueda y rutas offline.
+*   **Contenidos:** Mapas de ciudades, senderos, fuentes de agua y hospitales.
+*   **Idioma:** 🌐 **Multilingüe.** La interfaz y los nombres de los mapas se adaptan a tu región.
+
+### 3. Asistente de Inteligencia Artificial (Llamafile)
+Asistente inteligente privado que funciona 100% en tu ordenador local.
+*   **Contenidos:** Modelo Phi-3.5 de Microsoft (equilibrado entre potencia y velocidad).
+*   **Idioma:** 🌐 **Multilingüe.** Entiende y responde en más de 20 idiomas, incluyendo español, inglés y francés.
+
+### 4. Herramientas de Trabajo Estándar
+Programas esenciales para el día a día.
+*   **Contenidos:** **LibreOffice** (documentos y tablas), **VLC** (vídeo/audio), **Evince** (PDF) y **Syncthing** (compartir archivos sin red).
+*   **Idioma:** 🌐 **Multilingüe.** Todas las aplicaciones se instalan con el soporte de idioma local seleccionado.
 
 ---
 
-## 3. Asistente de Inteligencia Artificial (IA Local)
+## 🔮 Roadmap (Módulos planeados a futuro)
 
-refugiOS incluye un asistente inteligente que funciona **dentro de tu ordenador**, sin conectarse a la nube (como ChatGPT, pero privado y offline):
+Estamos trabajando para integrar estas potentes herramientas en próximas versiones:
 
-*   **¿Para qué sirve?** Puedes hacerle preguntas sobre cómo reparar algo de lo que no tienes manual, pedirle que te resuma un texto largo o que te ayude a traducir algo.
-*   **Motor Llamafile:** Es una tecnología moderna que permite ejecutar modelos de lenguaje potentes en ordenadores normales. Solo tienes que hacer doble clic y empezar a chatear en tu navegador.
-*   **Modelo Phi-3.5:** Es el "cerebro" que hemos elegido. Es muy inteligente, entiende perfectamente el español y otros 20 idiomas, y cabe en unos pocos gigabytes de espacio.
+### 1. Educación y Aprendizaje
+*   **Khan Academy Offline:** Descarga de lecciones interactivas de matemáticas, ciencia y economía para todas las edades.
+    *   **Idioma:** 🌐 **Multilingüe** (disponible en español e inglés).
+*   **Plataforma Kolibri:** Una completa biblioteca educativa con vídeos y ejercicios para escuelas en zonas remotas.
+    *   **Idioma:** 🌐 **Multilingüe.**
 
----
+### 2. Bibliotecas de Literatura y Técnica
+*   **Project Gutenberg:** Acceso a más de 70,000 libros clásicos de dominio público en formato electrónico.
+    *   **Idioma:** 🌐 **Multilingüe** (especialmente rico en inglés, francés y alemán, con miles de títulos en español).
+*   **Survivor Library:** Una colección masiva de manuales sobre técnicas preindustriales (agricultura, forja, química básica).
+    *   **Idioma:** 🇺🇸 **Principalmente Inglés.**
 
-## 4. Herramientas de Trabajo y Educación
+### 3. Análisis Avanzado con IA
+*   **AnythingLLM para Análisis de PDF:** Una herramienta que permite "chatear" con tus propios documentos PDF locales. Podrás preguntarle a la IA sobre manuales técnicos de 500 páginas y obtener respuestas instantáneas.
+    *   **Idioma:** 🌐 **Multilingüe.** Funciona con documentos en cualquier idioma que entienda el modelo base.
 
-Además de lo anterior, el sistema incluye programas estándar para que puedas trabajar con total normalidad:
-
-*   **Ofimática:** Suite completa (**LibreOffice**) para escribir documentos, crear hojas de cálculo de gastos o hacer presentaciones.
-*   **Multimedia:** Reproductor universal (**VLC**) para ver vídeos o escuchar música, y visores de fotos y documentos PDF.
-*   **Intercambio de archivos:** Herramientas (**Syncthing**) para compartir archivos entre varios ordenadores de forma inalámbrica sin necesidad de router ni Internet.
-*   **Educación:** Si lo deseas, puedes añadir plataformas educativas (**Kolibri**) o juegos educativos para niños.
+### 4. Redes y Comunicación
+*   **Estaciones de Radio Digital:** Integración de herramientas para conectar el ordenador a radios de onda corta (SDR) para recibir noticias o datos en situaciones de colapso total.
+    *   **Idioma:** 🌐 **Agnóstico al idioma.**
