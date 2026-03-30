@@ -36,6 +36,39 @@ Si vas a una tienda física o buscas online, usa estas palabras mágicas para no
 *   **En tienda física:** *"Quiero un disco SSD externo de bolsillo, que sea USB 3.2 y de al menos 64GB (o 128GB), con velocidad de lectura superior a 400 MB/s"*.
 *   **En tiendas online:** Busca *"SSD Portátil 128GB USB 3.2"* o *"Unidad de estado sólido externa USB-C"*. Fíjate que en la descripción ponga **"SSD"** y no solo "Flash Drive" o "USB Stick".
 
+### Dispositivos de referencia y presupuestos (España)
+
+Para facilitar la elección, aquí tienes tres configuraciones recomendadas. Ten en cuenta que los precios en tecnología son muy volubles y sirven solo como orientación, y que en el momento de escribir esto (marzo/abril de 2026) los precios están sufiendo una tendencia al alza:
+
+1.  **Opción Base (Económica / Réplicas):** 
+    *   **Qué es:** Un pendrive USB 3.2 metálico de 32GB o 64GB (Ej: SanDisk Ultra Luxe o Kingston DataTraveler Kyson).
+    *   **Para qué:** Ideal para tener **múltiples réplicas de seguridad baratas** del sistema base en mochilas, vehículos o botiquines. No recomendado para uso diario intensivo.
+    *   **Precio Real 2026:** Entre **8€ y 20€**.
+    *   *Nota:* Un modelo estándar de 64GB se localiza por unos **10€**. Las versiones de 32GB parten de los **14€**, subiendo hasta los **15€-25€** para los 64GB más rápidos. Modelos de plástico son más baratos (**8€**), pero su baja durabilidad no justifica el pequeño ahorro.
+
+2.  **Opción Intermedia (Adaptador SATA):**
+    *   **Qué es:** Un adaptador USB a SATA III (cable o carcasa) para conectar discos SSD de 2.5" existentes.
+    *   **Para qué:** La mejor forma de **reciclar discos de portátiles viejos** para tener un refugiOS de alta velocidad y gran capacidad para el día a día sin gastar mucho.
+    *   **Precio Real 2026:** Entre **10€ y 20€**.
+    *   *Nota:* Las carcasas básicas de aluminio se encuentran entre **5€ y 10€**. Los adaptadores de cable de alta fidelidad con soporte UASP oscilan entre los **15€ y 20€**.
+
+3.  **Opción Premium (Unidad Principal):**
+    *   **Qué es:** Un SSD Portátil dedicado de 250GB o un montaje DIY (NVMe + Carcasa).
+    *   **Para qué:** Como **unidad principal de alto rendimiento**. Imprescindible para uso intensivo de modelos de IA complejos, Wikipedia completa con imágenes y mapas mundiales detallados.
+    *   **Precio Real 2026:** Entre **60€ y 90€**.
+    *   *Nota:* Los modelos premium "montados" suelen partir ya de los 500GB (**100€-150€**). La opción real de 250GB ronda los **65€**. Montar un módulo NVMe por piezas puede ascender a los **80€-90€**, siendo más caro pero permitiendo futuras actualizaciones.
+
+#### Comparativa de Rendimiento y Experiencia (2026)
+
+| Perfil de Uso | Capacidad | Inversión (Est.) | Tiempo Instalación | Experiencia de Uso |
+| :--- | :--- | :--- | :--- | :--- |
+| **Distribución OS** | 32 GB - 64 GB | 10 € - 20 € | Una tarde completa | Con esperas continuas |
+| **Reciclaje SSD** | 128 GB - 256 GB | 15 € (Solo adap.) | ~1 hora | Fluida (casi nativa) |
+| **Alto Rendimiento** | 250 GB | 60 € - 90 € | < 45 minutos | Responsiva (como local) |
+
+> [!IMPORTANT]
+> Este ecosistema de precios refleja que el mercado de 2026 penaliza las capacidades más bajas. La diferencia de precio entre un pendrive lento y un SSD de 250GB es hoy una de las brechas de valor más importantes para el usuario final.
+
 ---
 
 ## 2. Descarga de la imagen base (El software)
