@@ -107,7 +107,15 @@ Si quieres probar que el USB funciona correctamente antes de reiniciar tu PC pri
 
 Apaga tu PC y arranca desde el USB (F12/F8/Esc).
 
-1.  **Lanzar el Instalador:** Una vez dentro del escritorio de Xubuntu, conéctate a la red y pega esto en la terminal:
+1.  **Configuración del teclado (Español):** 
+    Por defecto, la sesión "Live" arranca en inglés. Para poner el teclado en español:
+    *   Haz clic en el **menú de aplicaciones** (esquina superior izquierda).
+    *   Ve a **Settings** -> **Keyboard**.
+    *   En la pestaña **Layout**, desactiva la opción **"Use system defaults"**.
+    *   Pulsa en **+ Add**, busca **Spanish** y dale a OK.
+    *   (Opcional) Puedes subir "Spanish" arriba del todo o borrar "English" para que sea el teclado por defecto.
+    
+2.  **Lanzar el Instalador:** Una vez dentro del escritorio de Xubuntu, conéctate a la red y pega esto en la terminal:
     ```bash
     curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
     ```
