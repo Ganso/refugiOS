@@ -65,7 +65,7 @@ El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios 
     echo "deb http://ppa.launchpad.net/mkusb/ppa/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/mkusb.list
     sudo apt update && sudo apt install mkusb usb-pack-efi
     ```
-*   **Otros Linux (Manual con `dd`):**
+*   **Otros Linux (Manual con `dd`): (no recomendado)**
     Si grabas la imagen directamente, deberas crear la partición de datos y configurar el arranque a mano:
     ```bash
     # 1. Grabar ISO (sdX es tu USB)
@@ -79,7 +79,7 @@ El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios 
     > [!IMPORTANT] 
     > **Arranque con `dd`:** Al arrancar por primera vez desde un USB creado con `dd`, verás el menú de inicio (GRUB). Debes pulsar la tecla **`e`**, buscar la línea `linux` y añadir la palabra `persistent` antes de los tres guiones `---`. Pulsa **F10** para arrancar.
     > 
-    > Para evitar tener que repetir esto cada vez, te recomendamos seguir la guía de **[Persistencia Permanente](persistencia_permanente.md)**.
+    > Para evitar hacer esto cada vez tendrás que editar el arranque del sistema portable, lo cual está fuera del acance de esta guía. Por eso, se recomienda usar Rufus o mkusb excepto que sepas muy bien lo que estás haciendo y te sientas cómodo con la línea de comandos.
 
 ### Opción B: Instalación Nativa (Solo expertos)
 No recomendamos este método en USBs convencionales porque el "journaling" de Linux los destruirá en pocos meses. **Úsalo solo si tienes un SSD por USB.**
