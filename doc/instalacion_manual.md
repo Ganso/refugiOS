@@ -76,8 +76,7 @@ El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios 
     # 3. Formatear con la etiqueta obligatoria "writable"
     sudo mkfs.ext4 -L writable /dev/sdX3
     ```
-    > [!IMPORTANT] 
-    > **Arranque con `dd`:** Al arrancar por primera vez desde un USB creado con `dd`, verás el menú de inicio (GRUB). Debes pulsar la tecla **`e`**, buscar la línea `linux` y añadir la palabra `persistent` antes de los tres guiones `---`. Pulsa **F10** para arrancar.
+    > **Importante:** Al arrancar por primera vez desde un USB creado con `dd`, verás el menú de inicio (GRUB). Debes pulsar la tecla **`e`**, buscar la línea `linux` y añadir la palabra `persistent` antes de los tres guiones `---`. Pulsa **F10** para arrancar.
     > 
     > Para evitar hacer esto cada vez tendrás que editar el arranque del sistema portable, lo cual está fuera del acance de esta guía. Por eso, se recomienda usar Rufus o mkusb excepto que sepas muy bien lo que estás haciendo y te sientas cómodo con la línea de comandos.
 
