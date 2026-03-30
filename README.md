@@ -37,6 +37,7 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 Si ya tienes un USB con una base de Linux (Xubuntu) recién instalada, solo tienes que conectar el equipo a Internet una vez y ejecutar este comando en la terminal:
 
 ```bash
+sudo apt install curl -y
 curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
 ```
 
