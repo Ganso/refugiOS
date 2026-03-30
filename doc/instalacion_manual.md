@@ -10,7 +10,7 @@ Antes de empezar, de tu hardware dependerá la velocidad y vida útil de tu refu
 *   **Capacidad y Contenido:**
     *   **16 GB (Mínimo absoluto):** Sistema base + WikiMed + Mapas básicos + IA ligera. Sin espacio para Wikipedia.
     *   **32 GB (Equilibrado):** Todo lo anterior + Wikipedia "Mini" (solo texto o imágenes reducidas).
-    *   **64 GB (Estándar):** ¡El punto ideal! Incluye la **Wikipedia completa con imágenes**, modelo IA Phi-3.5 y mapas detallados.
+    *   **64 GB (Estándar):** ¡El punto ideal! Incluye la **Wikipedia completa con imágenes**, modelo IA Phi-4-mini y mapas detallados.
     *   **128 GB o más:** Permite bibliotecas masivas (Survivor Library), mapas de todo el mundo y múltiples modelos de IA.
 
 > [!TIP]

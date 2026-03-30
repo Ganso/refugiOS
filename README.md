@@ -17,7 +17,7 @@
 
 ## 📖 ¿Qué es refugiOS?
 
-**refugiOS** es un sistema operativo portátil diseñado para situaciones de emergencia, falta de Internet o necesidad extrema de privacidad. 
+**refugiOS** es un sistema operativo portátil diseñado para situaciones de emergencia, falta de conectividad a Internet o necesidad extrema de privacidad. 
 
 A diferencia de otras soluciones complejas, **refugiOS convierte cualquier ordenador normal (incluso uno antiguo) en una estación de información completa** que arranca directamente desde un pendrive USB. 
 
@@ -27,7 +27,7 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 
 *   **⚡ Arranca en cualquier PC (Plug-and-play):** No necesitas instalar nada en el ordenador que encuentres. Conectas el USB, enciendes el equipo y ya tienes tu refugio digital funcionando a máxima velocidad.
 *   **📚 Conocimiento Universal Offline:** Incluye copias completas de la Wikipedia, WikiMed (medicina), enciclopedias de supervivencia y guías de oficios gracias a la tecnología de *Kiwix*.
-*   **🤖 Inteligencia Artificial Privada:** Incorpora un asistente (como ChatGPT) que funciona de forma 100% local, sin Internet. Puede ayudarte a resolver problemas técnicos, médicos o de traducción usando solo la potencia de tu ordenador.
+*   **🤖 Inteligencia Artificial Privada:** Incorpora un asistente que funciona de forma 100% local, sin Internet. Puede ayudarte a resolver problemas técnicos, médicos o de traducción usando solo la potencia de tu ordenador.
 *   **🗺️ Mapas y Navegación GPS:** Mapas detallados de todo el mundo mediante *Organic Maps*. Puedes buscar rutas y puntos de interés (fuentes, hospitales, refugios) sin emitir ninguna señal de red.
 *   **🔒 Bóveda de Archivos Segura:** Sistema de cifrado profesional para guardar tus documentos más importantes (pasaportes, títulos, fotos) protegidos por una contraseña maestra.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español, inglés, francés, etc.), descargando solo los diccionarios y ayudas que necesitas.
@@ -62,11 +62,15 @@ Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido
 ## 🗃️ Agradecimientos y Fuentes
 
 refugiOS es posible gracias al increíble trabajo de proyectos de código abierto como:
-*   [Xubuntu](https://xubuntu.org/) y la comunidad de Ubuntu.
-*   [Kiwix](https://www.kiwix.org/) y la Wikipedia.
-*   [Mozilla Ocho](https://github.com/Mozilla-Ocho/llamafile) por el motor Llamafile.
-*   [Organic Maps](https://organicmaps.app/) y OpenStreetMap.
-*   Modelos de lenguaje de Microsoft (Phi-3.5) y otros desarrolladores FOSS.
+*   [Xubuntu](https://xubuntu.org/) y la comunidad de Ubuntu para la base del sistema operativo.
+*   [Kiwix](https://www.kiwix.org/) y la [Fundación Wikimedia](https://wikimediafoundation.org/) por el acceso offline al conocimiento universal.
+*   [Mozilla Ocho](https://github.com/Mozilla-Ocho/llamafile) por el motor de inferencia **Llamafile**.
+*   [HuggingFace](https://huggingface.co/) y [bartowski](https://huggingface.co/bartowski) por las excelentes cuantizaciones de los modelos de IA.
+*   Modelos de lenguaje **Phi-4-mini** (Microsoft) y **Qwen3** (Alibaba-Qwen).
+*   [Organic Maps](https://organicmaps.app/) y los colaboradores de [OpenStreetMap](https://www.openstreetmap.org/) por la cartografía offline.
+*   [Aria2](https://aria2.github.io/) para las descargas de alta eficiencia.
+*   [Flatpak](https://flatpak.org/) y [Flathub](https://flathub.org/) por la distribución de aplicaciones modernas.
+*   [Cryptsetup / LUKS](https://gitlab.com/cryptsetup/cryptsetup) para la seguridad y cifrado de datos personales.
 
 ---
 *(Este proyecto es una iniciativa de código abierto para la resiliencia digital).*

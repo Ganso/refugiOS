@@ -42,7 +42,7 @@ Cuando ocurre un problema real, refugiOS está diseñado para ser rápido, senci
 3.  **Iconos claros y directos:** En el escritorio verás botones grandes para lo que necesites:
     *   **"Enciclopedia Médica":** Para saber cómo tratar una herida o identificar una enfermedad (vía [Wikipedia](https://es.wikipedia.org/)/[WikiMed](https://www.kiwix.org/)).
     *   **"Mapas":** Para encontrar fuentes de agua, refugios u hospitales sin usar Internet ni enviar tu posición a nadie (vía [Organic Maps](https://organicmaps.app/)).
-    *   **"Asistente IA":** Un asistente al que puedes preguntarle cosas complejas (ej: "¿Cómo purificar agua?") y te responderá usando solo la potencia de ese ordenador (vía [Llamafile](https://github.com/Mozilla-Ocho/llamafile) y el modelo [Phi-3.5](https://huggingface.co/microsoft/Phi-3.5-mini-instruct)).
+    *   **"Asistente IA":** Un asistente al que puedes preguntarle cosas complejas (ej: "¿Cómo purificar agua?") y te responderá usando solo la potencia de ese ordenador (vía [Llamafile](https://github.com/Mozilla-Ocho/llamafile) y el modelo [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct)).
     *   **"Mis Documentos":** Pones tu contraseña y aparecen tus archivos personales para identificarte o pedir ayuda.
 
 refugiOS es, sencillamente, tu seguro de vida digital cuando el mundo conectado deja de funcionar.
