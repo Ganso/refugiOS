@@ -19,9 +19,13 @@ Mapas vectoriales detallados con búsqueda y rutas offline.
 *   **Idioma:** 🌐 **Multilingüe.** La interfaz y los nombres de los mapas se adaptan a tu región.
 
 ### 3. Asistente de Inteligencia Artificial ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
-Asistente inteligente privado que funciona 100% en tu ordenador local.
-*   **Contenidos:** Modelo [Phi-3.5 de Microsoft](https://huggingface.co/microsoft/Phi-3.5-mini-instruct) (equilibrado entre potencia y velocidad).
-*   **Idioma:** 🌐 **Multilingüe.** Entiende y responde en más de 20 idiomas, incluyendo español, inglés y francés.
+Asistente inteligente privado que funciona 100% en tu ordenador local. Disponible en tres niveles de potencia según la capacidad del PC:
+*   🟢 **Básico:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.5 GB. Funciona en cualquier PC con 4 GB de RAM.
+*   🟡 **Medio:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~5 GB. Para portátiles modernos con 8 GB de RAM.
+*   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~9 GB. Para PCs potentes con 16 GB de RAM.
+*   **Selector automático:** Al lanzar el asistente, un script detecta la RAM disponible y recomienda el modelo adecuado.
+*   **Idioma:** 🌐 **Multilingüe.** Todos los modelos entienden y responden en más de 20 idiomas.
+
 
 ### 4. Herramientas de Trabajo Estándar
 Programas esenciales para el día a día.

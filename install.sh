@@ -24,11 +24,11 @@ log_info "Espacio asignado en raíz: ${TOTAL_MB} MB. Libre: ${FREE_MB} MB."
 # Autoselección según capacidad (menor a 25GB -> modo Lite)
 if [ "$TOTAL_MB" -lt 25000 ]; then
     DEF_WIKI="2" # Top Mini
-    DEF_IA="2"   # Omitir IA
+    DEF_IA="3"   # Omitir IA
     log_info "Capacidad reducida detectada. Se recomendarán versiones ligeras."
 else
     DEF_WIKI="1" # All NoPic
-    DEF_IA="1"   # Incluir IA
+    DEF_IA="1"   # Incluir IA (básico)
     log_info "Capacidad óptima detectada. Se recomendarán versiones completas."
 fi
 
@@ -72,10 +72,11 @@ fi
 
 # 4. Inteligencia Artificial
 echo ""
-echo "¿Deseas descargar el motor de Inteligencia Artificial Phi-3.5 (~2.4 GB)?"
-echo "  1) Sí"
-echo "  2) No, omitir IA"
-read -p "Opción [1-2] (Enter para la recomendada: $DEF_IA): " menu_ia < /dev/tty
+echo "¿Qué nivel de asistente de IA deseas instalar?"
+echo "  1) Solo modelo básico - Phi-4-mini (~2.5 GB, funciona en cualquier PC)"
+echo "  2) Pack completo - Tres niveles según potencia (~16.5 GB total)"
+echo "  3) No, omitir IA"
+read -p "Opción [1-3] (Enter para la recomendada: $DEF_IA): " menu_ia < /dev/tty
 menu_ia=${menu_ia:-$DEF_IA}
 
 # 5. BitTorrent (opcional para archivos pesados)
@@ -212,12 +213,12 @@ EOF
 chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
 
 # ------------------------------------------------------------------------------
-# 5. Inteligencia Artificial Residente
+# 5. Inteligencia Artificial Residente (Niveles de Razonamiento)
 # ------------------------------------------------------------------------------
-if [ "$menu_ia" == "1" ]; then
+if [ "$menu_ia" == "1" ] || [ "$menu_ia" == "2" ]; then
     log_info "Preparando el asistente de Inteligencia Artificial..."
  
-    # Buscamos la descarga más reciente del motor Llamafile
+    # --- Motor de Inferencia (Llamafile) ---
     LLAMAFILE_URL=$(curl -sL https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest | jq -r '.assets[].browser_download_url' | grep -E 'llamafile-[0-9.]+$' | head -n 1)
  
     if [ -z "$LLAMAFILE_URL" ] || [ "$LLAMAFILE_URL" == "null" ]; then
@@ -228,33 +229,124 @@ if [ "$menu_ia" == "1" ]; then
     if [ -f "$BASE_DIR/IA/versiones/$LLAMA_FILE" ] && [ "$FORCE" -eq 0 ]; then
         log_info "El motor de IA ya está descargado ($LLAMA_FILE)."
     else
-        log_info "Descargando motor de IA..."
+        log_info "Descargando motor de IA (Llamafile)..."
         wget -c "$LLAMAFILE_URL" -O "$BASE_DIR/IA/versiones/$LLAMA_FILE"
         chmod +x "$BASE_DIR/IA/versiones/$LLAMA_FILE"
     fi
     ln -sf "$BASE_DIR/IA/versiones/$LLAMA_FILE" "$BASE_DIR/IA/llamafile"
 
-    PHI_FILE="Phi-3.5-mini-instruct-Q4_K_M.gguf"
-    if [ -f "$BASE_DIR/IA/versiones/$PHI_FILE" ] && [ "$FORCE" -eq 0 ]; then
-        log_info "El modelo de lenguaje ya existe. Omitiendo."
+    # --- Nivel 🟢 Básico: Phi-4-mini (3.8B, ~2.5 GB) - Siempre se descarga ---
+    PHI4_FILE="microsoft_Phi-4-mini-instruct-Q4_K_M.gguf"
+    if [ -f "$BASE_DIR/IA/versiones/$PHI4_FILE" ] && [ "$FORCE" -eq 0 ]; then
+        log_info "Modelo básico (Phi-4-mini) ya existe. Omitiendo."
     else
-        log_info "Descargando modelo de lenguaje Phi-3.5..."
-        wget -c "https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF/resolve/main/$PHI_FILE" -O "$BASE_DIR/IA/versiones/$PHI_FILE"
+        log_info "Descargando modelo básico: Phi-4-mini (~2.5 GB)..."
+        wget -c "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF/resolve/main/$PHI4_FILE" -O "$BASE_DIR/IA/versiones/$PHI4_FILE"
     fi
-    ln -sf "$BASE_DIR/IA/versiones/$PHI_FILE" "$BASE_DIR/IA/Phi-3.5-mini.gguf"
+    ln -sf "$BASE_DIR/IA/versiones/$PHI4_FILE" "$BASE_DIR/IA/modelo-basico.gguf"
 
+    # --- Niveles adicionales (solo pack completo) ---
+    if [ "$menu_ia" == "2" ]; then
+        # Nivel 🟡 Medio: Qwen3-8B (~5 GB)
+        QWEN8_FILE="Qwen_Qwen3-8B-Q4_K_M.gguf"
+        if [ -f "$BASE_DIR/IA/versiones/$QWEN8_FILE" ] && [ "$FORCE" -eq 0 ]; then
+            log_info "Modelo medio (Qwen3-8B) ya existe. Omitiendo."
+        else
+            log_info "Descargando modelo medio: Qwen3-8B (~5 GB)..."
+            wget -c "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/main/$QWEN8_FILE" -O "$BASE_DIR/IA/versiones/$QWEN8_FILE"
+        fi
+        ln -sf "$BASE_DIR/IA/versiones/$QWEN8_FILE" "$BASE_DIR/IA/modelo-medio.gguf"
+
+        # Nivel 🔴 Avanzado: Qwen3-14B (~9 GB)
+        QWEN14_FILE="Qwen_Qwen3-14B-Q4_K_M.gguf"
+        if [ -f "$BASE_DIR/IA/versiones/$QWEN14_FILE" ] && [ "$FORCE" -eq 0 ]; then
+            log_info "Modelo avanzado (Qwen3-14B) ya existe. Omitiendo."
+        else
+            log_info "Descargando modelo avanzado: Qwen3-14B (~9 GB)..."
+            wget -c "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/$QWEN14_FILE" -O "$BASE_DIR/IA/versiones/$QWEN14_FILE"
+        fi
+        ln -sf "$BASE_DIR/IA/versiones/$QWEN14_FILE" "$BASE_DIR/IA/modelo-avanzado.gguf"
+    fi
+
+    # --- Script selector de modelo según RAM disponible ---
+    cat << 'SELECTOR_EOF' > "$BASE_DIR/Scripts/refugios-ia-selector.sh"
+#!/bin/bash
+# ============================================
+# Selector de Modelo de IA - refugiOS
+# Detecta la RAM y elige el modelo adecuado
+# ============================================
+IA_DIR="$HOME/refugiOS/IA"
+
+# Detectar RAM total en MB
+RAM_MB=$(free -m | awk '/^Mem:/{print $2}')
+
+# Verificar qué modelos están disponibles
+TIENE_AVANZADO=0; TIENE_MEDIO=0; TIENE_BASICO=0
+[ -f "$IA_DIR/modelo-avanzado.gguf" ] && TIENE_AVANZADO=1
+[ -f "$IA_DIR/modelo-medio.gguf" ]    && TIENE_MEDIO=1
+[ -f "$IA_DIR/modelo-basico.gguf" ]   && TIENE_BASICO=1
+
+# Si solo hay un modelo, usarlo directamente
+MODELOS_DISPONIBLES=$((TIENE_BASICO + TIENE_MEDIO + TIENE_AVANZADO))
+if [ "$MODELOS_DISPONIBLES" -eq 1 ]; then
+    if [ "$TIENE_AVANZADO" -eq 1 ]; then MODELO="modelo-avanzado.gguf"; NOMBRE="Avanzado (Qwen3-14B)"
+    elif [ "$TIENE_MEDIO" -eq 1 ];   then MODELO="modelo-medio.gguf";   NOMBRE="Medio (Qwen3-8B)"
+    else                                   MODELO="modelo-basico.gguf";  NOMBRE="Básico (Phi-4-mini)"
+    fi
+    echo "Modelo único detectado: $NOMBRE"
+else
+    # Autoselección según RAM
+    if [ "$RAM_MB" -ge 14000 ] && [ "$TIENE_AVANZADO" -eq 1 ]; then
+        RECOMENDADO="3"; REC_NOMBRE="Avanzado (Qwen3-14B)"
+    elif [ "$RAM_MB" -ge 7000 ] && [ "$TIENE_MEDIO" -eq 1 ]; then
+        RECOMENDADO="2"; REC_NOMBRE="Medio (Qwen3-8B)"
+    else
+        RECOMENDADO="1"; REC_NOMBRE="Básico (Phi-4-mini)"
+    fi
+
+    echo ""
+    echo "=== SELECTOR DE MODELO DE IA ==="
+    echo "RAM detectada: ${RAM_MB} MB"
+    echo ""
+    [ "$TIENE_BASICO" -eq 1 ]   && echo "  1) 🟢 Básico   - Phi-4-mini  (necesita ~4 GB RAM)"
+    [ "$TIENE_MEDIO" -eq 1 ]    && echo "  2) 🟡 Medio    - Qwen3-8B    (necesita ~8 GB RAM)"
+    [ "$TIENE_AVANZADO" -eq 1 ] && echo "  3) 🔴 Avanzado - Qwen3-14B   (necesita ~16 GB RAM)"
+    echo ""
+    read -p "Elige modelo [Enter para recomendado: $REC_NOMBRE]: " ELECCION < /dev/tty
+    ELECCION=${ELECCION:-$RECOMENDADO}
+
+    case "$ELECCION" in
+        3) MODELO="modelo-avanzado.gguf"; NOMBRE="Avanzado (Qwen3-14B)" ;;
+        2) MODELO="modelo-medio.gguf";    NOMBRE="Medio (Qwen3-8B)" ;;
+        *) MODELO="modelo-basico.gguf";   NOMBRE="Básico (Phi-4-mini)" ;;
+    esac
+    echo "Lanzando modelo: $NOMBRE"
+fi
+
+cd "$IA_DIR"
+./llamafile -m "$MODELO" --server &
+LLAMA_PID=$!
+sleep 5
+epiphany-browser http://localhost:8080 2>/dev/null || xdg-open http://localhost:8080 2>/dev/null
+echo ""
+echo "El asistente de IA está corriendo. Cierra esta ventana para detenerlo."
+wait $LLAMA_PID
+SELECTOR_EOF
+    chmod +x "$BASE_DIR/Scripts/refugios-ia-selector.sh"
+
+    # --- Lanzador de escritorio ---
     cat << EOF > "$ESCRITORIO/Asistente_IA.desktop"
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=Asistente IA de Supervivencia
-Comment=Lanza el LLM y abre el navegador
-Exec=bash -c "cd $BASE_DIR/IA && ./llamafile -m Phi-3.5-mini.gguf --server & sleep 5 && epiphany-browser http://localhost:8080"
+Comment=Selecciona y lanza el modelo de IA adecuado
+Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-ia-selector.sh"
 Icon=utilities-terminal
 Terminal=false
 EOF
     chmod +x "$ESCRITORIO/Asistente_IA.desktop"
-    log_success "Asistente de IA configurado."
+    log_success "Asistente de IA configurado con $([ "$menu_ia" == "2" ] && echo "3 niveles" || echo "modelo básico")."
 else
     log_info "Instalación de IA omitida."
 fi
