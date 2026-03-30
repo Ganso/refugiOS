@@ -57,3 +57,8 @@ Estamos trabajando para integrar estas potentes herramientas en próximas versio
 ### 4. Redes y Comunicación
 *   **Estaciones de Radio Digital ([SDR](https://gqrx.dk/)):** Integración de herramientas para conectar el ordenador a radios de onda corta (SDR) para recibir noticias o datos en situaciones de colapso total.
     *   **Idioma:** 🌐 **Agnóstico al idioma.**
+
+### 5. Otras funcionalidades
+*   **Actualización:** Aunque los actuales scripts están pensados para poder ejecutarse varias veces, un script de autualización podría acelerar mucho este proceso, especialmente para actualizar rápidamente las carpetas de datos encriptados.
+*   **Imágenes pregeneradas para distintos idiomas y tamaños de dispositivo:** Para un despliegue rápido sin pasar por todo el proceso de descarga y configuración.
+*   **Instrucciones para crear imágenes personalizadas:** Para generar todo el contenido desde tu ordenador principal de una manera más rápida, y volcar a los dispositivos como paso final.
