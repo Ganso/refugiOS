@@ -45,7 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | ba
 > Si estás empezando de cero, sigue primero nuestra **[Guía de Instalación Manual](doc/instalacion_manual.md)** para preparar tu pendrive desde Windows o Linux.
 
 > [!NOTE] 
-> El instalador te guiará paso a paso y te preguntará qué contenidos quieres incluir según el tamaño de tu USB.
+> El instalador te guiará paso a paso y te preguntará qué contenidos quieres incluir según el tamaño de tu USB. Es recomendable leerla en cualquier caso.
 
 ## 📚 Documentación Detallada
 

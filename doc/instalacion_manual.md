@@ -6,12 +6,35 @@ Esta guía explica en detalle cómo preparar tu unidad de refugiOS desde cualqui
 
 Antes de empezar, de tu hardware dependerá la velocidad y vida útil de tu refugio:
 
-*   **Recomendación de Oro:** Aunque un pendrive estándar funciona, lo ideal para un rendimiento profesional es un **disco SSD de bolsillo** (o un adaptador USB para discos M.2 NVMe). Las memorias USB baratas se desgastan rápido bajo el uso constante de Linux y su velocidad de escritura es muy pobre.
+*   **Recomendación de Oro:** Aunque un pendrive estándar funciona, lo ideal para un buen rendimiento es un **disco SSD de bolsillo** (o un adaptador USB para discos M.2 NVMe). Las memorias USB baratas se desgastan rápido bajo el uso constante de Linux y su velocidad de escritura es muy pobre.
 *   **Capacidad y Contenido:**
     *   **16 GB (Mínimo absoluto):** Sistema base + WikiMed + Mapas básicos + IA ligera. Sin espacio para Wikipedia.
     *   **32 GB (Equilibrado):** Todo lo anterior + Wikipedia "Mini" (solo texto o imágenes reducidas).
     *   **64 GB (Estándar):** ¡El punto ideal! Incluye la **Wikipedia completa con imágenes**, modelo IA Phi-3.5 y mapas detallados.
     *   **128 GB o más:** Permite bibliotecas masivas (Survivor Library), mapas de todo el mundo y múltiples modelos de IA.
+
+> [!TIP]
+> **Consejos de compra (¿Qué buscar?):**
+> *   **Versión de USB:** Busca siempre **USB 3.0, 3.1 o 3.2** (a veces marcados como "Gen 1" o "Gen 2"). El conector suele ser de color azul o rojo por dentro.
+> *   **Velocidad:** En la caja, busca velocidades de lectura superiores a **150 MB/s** y de escritura superiores a **50 MB/s**.
+> *   **Formato:** Los de carcasa metálica disipan mejor el calor durante un uso intensivo.
+>
+> **⚠️ Qué evitar:**
+> *   **USB 2.0:** Es desesperadamente lento para ejecutar un sistema operativo. Un arranque que tarda 30 segundos en USB 3.0 puede tardar 10 minutos en USB 2.0.
+> *   **Marcas desconocidas:** Huye de ofertas "demasiado buenas para ser verdad" de 1 TB por 10€; suelen ser estafas con capacidad real ínfima.
+>
+> **Estrategia de respaldo:**
+> Si tienes pendrives antiguos o más pequeños (16 GB), no los tires. Puedes dejarlos como **unidades de reserva** metidos en una mochila, en el botiquín o en el vehículo con el sistema básico. Lleva siempre contigo "el bueno" (SSD o USB 3.2 rápido) como unidad principal.
+
+### ¿Cómo distinguir un SSD de un Pendrive?
+Es fácil confundirlos por el nombre, pero su rendimiento es abismal:
+*   **Pendrive (Memoria USB):** Es del tamaño de un pulgar, muy ligero y barato. Se calienta mucho y su velocidad cae drásticamente tras 5 minutos de uso.
+*   **SSD de bolsillo:** Es algo más grande (como un mechero o una caja de cerillas), suele tener carcasa de metal y velocidades que no bajan de los 400 MB/s. Es una unidad de disco real, pero miniaturizada.
+
+### Qué pedir en la tienda (o buscar en Amazon)
+Si vas a una tienda física o buscas online, usa estas palabras mágicas para no fallar:
+*   **En tienda física:** *"Quiero un disco SSD externo de bolsillo, que sea USB 3.2 y de al menos 64GB (o 128GB), con velocidad de lectura superior a 400 MB/s"*.
+*   **En tiendas online:** Busca *"SSD Portátil 128GB USB 3.2"* o *"Unidad de estado sólido externa USB-C"*. Fíjate que en la descripción ponga **"SSD"** y no solo "Flash Drive" o "USB Stick".
 
 ---
 
