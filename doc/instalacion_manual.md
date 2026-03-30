@@ -79,7 +79,7 @@ El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios 
     > [!IMPORTANT] 
     > **Arranque con `dd`:** Al arrancar por primera vez desde un USB creado con `dd`, verás el menú de inicio (GRUB). Debes pulsar la tecla **`e`**, buscar la línea `linux` y añadir la palabra `persistent` antes de los tres guiones `---`. Pulsa **F10** para arrancar.
     > 
-    > Una vez dentro del sistema, te recomendamos seguir la guía de **[Persistencia Permanente](persistencia_permanente.md)** para no tener que repetir este paso cada vez.
+    > Para evitar tener que repetir esto cada vez, te recomendamos seguir la guía de **[Persistencia Permanente](persistencia_permanente.md)**.
 
 ### Opción B: Instalación Nativa (Solo expertos)
 No recomendamos este método en USBs convencionales porque el "journaling" de Linux los destruirá en pocos meses. **Úsalo solo si tienes un SSD por USB.**
