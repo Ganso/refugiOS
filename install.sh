@@ -107,7 +107,7 @@ sudo apt-get install -f -y < /dev/null || true
  
 log_info "Instalando herramientas base y de soporte..."
 sudo apt-get update -y
-sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common < /dev/null
+sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common epiphany-browser < /dev/null
 
 # Intentar instalar soporte de idioma para el autodetectado y el elegido en el menú
 log_info "Verificando paquetes de soporte de idiomas ($SYS_LANG y $WIKI_LANG)..."
@@ -159,10 +159,10 @@ if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ -f "$BASE_DIR/Cono
     log_info "Enciclopedias ZIM ya existen en versiones. Omitiendo la descarga."
 else
     log_info "Descargando WikiMed: $LATEST_MED"
-    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
+    aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
 
     log_info "Descargando Wikipedia Principal ($WIKI_TYPE): $LATEST_WIKI"
-    aria2c -x 4 --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
+    aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
 fi
 ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" "$BASE_DIR/Conocimiento/wikimed.zim"
 ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" "$BASE_DIR/Conocimiento/wikipedia.zim"
@@ -193,7 +193,7 @@ Version=1.0
 Type=Application
 Name=Mapas GPS (Organic Maps)
 Exec=flatpak run app.organicmaps.desktop
-Icon=browser
+Icon=app.organicmaps.desktop
 Terminal=false
 EOF
 chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
@@ -236,7 +236,7 @@ Version=1.0
 Type=Application
 Name=Asistente IA de Supervivencia
 Comment=Lanza el LLM y abre el navegador
-Exec=bash -c "cd $BASE_DIR/IA &&./llamafile -m Phi-3.5-mini.gguf --server & sleep 5 && xdg-open http://localhost:8080"
+Exec=bash -c "cd $BASE_DIR/IA && ./llamafile -m Phi-3.5-mini.gguf --server & sleep 5 && epiphany-browser http://localhost:8080"
 Icon=utilities-terminal
 Terminal=false
 EOF
@@ -338,6 +338,9 @@ chmod +x "$ESCRITORIO"/*.desktop
 if command -v gio >/dev/null 2>&1; then
     for f in "$ESCRITORIO"/*.desktop; do
         gio set "$f" metadata::trusted yes 2>/dev/null || true
+        # Para XFCE, es necesario el checksum para evitar el aviso de "Lanzador no confiable"
+        checksum=$(sha256sum "$f" | awk '{print $1}')
+        gio set "$f" metadata::xfce-exe-checksum "$checksum" 2>/dev/null || true
     done
 fi
 
