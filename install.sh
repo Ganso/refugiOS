@@ -78,6 +78,11 @@ echo "  2) No, omitir IA"
 read -p "Opción [1-2] (Enter para la recomendada: $DEF_IA): " menu_ia < /dev/tty
 menu_ia=${menu_ia:-$DEF_IA}
 
+# 5. BitTorrent (opcional para archivos pesados)
+echo ""
+read -p "¿Descargar ficheros grandes por Bittorrent? (s/N): " menu_torrent < /dev/tty
+if [ "${menu_torrent,,}" == "s" ]; then USE_TORRENT=1; else USE_TORRENT=0; fi
+
 echo ""
 read -p "Todo listo. ¿Comenzar la instalación? (s/n): " confirm < /dev/tty
 if [ "${confirm,,}" != "s" ]; then 
@@ -158,11 +163,19 @@ log_info "Buscando las últimas enciclopedias disponibles..."
 if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" ] && [ "$FORCE" -eq 0 ]; then
     log_info "Enciclopedias ZIM ya existen en versiones. Omitiendo la descarga."
 else
-    log_info "Descargando WikiMed: $LATEST_MED"
-    aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
+    if [ "$USE_TORRENT" -eq 1 ]; then
+        log_info "Descargando WikiMed vía BitTorrent: $LATEST_MED"
+        aria2c --seed-time=0 --continue=true --dir="$BASE_DIR/Conocimiento/versiones/" "https://download.kiwix.org/zim/wikipedia/${LATEST_MED}.torrent"
+        
+        log_info "Descargando Wikipedia Principal vía BitTorrent ($WIKI_TYPE): $LATEST_WIKI"
+        aria2c --seed-time=0 --continue=true --dir="$BASE_DIR/Conocimiento/versiones/" "https://download.kiwix.org/zim/wikipedia/${LATEST_WIKI}.torrent"
+    else
+        log_info "Descargando WikiMed: $LATEST_MED"
+        aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
 
-    log_info "Descargando Wikipedia Principal ($WIKI_TYPE): $LATEST_WIKI"
-    aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
+        log_info "Descargando Wikipedia Principal ($WIKI_TYPE): $LATEST_WIKI"
+        aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
+    fi
 fi
 ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" "$BASE_DIR/Conocimiento/wikimed.zim"
 ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" "$BASE_DIR/Conocimiento/wikipedia.zim"
