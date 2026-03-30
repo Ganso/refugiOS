@@ -1,47 +1,51 @@
-# Configuración de Persistencia (Desde el Anfitrión)
+# Persistencia Permanente (Parche para modo `dd`)
 
-Si quieres que refugiOS guarde tus cambios para siempre sin tener que escribir `persistent` en cada arranque, lo más sencillo es configurar la persistencia **en el momento de crear el USB desde tu sistema principal (Windows o Linux)**. 
+Si ya has creado tu USB usando `dd` (o un clonado directo) y no quieres volver a grabarlo, la partición del sistema es de solo lectura. Sin embargo, puedes aprovechar la partición **ESP/EFI** (que sí es escribible) para crear un menú de arranque personalizado que active la persistencia automáticamente.
 
-Intentar parchear un USB ya creado con `dd` es muy difícil porque la partición de arranque es de solo lectura. **Lo mejor es volver a grabarlo siguiendo estos pasos:**
+Sigue estos pasos **desde tu sistema anfitrión (Linux)** antes de arrancar el USB:
+
+### 1. Identificar las particiones
+Inserta el USB y abre una terminal:
+```bash
+lsblk -o NAME,FSTYPE,LABEL,SIZE,MOUNTPOINT
+```
+*   Busca la partición pequeña del USB con formato **vfat** (suele llamarse `ESP` o tener unos 5-100 MB).
+*   Anota su identificador (ejemplo: `/dev/sdb2`).
+
+### 2. Montar la partición de arranque (ESP)
+Crea una carpeta temporal y monta la partición:
+```bash
+sudo mkdir -p /mnt/parche_usb
+sudo mount /dev/sdX2 /mnt/parche_usb  # <-- Sustituye sdX2 por la tuya
+```
+
+### 3. Crear el nuevo menú de arranque
+Vamos a crear un archivo `grub.cfg` que "engañe" al sistema para que arranque con persistencia. Ejecuta este bloque de comandos completo:
+
+```bash
+sudo mkdir -p /mnt/parche_usb/EFI/boot
+
+cat <<EOF | sudo tee /mnt/parche_usb/EFI/boot/grub.cfg
+set default=0
+set timeout=1
+
+menuentry "refugiOS (Persistencia Permanente)" {
+    # Busca la partición del sistema por la presencia del kernel
+    search --no-floppy --file --set=root /casper/vmlinuz
+    
+    # Carga el kernel y el disco de inicio con el parámetro 'persistent'
+    linux /casper/vmlinuz boot=casper persistent quiet splash ---
+    initrd /casper/initrd
+}
+EOF
+```
+
+### 4. Guardar y Desmontar
+Asegúrate de que los cambios se escriban en el USB y desmóntalo de forma segura:
+```bash
+sudo umount /mnt/parche_usb
+```
 
 ---
 
-## 🟦 Desde Windows (Método con Rufus)
-
-Rufus es la herramienta más sencilla y fiable para activar la persistencia en segundos:
-
-1.  Abre [**Rufus**](https://rufus.ie/).
-2.  Selecciona tu dispositivo USB y la imagen ISO de Xubuntu.
-3.  **¡CLAVE!:** Busca el deslizador **"Tamaño de partición persistente"** (Persistence partition size). Arrástralo hacia la derecha para asignar el espacio que desees (recomendado: el máximo disponible).
-4.  Pulsa **Empezar**. Rufus creará automáticamente la estructura necesaria para que el sistema reconozca la persistencia sin tocar nada más.
-
----
-
-## 🐧 Desde Linux (Método con mkusb)
-
-Si usas Linux, la herramienta estándar de creación de discos no suele soportar persistencia. **mkusb** es la solución definitiva:
-
-1.  **Instalar mkusb:** (Si usas Debian/Ubuntu)
-    ```bash
-    sudo add-apt-repository ppa:mkusb/ppa && sudo apt update
-    sudo apt install mkusb usb-pack-efi
-    ```
-2.  Ejecuta **`dus`** (la interfaz moderna de mkusb) desde la terminal o el menú.
-3.  Selecciona la opción **'i' (Install)** y luego **'p' (Persistent live)**.
-4.  Sigue el asistente para elegir tu ISO y tu pendrive. El programa se encargará de crear una partición `writable` y configurar el menú GRUB por ti.
-
----
-
-## 🛠️ ¿Y si ya lo grabé con `dd` y no quiero repetir?
-
-Si ya tienes un USB con una partición `writable` pero el arranque es de solo lectura, la única forma de no escribir `persistent` a mano es:
-
-1.  **En Windows/Linux:** Abre el USB y busca la partición pequeña llamada **ESP** o **EFI**.
-2.  Crea una carpeta (si no existe) en `EFI/boot/`.
-3.  Crea un archivo de texto llamado **`grub.cfg`** dentro de esa carpeta con este contenido (avanzado):
-    ```bash
-    set prefix=(memdisk)/boot/grub
-    set root=(memdisk)
-    configfile /boot/grub/grub.cfg
-    ```
-    *Nota: Este método puede fallar dependiendo de la versión exacta de la ISO. Lo más recomendable sigue siendo **Rufus** o **mkusb**.*
+¡Listo! Al arrancar de nuevo desde este USB, el equipo encontrará primero tu nuevo archivo configurado y activará la persistencia sin que tengas que tocar nada.
