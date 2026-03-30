@@ -339,9 +339,9 @@ SELECTOR_EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Asistente IA de Supervivencia
+Name=Asistente IA
 Comment=Selecciona y lanza el modelo de IA adecuado
-Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-ia-selector.sh"
+Exec=xfce4-terminal -e "$BASE_DIR/Scripts/refugios-ia-selector.sh"
 Icon=utilities-terminal
 Terminal=false
 EOF
@@ -415,7 +415,7 @@ cat << EOF > "$ESCRITORIO/1_Crear_Boveda.desktop"
 [Desktop Entry]
 Type=Application
 Name=1. Inicializar Bóveda (Una sola vez)
-Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-vault-create.sh"
+Exec=xfce4-terminal -e "$BASE_DIR/Scripts/refugios-vault-create.sh"
 Icon=dialog-password
 Terminal=false
 EOF
@@ -424,7 +424,7 @@ cat << EOF > "$ESCRITORIO/2_Abrir_Boveda.desktop"
 [Desktop Entry]
 Type=Application
 Name=2. Desbloquear Bóveda
-Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-vault-open.sh"
+Exec=xfce4-terminal -e "$BASE_DIR/Scripts/refugios-vault-open.sh"
 Icon=folder-open
 Terminal=false
 EOF
@@ -433,7 +433,7 @@ cat << EOF > "$ESCRITORIO/3_Cerrar_Boveda.desktop"
 [Desktop Entry]
 Type=Application
 Name=3. Sellar Bóveda
-Exec=lxterminal -e "$BASE_DIR/Scripts/refugios-vault-close.sh"
+Exec=xfce4-terminal -e "$BASE_DIR/Scripts/refugios-vault-close.sh"
 Icon=system-lock-screen
 Terminal=false
 EOF
