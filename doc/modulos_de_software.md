@@ -10,7 +10,7 @@ Estos componentes se instalan automáticamente o mediante el asistente de bienve
 
 ### 1. Biblioteca y Enciclopedias Offline ([Kiwix](https://www.kiwix.org/))
 Acceso a bases de datos masivas mediante el formato ZIM.
-*   **Contenidos:** Wikipedia (General), WikiMed (Medicina), WikiHow (Guías prácticas).
+*   **Contenidos:** [Wikipedia](https://es.wikipedia.org/) (General), [WikiMed](https://www.kiwix.org/es/get-kiwix/download-content/) (Medicina), [WikiHow](https://www.wikihow.com/) (Guías prácticas).
 *   **Idioma:** 🌐 **Multilingüe.** El instalador descarga los archivos específicamente en el idioma que elijas (es, en, fr, etc.).
 
 ### 2. Mapas y Navegación ([Organic Maps](https://organicmaps.app/))
@@ -20,7 +20,7 @@ Mapas vectoriales detallados con búsqueda y rutas offline.
 
 ### 3. Asistente de Inteligencia Artificial ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
 Asistente inteligente privado que funciona 100% en tu ordenador local.
-*   **Contenidos:** Modelo Phi-3.5 de Microsoft (equilibrado entre potencia y velocidad).
+*   **Contenidos:** Modelo [Phi-3.5 de Microsoft](https://huggingface.co/microsoft/Phi-3.5-mini-instruct) (equilibrado entre potencia y velocidad).
 *   **Idioma:** 🌐 **Multilingüe.** Entiende y responde en más de 20 idiomas, incluyendo español, inglés y francés.
 
 ### 4. Herramientas de Trabajo Estándar

@@ -19,8 +19,8 @@ Antes de empezar, de tu hardware dependerá la velocidad y vida útil de tu refu
 
 Utilizamos versiones ligeras de Xubuntu para maximizar el espacio libre disponible:
 
-*   **Xubuntu 24.04 LTS (Recomendado):** La opción más estable con soporte garantizado durante años.
-*   **Xubuntu 25.10 (Última versión):** Si prefieres tener kernels más modernos para hardware muy nuevo, aunque con un ciclo de soporte más corto.
+*   [**Xubuntu 24.04 LTS (Recomendado)**](https://xubuntu.org/): La opción más estable con soporte garantizado durante años.
+*   [**Xubuntu 25.10 (Última versión)**](https://xubuntu.org/): Si prefieres tener kernels más modernos para hardware muy nuevo, aunque con un ciclo de soporte más corto.
 *   **Aviso:** Descarga siempre la variante **"Minimal"** para ahorrar unos 2 GB de espacio eliminando programas innecesarios (juegos, ofimática pesada, etc.).
 
 ---
@@ -32,7 +32,7 @@ Hay dos formas principales de configurar el sistema. Lee con atención:
 ### Opción A: USB "Live" con Persistencia (Recomendado)
 El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios se guardan en la partición `writable`. Esto evita el desgaste excesivo de la memoria y protege tu ordenador anfitrión.
 
-*   **Desde Windows:** Usa **Rufus**. Al elegir la ISO, arrastra el deslizador de **"Tamaño de partición persistente"** al máximo posible (dejando un poco de aire).
+*   **Desde Windows:** Usa [**Rufus**](https://rufus.ie/). Al elegir la ISO, arrastra el deslizador de **"Tamaño de partición persistente"** al máximo posible (dejando un poco de aire).
 *   **Desde Ubuntu:** Usa la herramienta nativa **"Creador de discos de arranque"**.
 *   **Desde Debian (usando `mkusb`):**
     Para instalar `mkusb` en Debian debes añadir sus llaves y repositorio:
@@ -69,9 +69,10 @@ No recomendamos este método en USBs convencionales porque el "journaling" de Li
 
 ## 4. Pruebas y Virtualización
 
-Si usas máquinas virtuales, recuerda que refugiOS arranca en modo **UEFI**. Por eso en QEMU usamos el firmware **OVMF**, ya que la BIOS clásica (SeaBios) no reconocerá el formato del USB actual.
+Si quieres probar que el USB funciona correctamente antes de reiniciar tu PC principal:
 
-*   **En Linux (QEMU):**
+*   **Bajo Windows:** Puedes usar [**VMware Player**](https://www.vmware.com/products/workstation-player.html) o [**VirtualBox**](https://www.virtualbox.org/) añadiendo el USB físico como disco duro de la máquina virtual.
+*   **Bajo Linux ([QEMU](https://www.qemu.org/)):** Es el método más rápido para desarrolladores:
     ```bash
     sudo apt install qemu-system-x86 qemu-kvm ovmf
     sudo qemu-system-x86_64 -enable-kvm -m 4096 -bios /usr/share/ovmf/OVMF.fd -drive file=/dev/sdX,format=raw

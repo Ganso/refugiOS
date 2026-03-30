@@ -5,7 +5,7 @@ Para garantizar la fiabilidad de refugiOS en situaciones críticas, hemos tomado
 ## 1. Sistema Base
 
 *   **Sistema Operativo:** Linux.
-*   **Distribución:** **Xubuntu LTS**, una versión oficial de Ubuntu que utiliza el escritorio **XFCE**. 
+*   **Distribución:** [**Xubuntu LTS**](https://xubuntu.org/), una versión oficial de Ubuntu que utiliza el escritorio [**XFCE**](https://www.xfce.org/). 
 *   **Rendimiento:** XFCE es ideal para equipos antiguos o con recursos limitados. Un sistema recién arrancado utiliza **menos de 1 GB de RAM**, lo que permite ahorrar batería en portátiles y funcionar con fluidez en casi cualquier hardware.
 
 ### Versiones recomendadas:
@@ -35,7 +35,7 @@ De este modo, el sistema se adapta completamente a tu región sin ocupar espacio
 A diferencia de otros proyectos que usan sistemas complejos de virtualización o "contenedores" pesados, refugiOS apuesta por aplicaciones directas y portátiles:
 
 *   **AppImages:** Son aplicaciones que no necesitan instalación. Todo lo necesario para que funcionen está dentro de un solo archivo.
-*   **Ejecutables estáticos:** Como el motor de IA (Llamafile), que funciona simplemente haciendo doble clic, sin configuraciones complicadas.
-*   **Bóvedas de seguridad:** Para proteger tus archivos personales, utilizamos el estándar de cifrado de disco de Linux (**LUKS**), que es extremadamente seguro y compatible.
+*   **Ejecutables estáticos:** Como el motor de IA ([Llamafile](https://github.com/Mozilla-Ocho/llamafile)), que funciona simplemente haciendo doble clic, sin configuraciones complicadas.
+*   **Bóvedas de seguridad:** Para proteger tus archivos personales, utilizamos el estándar de cifrado de disco de Linux ([**LUKS**](https://gitlab.com/cryptsetup/cryptsetup)), que es extremadamente seguro y compatible.
 
 Este enfoque asegura que el software sea robusto, fácil de mover entre dispositivos y que consuma el mínimo posible de recursos de tu ordenador.

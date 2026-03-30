@@ -11,7 +11,7 @@ En lugar de proteger todo el pendrive con una contraseña (lo cual puede ser len
 Un contenedor es un archivo especial (por ejemplo, `mis_datos.img`) que funciona como una caja fuerte. Solo puedes ver lo que hay dentro si conoces la contraseña correcta.
 
 ### Características principales:
-*   **Estándar Profesional:** Utilizamos **LUKS**, el mismo sistema de cifrado que usan los gobiernos y empresas en Linux. Es extremadamente seguro.
+*   **Estándar Profesional:** Utilizamos [**LUKS**](https://gitlab.com/cryptsetup/cryptsetup) (Linux Unified Key Setup), el mismo sistema de cifrado que usan los gobiernos y empresas en Linux. Es extremadamente seguro.
 *   **Modularidad:** Puedes tener varias bóvedas distintas (una para temas médicos, otra para documentos legales) con contraseñas diferentes.
 *   **Rapidez:** Puedes abrir y cerrar tus archivos en segundos.
 
