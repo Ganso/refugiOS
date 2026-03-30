@@ -149,6 +149,7 @@ Apaga tu PC y arranca desde el USB (F12/F8/Esc).
     
 2.  **Lanzar el Instalador:** Una vez dentro del escritorio de Xubuntu, conéctate a la red y pega esto en la terminal:
     ```bash
+    sudo apt install curl -y
     curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
     ```
 2.  **Configuración:** El asistente detectará tu hardware y te sugerirá las mejores bibliotecas ZIM para tu capacidad.
