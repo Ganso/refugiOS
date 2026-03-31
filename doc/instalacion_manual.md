@@ -126,7 +126,7 @@ No recomendamos este método en USBs convencionales porque el "journaling" de Li
 
 Si quieres montar RefugiOS en una imagen de disco local antes de tocar el pendrive físico, o si prefieres probar que todo funciona correctamente en una máquina virtual antes de reiniciar tu PC:
 
-*   👉 **[Guía de Virtualización y Preparación de Pendrive](file:///home/ganso/codigo/refugiOS/doc/guia_virtualizacion_y_pendrive.md)**
+*   👉 **[Guía de Virtualización y Preparación de Pendrive](guia_virtualizacion_y_pendrive.md)**
 
 Esta guía exhaustiva te enseñará a crear una imagen `.img`, instalar el sistema dentro de una VM (como VirtualBox o QEMU) y volcar el resultado final al USB de forma segura.
 
