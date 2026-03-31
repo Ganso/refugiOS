@@ -122,16 +122,13 @@ No recomendamos este método en USBs convencionales porque el "journaling" de Li
 
 ---
 
-## 4. Pruebas y Virtualización
+## 4. Pruebas, Virtualización y Volcado
 
-Si quieres probar que el USB funciona correctamente antes de reiniciar tu PC principal:
+Si quieres montar RefugiOS en una imagen de disco local antes de tocar el pendrive físico, o si prefieres probar que todo funciona correctamente en una máquina virtual antes de reiniciar tu PC:
 
-*   **Bajo Windows:** Puedes usar [**VMware Player**](https://www.vmware.com/products/workstation-player.html) o [**VirtualBox**](https://www.virtualbox.org/) añadiendo el USB físico como disco duro de la máquina virtual.
-*   **Bajo Linux ([QEMU](https://www.qemu.org/)):** Es el método más rápido para desarrolladores:
-    ```bash
-    sudo apt install qemu-system-x86 qemu-kvm ovmf
-    sudo qemu-system-x86_64 -enable-kvm -m 4096 -bios /usr/share/ovmf/OVMF.fd -drive file=/dev/sdX,format=raw
-    ```
+*   👉 **[Guía de Virtualización y Preparación de Pendrive](file:///home/ganso/codigo/refugiOS/doc/guia_virtualizacion_y_pendrive.md)**
+
+Esta guía exhaustiva te enseñará a crear una imagen `.img`, instalar el sistema dentro de una VM (como VirtualBox o QEMU) y volcar el resultado final al USB de forma segura.
 
 ---
 
