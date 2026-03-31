@@ -31,7 +31,7 @@ Utilizaremos dispositivos *loop* para tratar el archivo `.img` como si fuera un 
     ```bash
     sudo losetup -fP refugios.img
     # Identifica el dispositivo (normalmente /dev/loop0)
-    losetup -a
+    sudo losetup -a
     ```
 
 2. **Volcar la ISO de Xubuntu en el loop:**
@@ -49,8 +49,7 @@ Utilizaremos dispositivos *loop* para tratar el archivo `.img` como si fuera un 
     sudo fdisk /dev/loop0
     # Comandos en orden:
     # 'n' -> Nueva partición
-    # 'p' -> Primaria
-    # '3' -> Muy importante: debe ser la partición 3
+    # 'Enter' -> Normalmente será la cuarta partición
     # 'Enter' -> Primer sector por defecto
     # 'Enter' -> Último sector (ocupa todo el resto)
     # 'w' -> Escribir cambios y salir
@@ -65,7 +64,7 @@ Utilizaremos dispositivos *loop* para tratar el archivo `.img` como si fuera un 
     sudo partprobe /dev/loop0
 
     # Formatea con la etiqueta que busca Ubuntu para la persistencia moderna
-    sudo mkfs.ext4 -L writable /dev/loop0p3
+    sudo mkfs.ext4 -L writable /dev/loop0p4
     ```
 
     En versiones recientes de Ubuntu y derivados, la partición de persistencia suele etiquetarse como `writable`, en lugar del clásico `casper-rw`, pero el mecanismo de arranque sigue siendo el mismo.
@@ -101,36 +100,35 @@ Aunque el contexto del documento es *Real-time Ubuntu*, la parte dedicada a GRUB
    ```bash
    # Asumiendo que sigues usando /dev/loop0
    sudo mkdir -p /mnt/refugios-efi
-   sudo mount /dev/loop0p1 /mnt/refugios-efi
+   sudo mount /dev/loop0p2 /mnt/refugios-efi
    ```
 
-2. **Localizar el `grub.cfg` del live:**
+2. **Crer un `grub.cfg` del live:**
+
+En las ISO modernas, GRUB está embebido en la partición EFI, así que tenemos que crear uno nuevo:
 
    ```bash
-   find /mnt/refugios-efi -name "grub.cfg"
+   sudo nano /mnt/refugios-efi/boot/grub/grub.cfg
    ```
 
-   En muchas ISOs basadas en Ubuntu/Xubuntu se encuentra bajo rutas como `boot/grub/grub.cfg` u otras similares dentro de la partición EFI.
+Pegamos este contenido en el nuevo fichero:
 
-3. **Editar la entrada de arranque del live para añadir `persistent`:**
+   ```
+   set timeout=5
+   set default=0
 
-   - Abre el `grub.cfg` encontrado con tu editor favorito, por ejemplo:
+   menuentry "Xubuntu RefugiOS (persistent)" {
+    set root=(hd0,gpt1)
+    linux /casper/vmlinuz boot=casper persistent quiet splash ---
+    initrd /casper/initrd
+   }
 
-     ```bash
-     sudo nano /mnt/refugios-efi/EFI/BOOT/grub.cfg
-     ```
-
-   - Localiza la entrada que arranca Xubuntu; suele contener una línea que empieza por `linux` y algo similar a:
-
-     ```text
-     linux   /casper/vmlinuz boot=casper quiet splash ---
-     ```
-
-   - Añade `persistent` a esa línea, por ejemplo:
-
-     ```text
-     linux   /casper/vmlinuz boot=casper quiet splash persistent ---
-     ```
+   menuentry "Xubuntu Live (no persistent)" {
+    set root=(hd0,gpt1)
+    linux /casper/vmlinuz boot=casper quiet splash ---
+    initrd /casper/initrd
+   }
+   ```
 
    A partir de este momento, cada vez que arranques la imagen RefugiOS, GRUB pasará el parámetro `persistent` al kernel y el sistema utilizará automáticamente la partición `writable` para la persistencia.
 
