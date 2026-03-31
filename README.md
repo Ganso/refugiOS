@@ -27,7 +27,7 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 *   **🗺️ Mapas y Navegación GPS:** Mapas detallados de todo el mundo mediante *Organic Maps*. Puedes buscar rutas y puntos de interés (fuentes, hospitales, refugios) sin emitir ninguna señal de red.
 *   **🔒 Bóveda de Archivos Segura:** Sistema de cifrado profesional para guardar tus documentos más importantes (pasaportes, títulos, fotos) protegidos por una contraseña maestra.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español, inglés, francés, etc.), descargando solo los diccionarios y ayudas que necesitas.
-*   **Puedes ver en el apartado de [Aplicaciones y Software](doc/modulos_de_software.md) el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
+*   Puedes ver en el apartado de [Aplicaciones y Software](doc/modulos_de_software.md) el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
 
 ## 📸 Capturas de Pantalla
 
