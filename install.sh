@@ -112,29 +112,6 @@ mkdir -p "$BASE_DIR"/{Apps/versiones,Conocimiento/versiones,Mapas,IA/versiones,B
 mkdir -p "$ESCRITORIO"
 
 # ------------------------------------------------------------------------------
-# 0. Robustez: Gestión de Memoria (Swap)
-# ------------------------------------------------------------------------------
-# En entornos virtuales o con poca RAM, un swapfile puede evitar cierres de IA.
-SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
-if [ "$SWAP_TOTAL" -eq 0 ]; then
-    echo ""
-    log_info "No se ha detectado partición de intercambio (Swap)."
-    if [ "$FREE_MB" -gt 10000 ]; then
-        read -p "¿Deseas crear un archivo de intercambio (swap) de 4GB para mayor estabilidad? (s/N): " menu_swap < /dev/tty
-        if [ "${menu_swap,,}" == "s" ]; then
-            log_info "Creando swapfile de 4GB en $BASE_DIR/swapfile..."
-            sudo dd if=/dev/zero of="$BASE_DIR/swapfile" bs=1M count=4096
-            sudo chmod 600 "$BASE_DIR/swapfile"
-            sudo mkswap "$BASE_DIR/swapfile"
-            sudo swapon "$BASE_DIR/swapfile"
-            log_success "Swap activado. Nota: Para que sea permanente tras reiniciar un Live, asegúrate de activar la persistencia."
-        fi
-    else
-        log_info "Espacio en disco insuficiente para crear un swapfile recomendado de 4GB. Omitiendo."
-    fi
-fi
-
-# ------------------------------------------------------------------------------
 # 1. Resolución de Bloqueos de Paquetes e Instalación de Dependencias
 # ------------------------------------------------------------------------------
 # En entornos Live recién iniciados, hay procesos automáticos que pueden bloquear el gestor de paquetes.
