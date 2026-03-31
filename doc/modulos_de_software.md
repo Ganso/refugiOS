@@ -1,4 +1,4 @@
-# Aplicaciones y Contenidos Incluidos (Actual y Futuro)
+# Aplicaciones y Contenidos Incluidos, y Roadmap a Futuro
 
 refugiOS incluye una selección de herramientas diseñadas para funcionar totalmente sin conexión a Internet. A continuación se detallan los módulos ya disponibles y los que planeamos añadir próximamente.
 
@@ -38,27 +38,30 @@ Programas esenciales para el día a día.
 
 Estamos trabajando para integrar estas potentes herramientas en próximas versiones:
 
-### 1. Educación y Aprendizaje
+### 1. Importación de datos en la bóbeda personal
+*   Scripts para automatizar la ingesta de datos en la bóbeda personal encriptada a partir de múltiples fuentes: Otros dispositivos USB conectados al equipo, discos duros locales, distintas plataformas en la nube, etc.
+
+### 2. Educación y Aprendizaje
 *   **[Khan Academy Offline](https://es.khanacademy.org/):** Descarga de lecciones interactivas de matemáticas, ciencia y economía para todas las edades.
     *   **Idioma:** 🌐 **Multilingüe** (disponible en español e inglés).
 *   **Plataforma [Kolibri](https://learningequality.org/kolibri/):** Una completa biblioteca educativa con vídeos y ejercicios para escuelas en zonas remotas.
     *   **Idioma:** 🌐 **Multilingüe.**
 
-### 2. Bibliotecas de Literatura y Técnica
+### 3. Bibliotecas de Literatura y Técnica
 *   **[Project Gutenberg](https://www.gutenberg.org/):** Acceso a más de 70,000 libros clásicos de dominio público en formato electrónico.
     *   **Idioma:** 🌐 **Multilingüe** (especialmente rico en inglés, francés y alemán, con miles de títulos en español).
 *   **[Survivor Library](http://www.survivorlibrary.com/):** Una colección masiva de manuales sobre técnicas preindustriales (agricultura, forja, química básica).
     *   **Idioma:** 🇺🇸 **Principalmente Inglés.**
 
-### 3. Análisis Avanzado con IA
+### 4. Análisis Avanzado con IA
 *   **[AnythingLLM](https://useanything.com/) para Análisis de PDF:** Una herramienta que permite "chatear" con tus propios documentos PDF locales. Podrás preguntarle a la IA sobre manuales técnicos de 500 páginas y obtener respuestas instantáneas.
     *   **Idioma:** 🌐 **Multilingüe.** Funciona con documentos en cualquier idioma que entienda el modelo base.
 
-### 4. Redes y Comunicación
+### 5. Redes y Comunicación
 *   **Estaciones de Radio Digital ([SDR](https://gqrx.dk/)):** Integración de herramientas para conectar el ordenador a radios de onda corta (SDR) para recibir noticias o datos en situaciones de colapso total.
     *   **Idioma:** 🌐 **Agnóstico al idioma.**
 
-### 5. Otras funcionalidades
+### 6. Otras funcionalidades
 *   **Actualización:** Aunque los actuales scripts están pensados para poder ejecutarse varias veces, un script de autualización podría acelerar mucho este proceso, especialmente para actualizar rápidamente las carpetas de datos encriptados.
 *   **Imágenes pregeneradas para distintos idiomas y tamaños de dispositivo:** Para un despliegue rápido sin pasar por todo el proceso de descarga y configuración.
 *   **Hardware adicional:** Soporte de hardware adicional. Especialmente de GPU o NPU para aceleración de los modelos de IA locales.

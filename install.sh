@@ -122,7 +122,8 @@ sudo apt-get install -f -y < /dev/null || true
  
 log_info "Instalando herramientas base y de soporte..."
 sudo apt-get update -y
-sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common epiphany-browser < /dev/null
+sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync language-selector-common epiphany-browser \
+                        libreoffice vlc evince syncthing gedit < /dev/null
 
 # Intentar instalar soporte de idioma para el autodetectado y el elegido en el menú
 log_info "Verificando paquetes de soporte de idiomas ($SYS_LANG y $WIKI_LANG)..."
