@@ -23,12 +23,14 @@ log_info "Espacio asignado en raíz: ${TOTAL_MB} MB. Libre: ${FREE_MB} MB."
 
 # Autoselección según capacidad (menor a 25GB -> modo Lite)
 if [ "$TOTAL_MB" -lt 25000 ]; then
-    DEF_WIKI="2" # Top Mini
-    DEF_IA="3"   # Omitir IA
+    DEF_WIKI="2"  # Top Mini
+    DEF_HOWTO="n" # Omitir Wikihow
+    DEF_IA="3"    # Omitir IA
     log_info "Capacidad reducida detectada. Se recomendarán versiones ligeras."
 else
-    DEF_WIKI="1" # All NoPic
-    DEF_IA="1"   # Incluir IA (básico)
+    DEF_WIKI="1"  # All NoPic
+    DEF_HOWTO="n" # Omitir Wikihow por defecto (pesado)
+    DEF_IA="1"    # Incluir IA (básico)
     log_info "Capacidad óptima detectada. Se recomendarán versiones completas."
 fi
 
@@ -70,7 +72,14 @@ else
     WIKI_TYPE="top_mini"
 fi
 
-# 4. Inteligencia Artificial
+# 4. WikiHow (Opcional)
+echo ""
+echo "¿Deseas descargar WikiHow (Manuales de supervivencia)? (~25-50 GB según idioma)"
+read -p "Opción (s/N) [Enter para la recomendada: $DEF_HOWTO]: " menu_howto < /dev/tty
+menu_howto=${menu_howto:-$DEF_HOWTO}
+if [ "${menu_howto,,}" == "s" ]; then DOWNLOAD_HOWTO=1; else DOWNLOAD_HOWTO=0; fi
+
+# 5. Inteligencia Artificial
 echo ""
 echo "¿Qué nivel de asistente de IA deseas instalar?"
 echo "  1) Solo modelo básico - Phi-4-mini (~2.5 GB, funciona en cualquier PC)"
@@ -79,7 +88,7 @@ echo "  3) No, omitir IA"
 read -p "Opción [1-3] (Enter para la recomendada: $DEF_IA): " menu_ia < /dev/tty
 menu_ia=${menu_ia:-$DEF_IA}
 
-# 5. BitTorrent (opcional para archivos pesados)
+# 6. BitTorrent (opcional para archivos pesados)
 echo ""
 read -p "¿Descargar ficheros grandes por Bittorrent? (s/N): " menu_torrent < /dev/tty
 if [ "${menu_torrent,,}" == "s" ]; then USE_TORRENT=1; else USE_TORRENT=0; fi
@@ -101,6 +110,29 @@ BASE_DIR="$HOME/refugiOS"
 log_info "Creando estructura de directorios en $BASE_DIR..."
 mkdir -p "$BASE_DIR"/{Apps/versiones,Conocimiento/versiones,Mapas,IA/versiones,Bovedas,Scripts}
 mkdir -p "$ESCRITORIO"
+
+# ------------------------------------------------------------------------------
+# 0. Robustez: Gestión de Memoria (Swap)
+# ------------------------------------------------------------------------------
+# En entornos virtuales o con poca RAM, un swapfile puede evitar cierres de IA.
+SWAP_TOTAL=$(free -m | awk '/^Swap:/{print $2}')
+if [ "$SWAP_TOTAL" -eq 0 ]; then
+    echo ""
+    log_info "No se ha detectado partición de intercambio (Swap)."
+    if [ "$FREE_MB" -gt 10000 ]; then
+        read -p "¿Deseas crear un archivo de intercambio (swap) de 4GB para mayor estabilidad? (s/N): " menu_swap < /dev/tty
+        if [ "${menu_swap,,}" == "s" ]; then
+            log_info "Creando swapfile de 4GB en $BASE_DIR/swapfile..."
+            sudo dd if=/dev/zero of="$BASE_DIR/swapfile" bs=1M count=4096
+            sudo chmod 600 "$BASE_DIR/swapfile"
+            sudo mkswap "$BASE_DIR/swapfile"
+            sudo swapon "$BASE_DIR/swapfile"
+            log_success "Swap activado. Nota: Para que sea permanente tras reiniciar un Live, asegúrate de activar la persistencia."
+        fi
+    else
+        log_info "Espacio en disco insuficiente para crear un swapfile recomendado de 4GB. Omitiendo."
+    fi
+fi
 
 # ------------------------------------------------------------------------------
 # 1. Resolución de Bloqueos de Paquetes e Instalación de Dependencias
@@ -156,13 +188,19 @@ log_info "Buscando las últimas enciclopedias disponibles..."
 
     LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_medicine_maxi_[0-9-]*\.zim" | sort -V | tail -n 1)
     LATEST_WIKI=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_${WIKI_TYPE}_[0-9-]*\.zim" | sort -V | tail -n 1)
+    
+    LATEST_HOWTO=""
+    if [ "$DOWNLOAD_HOWTO" -eq 1 ]; then
+        log_info "Buscando la última versión de WikiHow..."
+        LATEST_HOWTO=$(curl -sL https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/ | grep -o "wikihow_${WIKI_LANG}_maxi_[0-9-]*\.zim" | sort -V | tail -n 1 || echo "")
+    fi
 
     if [ -z "$LATEST_MED" ] || [ -z "$LATEST_WIKI" ]; then
-        log_err "Fallo al localizar las enciclopedias ZIM para el idioma seleccionado: $WIKI_LANG."
+        log_err "Fallo al localizar las enciclopedias ZIM fundamentales para el idioma seleccionado: $WIKI_LANG."
     fi
 
 if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" ] && [ "$FORCE" -eq 0 ]; then
-    log_info "Enciclopedias ZIM ya existen en versiones. Omitiendo la descarga."
+    log_info "Enciclopedias fundamentales ya existen. Omitiendo la descarga general."
 else
     if [ "$USE_TORRENT" -eq 1 ]; then
         log_info "Descargando WikiMed vía BitTorrent: $LATEST_MED"
@@ -178,20 +216,47 @@ else
         aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
     fi
 fi
+
+# Descarga opcional de WikiHow (desde mirror)
+if [ "$DOWNLOAD_HOWTO" -eq 1 ] && [ -n "$LATEST_HOWTO" ]; then
+    if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_HOWTO" ] && [ "$FORCE" -eq 0 ]; then
+        log_info "WikiHow ya existe. Omitiendo descarga."
+    else
+        log_info "Descargando WikiHow ($WIKI_LANG): $LATEST_HOWTO"
+        aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_HOWTO" "https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/$LATEST_HOWTO"
+    fi
+    ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_HOWTO" "$BASE_DIR/Conocimiento/wikihow.zim"
+else
+    [ "$DOWNLOAD_HOWTO" -eq 1 ] && log_err "No se pudo encontrar una versión de WikiHow para el idioma $WIKI_LANG."
+    rm -f "$BASE_DIR/Conocimiento/wikihow.zim"
+fi
+
 ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" "$BASE_DIR/Conocimiento/wikimed.zim"
 ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" "$BASE_DIR/Conocimiento/wikipedia.zim"
 
-cat << EOF > "$ESCRITORIO/Conocimiento_Offline.desktop"
+log_info "Creando lanzadores individuales para cada corpus de conocimiento..."
+for zim in "$BASE_DIR/Conocimiento"/*.zim; do
+    [ -e "$zim" ] || continue
+    FILENAME=$(basename "$zim")
+    case "$FILENAME" in
+        wikipedia.zim) NAME="Wikipedia" ;;
+        wikimed.zim)   NAME="WikiMed (Medicina)" ;;
+        wikihow.zim)   NAME="WikiHow" ;;
+        *) NAME=$(echo "$FILENAME" | sed 's/\.zim$//; s/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)} 1') ;;
+    esac
+
+    cat << EOF > "$ESCRITORIO/Conocimiento_${NAME// /_}.desktop"
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Conocimiento Offline (Kiwix)
-Comment=Acceso a Wikipedia y WikiMed
-Exec=$BASE_DIR/Apps/kiwix-desktop.appimage
+Name=$NAME (Offline)
+Comment=Acceso directo a $NAME
+Exec=$BASE_DIR/Apps/kiwix-desktop.appimage $zim
 Icon=accessories-dictionary
 Terminal=false
 EOF
-chmod +x "$ESCRITORIO/Conocimiento_Offline.desktop"
+    chmod +x "$ESCRITORIO/Conocimiento_${NAME// /_}.desktop"
+done
 log_success "Corpus de conocimiento garantizado."
 
 # ------------------------------------------------------------------------------
@@ -323,8 +388,10 @@ else
     echo "Lanzando modelo: $NOMBRE"
 fi
 
+# Ajuste de contexto para evitar fallos de memoria (Phi-4 y otros)
+# Un contexto de 4096 es seguro para equipos con 4GB-12GB de RAM.
 cd "$IA_DIR"
-./llamafile -m "$MODELO" --server &
+./llamafile -m "$MODELO" --ctx-size 4096 --server &
 LLAMA_PID=$!
 sleep 5
 epiphany-browser http://localhost:8080 2>/dev/null || xdg-open http://localhost:8080 2>/dev/null
@@ -366,7 +433,8 @@ FILE="$HOME/refugiOS/Bovedas/datos_personales.img"
 echo "--- GENERANDO BÓVEDA SEGURA ---"
 echo "Se creará un contenedor criptográfico preasignado de 3 GB."
 dd if=/dev/zero of="$FILE" bs=1M count=3072 status=progress
-echo "Inicializando cifrado. SE TE PEDIRÁ UNA NUEVA CONTRASEÑA EN MAYÚSCULAS."
+echo "Inicializando cifrado. Teclea YES en mayúsculas cuando se solicite."
+echo "Después se solicitará varias veces la contraseña que protegerá el sistema."
 sudo cryptsetup luksFormat "$FILE"
 echo "Desbloqueando bóveda para formateo interno..."
 sudo cryptsetup open "$FILE" boveda_activa
@@ -468,6 +536,9 @@ echo "  "
 echo "  Es aconsejable lanzar cada aplicación al menos una vez"
 echo "  para que se creen sus configuraciones antes de dar el"
 echo "  dispositivo por cerrado."
+echo "  "
+echo "  En concreto, se aconseja descargar todos los mapas offline"
+echo "  que se puedan necesitar."
 echo "  "
 echo "  A partir de ese momento podrás usarlo desconectado."
 echo "============================================================"
