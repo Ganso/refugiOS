@@ -61,20 +61,6 @@ curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | ba
 > **¿Ya tienes tu primer pendrive listo?** Una vez que lo hayas probado y configurado a tu gusto, te recomendamos **[clonarlo a otra unidad](doc/clonado_de_pendrive.md)** para tener una copia de seguridad o para dar copias a tus seres queridos.
 
 
-## 🧪 Cómo probarlo (Prueba de concepto)
-
-Si quieres validar el sistema de forma rápida sin pasar por el proceso completo de instalación, ofrecemos una imagen pre-configurada lista para usar.
-
-1.  **Descarga la imagen:** [refugios_0.01_test.img](refugios_0.01_test.img)
-2.  **Vuelca la imagen:** Sigue las instrucciones de **[Volcado final al pendrive físico](doc/guia_virtualizacion_y_pendrive.md#5-volcado-final-al-pendrive-físico)** en nuestro manual.
-3.  **Requisitos:** Necesitarás un pendrive de **64Gb o más**.
-4.  **Prueba en máquina virtual (Opcional):** Si prefieres no usar un pendrive todavía, puedes arrancar esta misma imagen en **QEMU o VirtualBox** siguiendo los pasos de **[Ejecución en VM](doc/guia_virtualizacion_y_pendrive.md#4-ejecución-y-configuración-en-vm)**.
-
-**Características de la imagen de prueba:**
-*   **Idioma:** Configurada íntegramente en **español**.
-*   **Contenido incluido:** Wikipedia (versión sin imágenes), WikiHow, WikiMed (enciclopedia médica) y el asistente de IA nativo (modelo básico).
-*   **Propósito:** Esta imagen se ofrece como una **prueba de concepto** para validar la compatibilidad con tu hardware y experimentar la interfaz de usuario de forma inmediata.
-
 
 ## 📚 Documentación Detallada
 
