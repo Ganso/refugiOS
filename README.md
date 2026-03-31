@@ -9,6 +9,9 @@
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
 </p>
 
+> [!WARNING]
+> **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Alpha**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores, mejoras en la interfaz de menús y la implementación de las funciones detalladas en el roadmap.
+
 ---
 
 ## 📖 ¿Qué es refugiOS?
@@ -58,6 +61,21 @@ curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | ba
 > **¿Ya tienes tu primer pendrive listo?** Una vez que lo hayas probado y configurado a tu gusto, te recomendamos **[clonarlo a otra unidad](doc/clonado_de_pendrive.md)** para tener una copia de seguridad o para dar copias a tus seres queridos.
 
 
+## 🧪 Cómo probarlo (Prueba de concepto)
+
+Si quieres validar el sistema de forma rápida sin pasar por el proceso completo de instalación, ofrecemos una imagen pre-configurada lista para usar.
+
+1.  **Descarga la imagen:** [refugios_0.01_test.img](refugios_0.01_test.img)
+2.  **Vuelca la imagen:** Sigue las instrucciones de **[Volcado final al pendrive físico](doc/guia_virtualizacion_y_pendrive.md#5-volcado-final-al-pendrive-físico)** en nuestro manual.
+3.  **Requisitos:** Necesitarás un pendrive de **64Gb o más**.
+4.  **Prueba en máquina virtual (Opcional):** Si prefieres no usar un pendrive todavía, puedes arrancar esta misma imagen en **QEMU o VirtualBox** siguiendo los pasos de **[Ejecución en VM](doc/guia_virtualizacion_y_pendrive.md#4-ejecución-y-configuración-en-vm)**.
+
+**Características de la imagen de prueba:**
+*   **Idioma:** Configurada íntegramente en **español**.
+*   **Contenido incluido:** Wikipedia (versión sin imágenes), WikiHow, WikiMed (enciclopedia médica) y el asistente de IA nativo (modelo básico).
+*   **Propósito:** Esta imagen se ofrece como una **prueba de concepto** para validar la compatibilidad con tu hardware y experimentar la interfaz de usuario de forma inmediata.
+
+
 ## 📚 Documentación Detallada
 
 Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido, consulta las guías en el directorio `/doc/`:
@@ -86,4 +104,4 @@ refugiOS es posible gracias al increíble trabajo de proyectos de código abiert
 *   [Cryptsetup / LUKS](https://gitlab.com/cryptsetup/cryptsetup) para la seguridad y cifrado de datos personales.
 
 ---
-*(Este proyecto es una iniciativa de código abierto para la resiliencia digital).*
+*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/modulos_de_software.md#🔮-roadmap-módulos-planeados-a-futuro)).*
