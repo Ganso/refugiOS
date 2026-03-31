@@ -28,7 +28,7 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 *   **🔒 Bóveda de Archivos Segura:** Sistema de cifrado profesional para guardar tus documentos más importantes (pasaportes, títulos, fotos) protegidos por una contraseña maestra.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español, inglés, francés, etc.), descargando solo los diccionarios y ayudas que necesitas.
 
-## 📸 Visuales del Sistema
+## 📸 Capturas de Pantalla
 
 | Item | Captura de Pantalla |
 | :--- | :--- |
