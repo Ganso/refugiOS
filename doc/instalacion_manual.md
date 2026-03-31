@@ -130,6 +130,9 @@ Si quieres montar RefugiOS en una imagen de disco local antes de tocar el pendri
 
 Esta guía exhaustiva te enseñará a crear una imagen `.img`, instalar el sistema dentro de una VM (como VirtualBox o QEMU) y volcar el resultado final al USB de forma segura.
 
+Ésta es la opción recomendada para usuarios avanzados, ya que permite trabajar en local de manera muchísimo más rápida, y luego volcar el resultado final al USB de forma segura. Es perfecta además si quieres preparar una tanda de dispositivos
+USB de tamaño similar.
+
 ---
 
 ## 5. Primer arranque e Instalación de refugiOS

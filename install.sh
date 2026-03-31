@@ -463,5 +463,11 @@ if ! grep -q "persistent" /proc/cmdline; then
 fi
 
 echo "============================================================"
-echo " EXCELENTE: Instalación Completa. Verifica tu escritorio."
+echo "  INSTALACIÓN COMPLETA. Verifica tu escritorio."
+echo "  "
+echo "  Es aconsejable lanzar cada aplicación al menos una vez"
+echo "  para que se creen sus configuraciones antes de dar el"
+echo "  dispositivo por cerrado."
+echo "  "
+echo "  A partir de ese momento podrás usarlo desconectado."
 echo "============================================================"
