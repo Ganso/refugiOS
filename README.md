@@ -1,9 +1,5 @@
 <h1 align="center">
-  <br>
-  <img src="https://via.placeholder.com/150/000000/FFFFFF/?text=refugiOS" alt="refugiOS" width="150" style="border-radius: 20px;">
-  <br>
   refugiOS - Tu Refugio Digital y Biblioteca de Supervivencia
-  <br>
 </h1>
 
 <p align="center">
