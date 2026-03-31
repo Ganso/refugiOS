@@ -60,6 +60,8 @@ curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | ba
 > [!TIP]
 > **¿Ya tienes tu primer pendrive listo?** Una vez que lo hayas probado y configurado a tu gusto, te recomendamos **[clonarlo a otra unidad](doc/clonado_de_pendrive.md)** para tener una copia de seguridad o para dar copias a tus seres queridos.
 
+> [!NOTE]
+> **¿Quieres probarlo rápidamente sin tocar un pendrive?** Si tienes experiencia con máquinas virtuales, puedes montar refugiOS en una imagen de disco virtual y arrancarlo con QEMU o VirtualBox. Consulta nuestra **[Guía de Virtualización](doc/guia_virtualizacion_y_pendrive.md)** para los pasos detallados.
 
 
 ## 📚 Documentación Detallada

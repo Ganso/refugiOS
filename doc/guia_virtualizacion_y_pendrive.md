@@ -5,7 +5,32 @@ Esta guía explica el **método recomendado** para montar RefugiOS para usuarios
 Este enfoque protege la vida útil de tu pendrive, permite crear copias idénticas y mantiene el sistema base inmutable (solo cambian tus datos y configuración persistente).
 
 > [!IMPORTANT]
-> Esta guía asume que estás utilizando **Linux** (preferiblemente un sistema tipo Ubuntu o Debian). El proceso en Windows es menos adecuado para personal técnico.
+> Esta guía está escrita para **Linux** (preferiblemente Ubuntu o Debian). Si usas **Windows**, consulta las notas específicas en la sección de más abajo.
+
+---
+
+### 💡 Notas para usuarios de Windows
+
+Si no dispones de un equipo con Linux, puedes realizar todo el proceso utilizando únicamente **[VirtualBox](https://www.virtualbox.org/)** (gratuito):
+
+1.  **Instala VirtualBox** desde [virtualbox.org](https://www.virtualbox.org/wiki/Downloads) y descarga la ISO de **[Xubuntu](https://xubuntu.org/download/)** (la misma que usarás para refugiOS).
+2.  **Crea una máquina virtual** en VirtualBox con estas características:
+    *   Tipo: Linux / Ubuntu (64-bit)
+    *   Habilitar **EFI** (*System → Enable EFI*)
+    *   RAM: **4 GB** o más
+    *   Disco duro virtual: Crea un disco de **tipo VMDK**, tamaño fijo de **64 GB** (o el tamaño de tu pendrive destino). Este disco hará las veces del archivo `refugios.img`.
+    *   Monta la ISO de Xubuntu como CD-ROM virtual.
+3.  **Arranca la VM** y elige *"Probar Xubuntu"* (modo Live). Ya estás en un Linux completo.
+4.  **Sigue la guía desde la sección 1** exactamente como está escrita, usando la terminal dentro de la sesión Live virtual. Los comandos `truncate`, `losetup`, `dd`, `fdisk`, `mkfs.ext4`, etc. funcionarán con total normalidad.
+5.  **Cuando termines**, apaga la VM. El disco VMDK contiene tu imagen lista.
+6.  **Volcado al pendrive:** Convierte el VMDK a imagen raw y escríbela al USB con **[Rufus](https://rufus.ie/)** (en modo *DD Image*) o **[balenaEtcher](https://etcher.balena.io/)**. Para convertir el disco:
+    ```
+    VBoxManage clonemedium disk refugios.vmdk refugios.img --format RAW
+    ```
+    Este comando se ejecuta desde la terminal de Windows (cmd o PowerShell) en el directorio donde VirtualBox guarda los discos de la VM.
+
+> [!WARNING]
+> Antes de volcar la imagen al pendrive, abre *Administración de discos* (`diskmgmt.msc`) en Windows para verificar qué disco corresponde a tu USB. ¡Nunca escribas sobre el disco equivocado!
 
 ---
 
