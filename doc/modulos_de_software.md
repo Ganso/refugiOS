@@ -61,4 +61,4 @@ Estamos trabajando para integrar estas potentes herramientas en próximas versio
 ### 5. Otras funcionalidades
 *   **Actualización:** Aunque los actuales scripts están pensados para poder ejecutarse varias veces, un script de autualización podría acelerar mucho este proceso, especialmente para actualizar rápidamente las carpetas de datos encriptados.
 *   **Imágenes pregeneradas para distintos idiomas y tamaños de dispositivo:** Para un despliegue rápido sin pasar por todo el proceso de descarga y configuración.
-*   **Instrucciones para crear imágenes personalizadas:** Para generar todo el contenido desde tu ordenador principal de una manera más rápida, y volcar a los dispositivos como paso final.
+*   **Hardware adicional:** Soporte de hardware adicional. Especialmente de GPU o NPU para aceleración de los modelos de IA locales.

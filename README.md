@@ -28,6 +28,15 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 *   **🔒 Bóveda de Archivos Segura:** Sistema de cifrado profesional para guardar tus documentos más importantes (pasaportes, títulos, fotos) protegidos por una contraseña maestra.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español, inglés, francés, etc.), descargando solo los diccionarios y ayudas que necesitas.
 
+## 📸 Visuales del Sistema
+
+| Item | Captura de Pantalla |
+| :--- | :--- |
+| **Interfaz Principal** | ![Menú principal](screenshots/Menu+Bobeda.png)<br>*Menú principal con una bóveda abierta* |
+| **Conocimiento** | ![Enciclopedia médica](screenshots/Medicina.png)<br>*Enciclopedia médica (WikiMed)* |
+| **Navegación** | ![Cartografía](screenshots/Mapas.png)<br>*Cartografía y navegación offline* |
+| **Asistente** | ![IA local](screenshots/IA%20local.png)<br>*Inteligencia Artificial local* |
+
 ## 🚀 Instalación Rápida
 
 Si ya tienes un USB con una base de Linux (Xubuntu) recién instalada, solo tienes que conectar el equipo a Internet una vez y ejecutar este comando en la terminal:
