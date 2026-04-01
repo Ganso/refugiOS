@@ -21,6 +21,18 @@ SYS_LANG=$(echo "${LANG:-es}" | cut -d'_' -f1)
 IS_RPI=0
 [ -f /sys/firmware/devicetree/base/model ] && grep -q "Raspberry Pi" /sys/firmware/devicetree/base/model && IS_RPI=1
 
+if [ "$IS_RPI" -eq 1 ]; then
+    echo -e "\n\e[1;33m[!] ADVERTENCIA DE COMPATIBILIDAD:\e[0m"
+    echo "Se ha detectado que estás corriendo en una Raspberry Pi."
+    echo "El soporte para esta plataforma es todavía PRELIMINAR."
+    echo "Existen fallos conocidos (Kiwix ARM, OpenGL de Mapas, IA) y se esperan errores."
+    echo ""
+    read -p "¿Deseas continuar con la instalación bajo tu responsabilidad? (s/N): " rpi_confirm < /dev/tty
+    if [ "${rpi_confirm,,}" != "s" ]; then
+        log_err "Instalación cancelada por el usuario (Raspberry Pi Beta)."
+    fi
+fi
+
 log_info "Espacio asignado en raíz: ${TOTAL_MB} MB. Libre: ${FREE_MB} MB."
 
 # Autoselección según capacidad (menor a 25GB -> modo Lite)
@@ -290,22 +302,14 @@ log_success "Corpus de conocimiento garantizado."
 # ------------------------------------------------------------------------------
 # 4. Módulo Cartográfico Offline
 # ------------------------------------------------------------------------------
-INSTALL_MAPS=1
-if [ "$IS_RPI" -eq 1 ]; then
-    echo ""
-    read -p "¿Instalar Organic Maps? AVISO: Aún no testeado en Raspberry Pi (s/N): " menu_maps < /dev/tty
-    if [ "${menu_maps,,}" != "s" ]; then INSTALL_MAPS=0; fi
-fi
+log_info "Instalando motor cartográfico Organic Maps..."
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo < /dev/null
+sudo flatpak install flathub app.organicmaps.desktop -y < /dev/null
 
-if [ "$INSTALL_MAPS" -eq 1 ]; then
-    log_info "Instalando motor cartográfico Organic Maps..."
-    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo < /dev/null
-    sudo flatpak install flathub app.organicmaps.desktop -y < /dev/null
-    
-    # Asegurar acceso a la GPU (aunque el lanzador falle, dejamos el permiso)
-    [ "$IS_RPI" -eq 1 ] && sudo flatpak override --device=dri app.organicmaps.desktop || true
+# Asegurar acceso a la GPU (aunque el lanzador falle, dejamos el permiso)
+[ "$IS_RPI" -eq 1 ] && sudo flatpak override --device=dri app.organicmaps.desktop || true
 
-    cat << EOF > "$ESCRITORIO/Mapas_Offline.desktop"
+cat << EOF > "$ESCRITORIO/Mapas_Offline.desktop"
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -314,10 +318,7 @@ Exec=flatpak run app.organicmaps.desktop
 Icon=app.organicmaps.desktop
 Terminal=false
 EOF
-    chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
-else
-    log_info "Omitiendo Organic Maps por elección del usuario."
-fi
+chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
 
 # ------------------------------------------------------------------------------
 # 5. Inteligencia Artificial Residente (Niveles de Razonamiento)

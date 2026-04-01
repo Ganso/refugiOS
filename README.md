@@ -12,6 +12,9 @@
 > [!WARNING]
 > **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Alpha**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores, mejoras en la interfaz de menús y la implementación de las funciones detalladas en el roadmap.
 
+> [!NOTE]
+> **Soporte Raspberry Pi (En pruebas):** Estamos realizando pruebas preliminares en **Raspberry Pi 3B+**. Aunque el instalador ya es compatible, aún existen desafíos técnicos con la arquitectura ARM y la aceleración gráfica. Consulta el [Changelog](CHANGELOG.md) para los detalles técnicos de esta fase.
+
 ---
 
 ## 📖 ¿Qué es refugiOS?
