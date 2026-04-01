@@ -64,7 +64,11 @@ Estamos trabajando para integrar estas potentes herramientas en próximas versio
 *   **Estaciones de Radio Digital ([SDR](https://gqrx.dk/)):** Integración de herramientas para conectar el ordenador a radios de onda corta (SDR) para recibir noticias o datos en situaciones de colapso total.
     *   **Idioma:** 🌐 **Agnóstico al idioma.**
 
-### 6. Cambios técnicos
+### 6. Ocio y entetenimiento
+*   **Emuladores:** Emuladores de sistemas retro, con una selección de juegos libres y opciones para importar los que tengas en propiedad.
+*   **Juegos:** Una selección de juegos independientes y de código abierto.
+
+### 7. ❗ Cambios técnicos
 *   **Migración del script a Python:** El script ha crecido demasiado y es complicado de manejar como un único fichero en Shell Script. Migrar a Python permitirá mejorar la legibilidad y funcionalidad.
 *   **Actualización:** Aunque los actuales scripts están pensados para poder ejecutarse varias veces, un script de autualización podría acelerar mucho este proceso, especialmente para actualizar rápidamente las carpetas de datos encriptados.
 *   **Imágenes pregeneradas para distintos idiomas y tamaños de dispositivo:** Para un despliegue rápido sin pasar por todo el proceso de descarga y configuración.
