@@ -48,7 +48,7 @@ Para facilitar la elección, aquí tienes tres configuraciones recomendadas. Ten
 
 2.  **Opción Intermedia (Adaptador SATA):**
     *   **Qué es:** Un adaptador USB a SATA III (cable o carcasa) para conectar discos HDD o SDD de 2.5" o 3.5" existentes
-    *   **Para qué:** La mejor forma de **reciclar discos de ordenadores viejos** para tener un refugiOS de alta velocidad y gran capacidad para el día a día sin gastar mucho. Un SSD nos dará una velocidad de lectura y escritura prácticamente comparable con un ordenador real, mientras que un HDD bien cuidado puede tener una durabilidad enorme (aunque tendremos que tener más cuidado con golpes o campos magnéticos).
+    *   **Para qué:** La mejor forma de **reciclar discos de ordenadores viejos** para tener un refugiOS de alta velocidad y gran capacidad para el día a día sin gastar mucho. Un SSD nos dará una velocidad de lectura y escritura comparable con un ordenador moderno, mientras que un HDD bien cuidado puede tener una durabilidad enorme (aunque tendremos que tener más cuidado con golpes o campos magnéticos).
     *   **Precio Real 2026:** Entre **10€ y 20€**, más el precio del disco duro que ya tengamos.
     *   *Nota:* Las carcasas básicas de aluminio se encuentran entre **5€ y 10€**. Los adaptadores de cable de alta fidelidad con soporte UASP oscilan entre los **15€ y 20€**.
 
