@@ -59,20 +59,31 @@ case "$menu_lang" in
 esac
 if [[ ! "$WIKI_LANG" =~ ^(es|en|fr)$ ]]; then WIKI_LANG="es"; fi
 
-# 3. Tamaño Wikipedia
+# 3. Wikipedia
 echo ""
 echo "¿Qué versión de la Wikipedia deseas descargar?"
 echo "  1) Completa sin imágenes (~11 GB)"
 echo "  2) Top Mini (~200 MB)"
-read -p "Opción [1-2] (Enter para la recomendada: $DEF_WIKI): " menu_wiki < /dev/tty
+echo "  3) Ninguna (Omitir)"
+read -p "Opción [1-3] (Enter para la recomendada: $DEF_WIKI): " menu_wiki < /dev/tty
 menu_wiki=${menu_wiki:-$DEF_WIKI}
 if [ "$menu_wiki" == "1" ]; then
     WIKI_TYPE="all_nopic"
-else
+    DOWNLOAD_WIKI=1
+elif [ "$menu_wiki" == "2" ]; then
     WIKI_TYPE="top_mini"
+    DOWNLOAD_WIKI=1
+else
+    DOWNLOAD_WIKI=0
 fi
 
-# 4. WikiHow (Opcional)
+# 4. WikiMed (Medicina)
+echo ""
+echo "¿Deseas descargar WikiMed (Enciclopedia Médica)? (~1.5 GB)"
+read -p "Opción (S/n) [Enter para S]: " menu_med < /dev/tty
+if [ "${menu_med,,}" == "n" ]; then DOWNLOAD_MED=0; else DOWNLOAD_MED=1; fi
+
+# 5. WikiHow (Manuales)
 echo ""
 echo "¿Deseas descargar WikiHow (Manuales de supervivencia)? (~25-50 GB según idioma)"
 read -p "Opción (s/N) [Enter para la recomendada: $DEF_HOWTO]: " menu_howto < /dev/tty
@@ -164,39 +175,69 @@ ln -sf "$BASE_DIR/Apps/versiones/$KIWIX_FILE" "$BASE_DIR/Apps/kiwix-desktop.appi
 # ------------------------------------------------------------------------------
 log_info "Buscando las últimas enciclopedias disponibles..."
 
-    LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_medicine_maxi_[0-9-]*\.zim" | sort -V | tail -n 1)
-    LATEST_WIKI=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_${WIKI_TYPE}_[0-9-]*\.zim" | sort -V | tail -n 1)
-    
+    LATEST_MED=""
+    if [ "$DOWNLOAD_MED" -eq 1 ]; then
+        log_info "Buscando la última versión de WikiMed..."
+        LATEST_MED=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_medicine_maxi_[0-9-]*\.zim" | sort -V | tail -n 1)
+        [ -z "$LATEST_MED" ] && log_err "Fallo al localizar WikiMed para el idioma: $WIKI_LANG."
+    fi
+
+    LATEST_WIKI=""
+    if [ "$DOWNLOAD_WIKI" -eq 1 ]; then
+        log_info "Buscando la última versión de Wikipedia ($WIKI_TYPE)..."
+        LATEST_WIKI=$(curl -sL https://download.kiwix.org/zim/wikipedia/ | grep -o "wikipedia_${WIKI_LANG}_${WIKI_TYPE}_[0-9-]*\.zim" | sort -V | tail -n 1)
+        [ -z "$LATEST_WIKI" ] && log_err "Fallo al localizar Wikipedia para el idioma: $WIKI_LANG."
+    fi
+
     LATEST_HOWTO=""
     if [ "$DOWNLOAD_HOWTO" -eq 1 ]; then
         log_info "Buscando la última versión de WikiHow..."
         LATEST_HOWTO=$(curl -sL https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/ | grep -o "wikihow_${WIKI_LANG}_maxi_[0-9-]*\.zim" | sort -V | tail -n 1 || echo "")
+        [ -z "$LATEST_HOWTO" ] && log_err "No se pudo encontrar una versión de WikiHow para el idioma $WIKI_LANG."
     fi
 
-    if [ -z "$LATEST_MED" ] || [ -z "$LATEST_WIKI" ]; then
-        log_err "Fallo al localizar las enciclopedias ZIM fundamentales para el idioma seleccionado: $WIKI_LANG."
-    fi
+# --- Descargas Efectivas ---
 
-if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" ] && [ "$FORCE" -eq 0 ]; then
-    log_info "Enciclopedias fundamentales ya existen. Omitiendo la descarga general."
-else
-    if [ "$USE_TORRENT" -eq 1 ]; then
-        log_info "Descargando WikiMed vía BitTorrent: $LATEST_MED"
-        aria2c --seed-time=0 --continue=true --dir="$BASE_DIR/Conocimiento/versiones/" "https://download.kiwix.org/zim/wikipedia/${LATEST_MED}.torrent"
-        
-        log_info "Descargando Wikipedia Principal vía BitTorrent ($WIKI_TYPE): $LATEST_WIKI"
-        aria2c --seed-time=0 --continue=true --dir="$BASE_DIR/Conocimiento/versiones/" "https://download.kiwix.org/zim/wikipedia/${LATEST_WIKI}.torrent"
+# 1. WikiMed
+if [ "$DOWNLOAD_MED" -eq 1 ]; then
+    if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" ] && [ "$FORCE" -eq 0 ]; then
+        log_info "WikiMed ya existe. Omitiendo descarga."
     else
-        log_info "Descargando WikiMed: $LATEST_MED"
-        aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
-
-        log_info "Descargando Wikipedia Principal ($WIKI_TYPE): $LATEST_WIKI"
-        aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
+        if [ "$USE_TORRENT" -eq 1 ]; then
+            log_info "Descargando WikiMed vía BitTorrent: $LATEST_MED"
+            aria2c --seed-time=0 --continue=true --dir="$BASE_DIR/Conocimiento/versiones/" "https://download.kiwix.org/zim/wikipedia/${LATEST_MED}.torrent"
+        else
+            log_info "Descargando WikiMed: $LATEST_MED"
+            aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_MED" "https://download.kiwix.org/zim/wikipedia/$LATEST_MED"
+        fi
     fi
+    ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" "$BASE_DIR/Conocimiento/wikimed.zim"
+else
+    log_info "Omitiendo WikiMed por elección del usuario."
+    rm -f "$BASE_DIR/Conocimiento/wikimed.zim"
 fi
 
-# Descarga opcional de WikiHow (desde mirror)
-if [ "$DOWNLOAD_HOWTO" -eq 1 ] && [ -n "$LATEST_HOWTO" ]; then
+# 2. Wikipedia Principal
+if [ "$DOWNLOAD_WIKI" -eq 1 ]; then
+    if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" ] && [ "$FORCE" -eq 0 ]; then
+        log_info "Wikipedia Principal ya existe. Omitiendo descarga."
+    else
+        if [ "$USE_TORRENT" -eq 1 ]; then
+            log_info "Descargando Wikipedia vía BitTorrent: $LATEST_WIKI"
+            aria2c --seed-time=0 --continue=true --dir="$BASE_DIR/Conocimiento/versiones/" "https://download.kiwix.org/zim/wikipedia/${LATEST_WIKI}.torrent"
+        else
+            log_info "Descargando Wikipedia ($WIKI_TYPE): $LATEST_WIKI"
+            aria2c -x 4 --continue=true --auto-file-renaming=false --dir="$BASE_DIR/Conocimiento/versiones/" -o "$LATEST_WIKI" "https://download.kiwix.org/zim/wikipedia/$LATEST_WIKI"
+        fi
+    fi
+    ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" "$BASE_DIR/Conocimiento/wikipedia.zim"
+else
+    log_info "Omitiendo Wikipedia por elección del usuario."
+    rm -f "$BASE_DIR/Conocimiento/wikipedia.zim"
+fi
+
+# 3. WikiHow
+if [ "$DOWNLOAD_HOWTO" -eq 1 ]; then
     if [ -f "$BASE_DIR/Conocimiento/versiones/$LATEST_HOWTO" ] && [ "$FORCE" -eq 0 ]; then
         log_info "WikiHow ya existe. Omitiendo descarga."
     else
@@ -205,12 +246,10 @@ if [ "$DOWNLOAD_HOWTO" -eq 1 ] && [ -n "$LATEST_HOWTO" ]; then
     fi
     ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_HOWTO" "$BASE_DIR/Conocimiento/wikihow.zim"
 else
-    [ "$DOWNLOAD_HOWTO" -eq 1 ] && log_err "No se pudo encontrar una versión de WikiHow para el idioma $WIKI_LANG."
+    log_info "Omitiendo WikiHow."
     rm -f "$BASE_DIR/Conocimiento/wikihow.zim"
 fi
 
-ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_MED" "$BASE_DIR/Conocimiento/wikimed.zim"
-ln -sf "$BASE_DIR/Conocimiento/versiones/$LATEST_WIKI" "$BASE_DIR/Conocimiento/wikipedia.zim"
 
 log_info "Creando lanzadores individuales para cada corpus de conocimiento..."
 for zim in "$BASE_DIR/Conocimiento"/*.zim; do
@@ -410,7 +449,7 @@ set -e
 FILE="$HOME/refugiOS/Bovedas/datos_personales.img"
 echo "--- GENERANDO BÓVEDA SEGURA ---"
 echo "Se creará un contenedor criptográfico preasignado de 3 GB."
-dd if=/dev/zero of="$FILE" bs=1M count=3072 status=progress
+dd if=/dev/urandom of="$FILE" bs=1M count=3072 status=progress
 echo "Inicializando cifrado. Teclea YES en mayúsculas cuando se solicite."
 echo "Después se solicitará varias veces la contraseña que protegerá el sistema."
 sudo cryptsetup luksFormat "$FILE"

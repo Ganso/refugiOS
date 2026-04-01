@@ -39,11 +39,13 @@ Si no dispones de un equipo con Linux, puedes realizar todo el proceso utilizand
 Primero creamos un archivo que simulará ser nuestro pendrive físico.
 
 ```bash
-# Crea un archivo vacío de 64GB (no ocupa espacio real hasta que lo llenas)
-truncate -s 64G refugios.img
+# Crea un archivo vacío de 60GB (no ocupa espacio real hasta que lo llenas)
+truncate -s 60G refugios.img
 ```
 
 Puedes ajustar el tamaño (por ejemplo 32G, 16G, etc.) según la capacidad real de tu pendrive.
+
+No ajustes al límite el tamaño del archivo, deja siempre unos gigas de margen, porque siempre hay pequeñas diferencias entre el tamaño anunciado y el tamaño real de los dispositivos. En el ejemplo hemos sido muy conservadores para un pendrive de 64GB, pero dependiendo del que vayas a usar podrás ajustar más al tamaño anunciado.
 
 ---
 
@@ -133,6 +135,7 @@ Aunque el contexto del documento es *Real-time Ubuntu*, la parte dedicada a GRUB
 En las ISO modernas, GRUB está embebido en la partición EFI, así que tenemos que crear uno nuevo:
 
    ```bash
+   sudo mkdir -p /mnt/refugios-efi/boot/grub/
    sudo nano /mnt/refugios-efi/boot/grub/grub.cfg
    ```
 
