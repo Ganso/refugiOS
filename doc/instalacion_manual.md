@@ -47,7 +47,7 @@ Para facilitar la elección, aquí tienes tres configuraciones recomendadas. Ten
     *   *Nota:* Un modelo estándar de 64GB se localiza por unos **10€**. Las versiones de 32GB parten de los **14€**, subiendo hasta los **15€-25€** para los 64GB más rápidos. Modelos de plástico son más baratos (**8€**), pero su baja durabilidad no justifica el pequeño ahorro.
 
 2.  **Opción Intermedia (Adaptador SATA):**
-    *   **Qué es:** Un adaptador USB a SATA III (cable o carcasa) para conectar discos HDD o SDD de 2.5 existentes
+    *   **Qué es:** Un adaptador USB a SATA III (cable o carcasa) para conectar discos HDD o SDD de 2.5" o 3.5" existentes
     *   **Para qué:** La mejor forma de **reciclar discos de ordenadores viejos** para tener un refugiOS de alta velocidad y gran capacidad para el día a día sin gastar mucho. Un SSD nos dará una velocidad de lectura y escritura prácticamente comparable con un ordenador real, mientras que un HDD bien cuidado puede tener una durabilidad enorme (aunque tendremos que tener más cuidado con golpes o campos magnéticos).
     *   **Precio Real 2026:** Entre **10€ y 20€**, más el precio del disco duro que ya tengamos.
     *   *Nota:* Las carcasas básicas de aluminio se encuentran entre **5€ y 10€**. Los adaptadores de cable de alta fidelidad con soporte UASP oscilan entre los **15€ y 20€**.
