@@ -130,11 +130,16 @@ log_info "Preparando el sistema para instalar nuevos paquetes..."
 sudo systemctl stop unattended-upgrades 2>/dev/null || true
 sudo dpkg --configure -a || true
 sudo apt-get install -f -y < /dev/null || true
- 
-log_info "Instalando herramientas base y de soporte..."
 sudo apt-get update -y
-sudo apt-get install -y curl wget aria2 jq flatpak cryptsetup rsync epiphany-browser \
-                        libreoffice vlc evince syncthing gedit xfce4-terminal < /dev/null
+
+log_info "Instalando herramientas base y de soporte (Bloque 1/3)..."
+sudo apt-get install -y curl wget aria2 jq rsync < /dev/null
+
+log_info "Instalando herramientas base y de soporte (Bloque 2/3)..."
+sudo apt-get install -y flatpak cryptsetup epiphany-browser gedit xfce4-terminal < /dev/null
+
+log_info "Instalando herramientas base y de soporte (Bloque 3/3)..."
+sudo apt-get install -y syncthing libreoffice vlc evince < /dev/null
 
 # Intentar instalar soporte de idioma (Ubuntu) sin fallar el script si no existe (Debian/RPi/etc)
 sudo apt-get install -y language-selector-common < /dev/null 2>/dev/null || true
