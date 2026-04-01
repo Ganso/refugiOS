@@ -18,6 +18,8 @@ log_success() { echo -e "\e[1;32m[v] ÉXITO:\e[0m $1"; }
 TOTAL_MB=$(df -m / | awk 'NR==2 {print $2}')
 FREE_MB=$(df -m / | awk 'NR==2 {print $4}')
 SYS_LANG=$(echo "${LANG:-es}" | cut -d'_' -f1)
+IS_RPI=0
+[ -f /sys/firmware/devicetree/base/model ] && grep -q "Raspberry Pi" /sys/firmware/devicetree/base/model && IS_RPI=1
 
 log_info "Espacio asignado en raíz: ${TOTAL_MB} MB. Libre: ${FREE_MB} MB."
 
@@ -288,11 +290,22 @@ log_success "Corpus de conocimiento garantizado."
 # ------------------------------------------------------------------------------
 # 4. Módulo Cartográfico Offline
 # ------------------------------------------------------------------------------
-log_info "Instalando motor cartográfico Organic Maps..."
-sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo < /dev/null
-sudo flatpak install flathub app.organicmaps.desktop -y < /dev/null
+INSTALL_MAPS=1
+if [ "$IS_RPI" -eq 1 ]; then
+    echo ""
+    read -p "¿Instalar Organic Maps? AVISO: Aún no testeado en Raspberry Pi (s/N): " menu_maps < /dev/tty
+    if [ "${menu_maps,,}" != "s" ]; then INSTALL_MAPS=0; fi
+fi
 
-cat << EOF > "$ESCRITORIO/Mapas_Offline.desktop"
+if [ "$INSTALL_MAPS" -eq 1 ]; then
+    log_info "Instalando motor cartográfico Organic Maps..."
+    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo < /dev/null
+    sudo flatpak install flathub app.organicmaps.desktop -y < /dev/null
+    
+    # Asegurar acceso a la GPU (aunque el lanzador falle, dejamos el permiso)
+    [ "$IS_RPI" -eq 1 ] && sudo flatpak override --device=dri app.organicmaps.desktop || true
+
+    cat << EOF > "$ESCRITORIO/Mapas_Offline.desktop"
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -301,7 +314,10 @@ Exec=flatpak run app.organicmaps.desktop
 Icon=app.organicmaps.desktop
 Terminal=false
 EOF
-chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
+    chmod +x "$ESCRITORIO/Mapas_Offline.desktop"
+else
+    log_info "Omitiendo Organic Maps por elección del usuario."
+fi
 
 # ------------------------------------------------------------------------------
 # 5. Inteligencia Artificial Residente (Niveles de Razonamiento)
@@ -554,13 +570,8 @@ if [ -f "$LIBFM_CONFIG" ]; then
     fi
 fi
 
-# ------------------------------------------------------------------------------
 # 7. Diagnóstico de Persistencia (Advertencia Segura)
 # ------------------------------------------------------------------------------
-# Detectar si es Raspberry Pi (en cuyo caso la persistencia Live no aplica usualmente)
-IS_RPI=0
-[ -f /sys/firmware/devicetree/base/model ] && grep -q "Raspberry Pi" /sys/firmware/devicetree/base/model && IS_RPI=1
-
 if [ "$IS_RPI" -eq 0 ] && ! grep -q "persistent" /proc/cmdline; then
     echo -e "\n\e[1;33m[!] ADVERTENCIA DE PERSISTENCIA:\e[0m"
     echo "Se ha detectado que el sistema NO está corriendo con el flag 'persistent'."
