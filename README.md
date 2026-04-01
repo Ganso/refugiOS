@@ -41,6 +41,12 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 | **Navegación** | ![Cartografía](screenshots/Mapas.png)<br>*Cartografía y navegación offline* |
 | **Asistente** | ![IA local](screenshots/IA%20local.png)<br>*Inteligencia Artificial local* |
 
+### 📺 Vídeo de Demostración
+
+[![refugiOS en acción](https://img.youtube.com/vi/VrP8VIxQZGg/0.jpg)](https://www.youtube.com/watch?v=VrP8VIxQZGg)
+
+*refugiOS corriendo en un Microsoft Surface de 2018, arrancado desde un pendrive de 16Gb y completamente offline*
+
 ## 🚀 Instalación Rápida
 
 Si ya tienes un USB con una base de Linux (Xubuntu) recién instalada, solo tienes que conectar el equipo a Internet una vez y ejecutar este comando en la terminal:
