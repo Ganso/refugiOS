@@ -142,6 +142,7 @@ log_info "Instalando herramientas base y de soporte (Bloque 3/3)..."
 sudo apt-get install -y syncthing libreoffice vlc evince < /dev/null
 
 # Intentar instalar soporte de idioma (Ubuntu) sin fallar el script si no existe (Debian/RPi/etc)
+log_info "Instalando soporte de idioma para distribuciones Ubuntu"
 sudo apt-get install -y language-selector-common < /dev/null 2>/dev/null || true
 
 # Intentar instalar soporte de idioma para el autodetectado y el elegido en el menú
@@ -532,8 +533,9 @@ Terminal=false
 EOF
 
 chmod +x "$ESCRITORIO"/*.desktop
-# Marcar como confiables en entornos como XFCE/MATE/GNOME para evitar la advertencia de "Untrusted launcher"
+# Marcar como confiables en entornos como LXDE (Raspberry Pi OS) / XFCE
 if command -v gio >/dev/null 2>&1; then
+    log_info "Certificando lanzadores del escritorio..."
     for f in "$ESCRITORIO"/*.desktop; do
         gio set "$f" metadata::trusted yes 2>/dev/null || true
         # Para XFCE, es necesario el checksum para evitar el aviso de "Lanzador no confiable"
@@ -542,10 +544,24 @@ if command -v gio >/dev/null 2>&1; then
     done
 fi
 
+# Intentar desactivar el aviso "Execute File" de PCManFM (Raspberry Pi OS / LXDE)
+LIBFM_CONFIG="$HOME/.config/libfm/libfm.conf"
+if [ -f "$LIBFM_CONFIG" ]; then
+    if grep -q "quick_exec=" "$LIBFM_CONFIG"; then
+        sed -i 's/quick_exec=0/quick_exec=1/' "$LIBFM_CONFIG"
+    else
+        sed -i '/\[General\]/a quick_exec=1' "$LIBFM_CONFIG" 2>/dev/null || echo -e "[General]\nquick_exec=1" >> "$LIBFM_CONFIG"
+    fi
+fi
+
 # ------------------------------------------------------------------------------
 # 7. Diagnóstico de Persistencia (Advertencia Segura)
 # ------------------------------------------------------------------------------
-if ! grep -q "persistent" /proc/cmdline; then
+# Detectar si es Raspberry Pi (en cuyo caso la persistencia Live no aplica usualmente)
+IS_RPI=0
+[ -f /sys/firmware/devicetree/base/model ] && grep -q "Raspberry Pi" /sys/firmware/devicetree/base/model && IS_RPI=1
+
+if [ "$IS_RPI" -eq 0 ] && ! grep -q "persistent" /proc/cmdline; then
     echo -e "\n\e[1;33m[!] ADVERTENCIA DE PERSISTENCIA:\e[0m"
     echo "Se ha detectado que el sistema NO está corriendo con el flag 'persistent'."
     echo "Si estás en un Live USB, tus cambios se perderán al reiniciar."
