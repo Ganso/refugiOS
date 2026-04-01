@@ -43,9 +43,13 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 
 ### 📺 Vídeo de Demostración
 
-[![refugiOS en acción](https://img.youtube.com/vi/VrP8VIxQZGg/0.jpg)](https://www.youtube.com/watch?v=VrP8VIxQZGg)
-
-*refugiOS corriendo en un Microsoft Surface de 2018, arrancado desde un pendrive de 16Gb y completamente offline*
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=VrP8VIxQZGg">
+    <img src="https://img.youtube.com/vi/VrP8VIxQZGg/maxresdefault.jpg" alt="refugiOS en acción" width="800">
+  </a>
+  <br>
+  <em>refugiOS corriendo en un Microsoft Surface de 2018, arrancado desde un pendrive de 16Gb y completamente offline</em>
+</p>
 
 ## 🚀 Instalación Rápida
 
