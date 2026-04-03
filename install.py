@@ -563,7 +563,7 @@ Terminal=false
     
     def fetch_script(s_name):
         d_path = os.path.join(env.scripts_dir, s_name)
-        ok = run_cmd(f"wget -q -c \"{repo_url}/scripts/{s_name}\" -O \"{d_path}\"", quiet=True)
+        ok = run_cmd(f"wget -q \"{repo_url}/scripts/{s_name}\" -O \"{d_path}\"", quiet=True)
         if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
             local_dir = os.path.dirname(os.path.realpath(__file__))
             local_s = os.path.join(local_dir, "scripts", s_name)
