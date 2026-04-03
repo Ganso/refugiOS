@@ -1,0 +1,59 @@
+# ========== PYTHON ==========
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# ========== OS / SISTEMA ==========
+# Archivos de metadatos de sistemas operativos MacOS / Windows
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========== EDITORES / IDE ==========
+# Configuraciones locales de editores
+.vscode/
+.idea/
+*.swp
+*~
+*.bak
+
+# ========== REFUGIOS (CUSTOM) ==========
+# Evitar subir imágenes de bóvedas o descargas de prueba si el usuario compila el instalador en la misma carpeta local
+*.zim
+*.gguf
+*.img
+*.appimage
+*.torrent

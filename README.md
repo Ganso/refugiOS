@@ -63,6 +63,10 @@ sudo apt install curl -y
 curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
 ```
 
+> [!TIP]
+> **Versión experimental en Python:** Hemos desarrollado una nueva versión del instalador (`installpy.sh`) con un core Python. Esta iteración es **mucho más compatible con arquitecturas ARM y Raspberry Pi OS**, separa su lógica interna de la ejecución remota de bash, y ofrece unos interactivos menús amigables libres de bloqueos. Actualmente carece de testeos de estrés exhaustivos. ¡Te animamos encarecidamente a que nos ayudes realizándole pruebas! Para ello simplemente sustituye el archivo final, ejecutando: `<br>`
+`curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/installpy.sh | bash`
+
 > [!IMPORTANT] 
 > **¿Aún no tienes el USB de Linux preparado?** 
 > Si estás empezando de cero, sigue primero nuestra **[Guía de Instalación Manual](doc/instalacion_manual.md)** para preparar tu pendrive desde Windows o Linux.
