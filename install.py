@@ -183,10 +183,14 @@ def multi_select_menu(title, options, default_indices=[]):
     print(f"\n\033[1;36m=== {title} ===\033[0m")
     for i, opt in enumerate(options, 1):
         print(f"  {i}) {opt['label']}")
+    print("  0) [No seleccionar nada / Saltar esta sección]")
     
     # Se añade +1 visualmente ya que los programadores cuentan desde 0, pero el usuario desde 1.
-    default_str = ",".join(map(str, [i + 1 for i in default_indices]))
-    prompt = f"Escribe los números separados por comas (Ej: 1,3) [Enter para recomendada: {default_str}]: "
+    if default_indices:
+        default_str = ",".join(map(str, [i + 1 for i in default_indices]))
+        prompt = f"Escribe los números separados por comas o 0 para omitir (Ej: 1,3) [Enter para recomendada: {default_str}]: "
+    else:
+        prompt = f"Escribe los números separados por comas o 0 para omitir [Enter para omitir]: "
     
     val = input(prompt).strip()
     if not val:
@@ -224,6 +228,18 @@ def single_select_menu(title, options, default_index):
         if 0 <= idx < len(options):
             return idx
     return default_index
+
+def simple_question(title, prompt_text, default_yes=False):
+    """
+    Muestra una cabecera de sección y realiza una pregunta interactiva de Sí/No.
+    """
+    print(f"\n\033[1;36m=== {title} ===\033[0m")
+    if default_yes:
+        val = input(f"{prompt_text} (S/n): ").strip().lower()
+        return val != 'n'
+    else:
+        val = input(f"{prompt_text} (s/N): ").strip().lower()
+        return val == 's'
 
 # ==============================================================================
 # SECCIÓN 4: GESTIÓN JERÁRQUICA DE PAQUETES
@@ -340,8 +356,8 @@ def main():
     if sys_info.is_rpi:
         print("\033[1;33m[!] ADVERTENCIA DE COMPATIBILIDAD:\033[0m")
         print("Se ha detectado arquitectura de placa Raspberry Pi. El soporte completo todavía se encuentra bajo investigación y se forzarán paquetes nativos de repositorios ARM.")
-        ans = input("¿Deseas continuar a pesar de las limitaciones experimentales? (s/N): ").lower()
-        if ans != 's':
+        ans = simple_question("IGNORAR ADVERTENCIA", "¿Deseas continuar a pesar de las limitaciones experimentales?", default_yes=False)
+        if not ans:
             sys.exit(0)
 
     # El idioma es fundamental pues altera qué ficheros pesados se solicitan de los wikis (es, fr, en).
@@ -361,7 +377,7 @@ def main():
         def_ia = [0] # Índice 0 = Modelo conversacional base de Microsoft Phi-4
 
     # Criterio interno para cuando se abortan instalaciones a medias o se actualiza versiones viejas.
-    force_dl = input("\n¿Forzar descarga de componentes aunque ya existan? (s/N): ").strip().lower() == 's'
+    force_dl = simple_question("MODO REESCRITURA", "¿Forzar descarga de componentes aunque ya existan?", default_yes=False)
 
     # ==========================
     # CUESTIONARIOS DEL INSTALADOR
@@ -377,10 +393,10 @@ def main():
     kb_selected = multi_select_menu("BASES DE DATOS DE CONOCIMIENTO (OFFLINE)", kb_opts, def_kb)
 
     # 2. Elección de Mapas (Opción de Organic Maps ahora puede omitirse según demanda del usuario)
-    install_maps = input("\n¿Deseas instalar el módulo de Organic Maps para Cartografía y posicionamiento GPS Offline? (S/n): ").strip().lower() != 'n'
+    install_maps = simple_question("CARTOGRAFÍA (OFFLINE)", "¿Deseas instalar el módulo de Organic Maps para Cartografía y posicionamiento GPS Offline?", default_yes=True)
 
     # 2.5 Paquetes Extra: Ofimática y multimedia
-    install_extras = input("\n¿Deseas instalar el paquete de software extra no directamente relacionado con la base (ofimática, reproducción de vídeos...)? (S/n): ").strip().lower() != 'n'
+    install_extras = simple_question("SOFTWARE OFIMÁTICO Y MULTIMEDIA", "¿Deseas instalar el paquete de software extra no directamente relacionado con la base (ofimática, reproducción de vídeos...)?", default_yes=True)
 
     # 3. Elección de Motores Inteligencia Artificial Auto-Hospedada (LLM)
     ia_opts = [
@@ -391,9 +407,9 @@ def main():
     ia_selected = multi_select_menu("MODELOS DE INTELIGENCIA ARTIFICIAL (IA)", ia_opts, def_ia)
 
     # Configuración de red para P2P (Alivia servidores externos voluntarios usando Torrents)
-    use_torrent = input("\n¿Priorizar conexiones descargas en P2P (BitTorrent) sobre descargas directas cuando sea posible? (s/N): ").strip().lower() == 's'
+    use_torrent = simple_question("RED PEER-TO-PEER (P2P)", "¿Priorizar descargas en P2P (BitTorrent) sobre descargas directas cuando sea posible?", default_yes=False)
     
-    if input("\nConfiguración terminada. ¿Deseas aplicar los cambios y comenzar la instalación ahora? (s/N): ").strip().lower() != 's':
+    if not simple_question("CONFIRMACIÓN DE INSTALACIÓN", "Configuración terminada. ¿Deseas aplicar los cambios y comenzar la instalación ahora?", default_yes=False):
         log_err("La línea de comandos ha detenido formalmente la instalación.")
 
     if os.environ.get("DEBUG") == "1":
