@@ -346,7 +346,7 @@ def main():
 
     # El idioma es fundamental pues altera qué ficheros pesados se solicitan de los wikis (es, fr, en).
     print("En caso de que el perfil de idioma detectado automáticamente fuera incorrecto, corrígelo aquí (ejes: es, en, fr).")
-    new_lang = input(f"Idiona por defecto [pulsa Intro para consolidar '{sys_info.lang}']: ").strip().lower()
+    new_lang = input(f"Idioma por defecto [pulsa Intro para consolidar '{sys_info.lang}']: ").strip().lower()
     if new_lang: sys_info.lang = new_lang
 
     # Según el disco, ofrecemos versiones ligeras en texto o de alta calidad compuestas de imágenes (media rica).

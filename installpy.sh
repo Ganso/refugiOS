@@ -48,7 +48,7 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 PYTHON_SCRIPT="/tmp/refugios_install.py"
 
 log_info "Descargando instalador principal desde GitHub..."
-if wget -q -c "$REPO_URL/install.py" -O "$PYTHON_SCRIPT"; then
+if wget -q -c "$REPO_URL/install.py?nocache=$RANDOM" -O "$PYTHON_SCRIPT"; then
     log_info "Instalador descargado con éxito."
 else
     echo -e "\e[1;33m[!] Aviso:\e[0m No se pudo descargar el instalador de internet."
@@ -63,4 +63,6 @@ fi
 log_info "Lanzando instalador Python..."
 export HOME_DIR="$HOME"
 export REPO_URL="$REPO_URL"
-python3 "$PYTHON_SCRIPT"
+# Forzamos la lectura interactiva desde la terminal virtual (tty) 
+# para solventar el 'EOFError' si el script maestro se lanzó a través de una tubería (pipe) como: curl ... | bash
+python3 "$PYTHON_SCRIPT" < /dev/tty
