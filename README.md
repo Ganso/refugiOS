@@ -13,7 +13,7 @@
 > **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Alpha**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores, mejoras en la interfaz de menús y la implementación de las funciones detalladas en el roadmap.
 
 > [!NOTE]
-> **Soporte Raspberry Pi (En pruebas):** Estamos realizando pruebas preliminares en **Raspberry Pi 3B+**. Aunque el instalador ya es compatible, aún existen desafíos técnicos con la arquitectura ARM y la aceleración gráfica. Consulta el [Changelog](CHANGELOG.md) para los detalles técnicos de esta fase.
+> **Soporte Raspberry Pi (En pruebas):** Se están realizando pruebas preliminares en **Raspberry Pi 3B+**. Aunque existen desafíos técnicos con la arquitectura ARM y la aceleración gráfica, el uso del script **installpy.sh** (basado en Python) puede mitigar muchas de estas restricciones. Consulta el [Changelog](CHANGELOG.md) para los detalles técnicos.
 
 ---
 
@@ -37,7 +37,7 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 
 ## 📸 Capturas de Pantalla
 
-| Item | Captura de Pantalla |
+| Elemento | Captura de Pantalla |
 | :--- | :--- |
 | **Interfaz Principal** | ![Menú principal](screenshots/Menu+Bobeda.png)<br>*Menú principal con una bóveda abierta* |
 | **Conocimiento** | ![Enciclopedia médica](screenshots/Medicina.png)<br>*Enciclopedia médica (WikiMed)* |
@@ -64,8 +64,12 @@ curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | ba
 ```
 
 > [!TIP]
-> **Versión experimental en Python:** Hemos desarrollado una nueva versión del instalador (`installpy.sh`) con un core Python. Esta iteración es **mucho más compatible con arquitecturas ARM y Raspberry Pi OS**, separa su lógica interna de la ejecución remota de bash, y ofrece unos interactivos menús amigables libres de bloqueos. Actualmente carece de testeos de estrés exhaustivos. ¡Te animamos encarecidamente a que nos ayudes realizándole pruebas! Para ello simplemente sustituye el archivo final, ejecutando: `<br>`
-`curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/installpy.sh | bash`
+> **¿Usas Raspberry Pi o buscas mayor estabilidad?**
+> Hemos desarrollado un nuevo instalador basado en Python (**installpy.sh**) diseñado específicamente para mejorar la compatibilidad con arquitecturas **ARM** y **Raspberry Pi OS**. Ofrece menús interactivos más robustos y evita bloqueos en la terminal. ¡Te animamos a probarlo y darnos feedback! 
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/installpy.sh | bash
+```
 
 > [!IMPORTANT] 
 > **¿Aún no tienes el USB de Linux preparado?** 
@@ -109,4 +113,4 @@ refugiOS es posible gracias al increíble trabajo de proyectos de código abiert
 *   [Cryptsetup / LUKS](https://gitlab.com/cryptsetup/cryptsetup) para la seguridad y cifrado de datos personales.
 
 ---
-*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/modulos_de_software.md#🔮-roadmap-módulos-planeados-a-futuro)).*
+*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/modulos_de_software.md)).*
