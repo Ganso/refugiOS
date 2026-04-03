@@ -166,6 +166,22 @@ class SystemInfo:
                 if mem_match:
                     self.vram_info = mem_match.group(1)
 
+def fix_flatpak_permissions():
+    """
+    Soluciona el error 'bwrap: Creating new namespace failed: Permission denied'
+    típico en Ubuntu 24.04 y Debian 13 debido a restricciones de AppArmor en namespaces de usuario.
+    """
+    path = "/proc/sys/kernel/apparmor_restrict_unprivileged_userns"
+    if os.path.exists(path):
+        try:
+            with open(path, 'r') as f:
+                if f.read().strip() == '1':
+                    log_info("Detectada restricción de AppArmor sobre namespaces. Aplicando parche de sistema...")
+                    run_cmd("echo 'kernel.apparmor_restrict_unprivileged_userns = 0' | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf", quiet=True)
+                    run_cmd("sudo sysctl -p /etc/sysctl.d/60-apparmor-namespace.conf", quiet=True)
+        except Exception as e:
+            log_info(f"Aviso: No se pudo verificar/aplicar el parche de AppArmor: {e}")
+
 # ==============================================================================
 # SECCIÓN 3: MENÚS DE INTERACCIÓN MÚLTIPLE
 # ==============================================================================
@@ -431,14 +447,29 @@ def main():
     ensure_dirs(env)
 
     # Fase 1: Despliegue de Utilidades Internas del SO. (Bloque no AppImage, por lo que va directo al APT).
+    log_info("Preparando gestor de paquetes y resolviendo posibles bloqueos...")
+    run_cmd("sudo systemctl stop unattended-upgrades 2>/dev/null || true", quiet=True)
+    run_cmd("sudo dpkg --configure -a", quiet=True)
+    run_cmd("sudo apt-get install -f -y", quiet=True)
+    run_cmd("sudo apt-get update", quiet=True)
+
     log_info("Instalando el paquete de dependencias primario que nutre el resto del ecosistema...")
     
-    base_pkgs = "curl wget aria2 jq rsync flatpak cryptsetup epiphany-browser gedit xfce4-terminal"
+    # dbus-user-session y xdg-desktop-portal son necesarios para que Flatpak (Organic Maps) funcione en sandbox.
+    # language-selector-common permite el chequeo de traducciones del sistema.
+    base_pkgs = "curl wget aria2 jq rsync flatpak cryptsetup epiphany-browser gedit xfce4-terminal dbus-user-session xdg-desktop-portal language-selector-common"
     if install_extras:
         log_info("Añadiendo suite multimedia y ofimática al instalador...")
         base_pkgs += " syncthing libreoffice vlc evince"
         
     run_cmd(f"sudo apt-get install -y {base_pkgs}", quiet=True)
+
+    # Instalación de soporte de idiomas para el sistema base
+    log_info(f"Sincronizando paquetes de idioma para '{sys_info.lang}'...")
+    run_cmd(f"check-language-support -l {sys_info.lang} 2>/dev/null | xargs sudo apt-get install -y", quiet=True)
+
+    # Aplicar parche de seguridad para Flatpak si es necesario
+    fix_flatpak_permissions()
 
     # Fase 2: Instalar la interfaz visual lectora Kiwix 
     # Esta interfaz decodifica la compresión .zim y te abre los wikis fuera de línea simulando Firefox.
