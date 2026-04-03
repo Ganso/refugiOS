@@ -558,6 +558,22 @@ Terminal=false
     else:
         log_info("Se omitirá la provisión de las librerías cartográficas (Organic Maps).")
 
+    # Función de ayuda para extraer los scripts externos de su repositorio principal
+    repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
+    
+    def fetch_script(s_name):
+        d_path = os.path.join(env.scripts_dir, s_name)
+        ok = run_cmd(f"wget -q -c \"{repo_url}/scripts/{s_name}\" -O \"{d_path}\"", quiet=True)
+        if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
+            local_dir = os.path.dirname(os.path.realpath(__file__))
+            local_s = os.path.join(local_dir, "scripts", s_name)
+            if os.path.exists(local_s):
+                shutil.copy(local_s, d_path)
+            else:
+                log_err(f"No fue posible ubicar el {s_name} remoto ni local.")
+        os.chmod(d_path, 0o755)
+        return d_path
+
     # Fase 5: IA Residente e Inferencia de Lenguaje Natural (Llamafile portado para ser autónomo).
     if ia_selected:
         log_info("Estableciendo fundaciones del motor central cognitivo, Llamafile...")
@@ -599,22 +615,6 @@ Terminal=false
                  run_cmd(f"wget -c \"{full_url}\" -O \"{m_path}\"")
             run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'IA', symlink)}'")
 
-        # Extraer los scripts externos de su repositorio principal
-        repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
-        
-        def fetch_script(s_name):
-            d_path = os.path.join(env.scripts_dir, s_name)
-            ok = run_cmd(f"wget -q -c \"{repo_url}/scripts/{s_name}\" -O \"{d_path}\"", quiet=True)
-            if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
-                local_dir = os.path.dirname(os.path.realpath(__file__))
-                local_s = os.path.join(local_dir, "scripts", s_name)
-                if os.path.exists(local_s):
-                    shutil.copy(local_s, d_path)
-                else:
-                    log_err(f"No fue posible ubicar el {s_name} remoto ni local.")
-            os.chmod(d_path, 0o755)
-            return d_path
-        
         script_path = fetch_script("refugios-ia-selector.sh")
         
         with open(os.path.join(env.desktop, "Asistente_IA.desktop"), "w") as f:
