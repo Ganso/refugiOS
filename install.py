@@ -641,28 +641,28 @@ Terminal=false
         (2, "Abrir Bóveda Segura", v_open, "folder-open"),
         (3, "Cerrar y Sellar Bóveda Activa", v_close, "system-lock-screen")
     ]:
-         dfile = os.path.join(env.desktop, f"{i}_{name.replace(' ', '_')}.desktop")
-         with open(dfile, "w") as f:
-              f.write(f"""[Desktop Entry]
+        dfile = os.path.join(env.desktop, f"{i}_{name.replace(' ', '_')}.desktop")
+        with open(dfile, "w") as f:
+            f.write(f"""[Desktop Entry]
 Type=Application
 Name={i}. {name}
 Exec=xfce4-terminal -e "{script}"
 Icon={icon}
 Terminal=false
 """)
-         os.chmod(dfile, 0o755)
+        os.chmod(dfile, 0o755)
 
     # Eliminación de alertas para los gestores modulares del software sobre ejecutables carentes de firma formal.
     log_info("Certificando atajos y deshabilitando avisos de seguridad del escritorio local...")
     if shutil.which("gio"):
-         for file in os.listdir(env.desktop):
-              if file.endswith('.desktop'):
-                   fpath = os.path.join(env.desktop, file)
-                   run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
-                   # Parche para XFCE de Checksum
-                   checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
-                   if checksum:
-                       run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
+        for file in os.listdir(env.desktop):
+            if file.endswith('.desktop'):
+                fpath = os.path.join(env.desktop, file)
+                run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
+                # Parche para XFCE de Checksum
+                checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
+                if checksum:
+                    run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
 
     # Parche para LXDE / PCManFM (Típico en Raspberry Pi)
     libfm_conf = os.path.join(os.environ['HOME'], ".config", "libfm", "libfm.conf")
