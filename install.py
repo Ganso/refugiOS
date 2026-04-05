@@ -386,11 +386,11 @@ def main():
     if lite_mode:
         log_info("Se detectaron menos de 25 GB de almacenamiento. Se ha seleccionado la pre-configuración aligerada.")
         def_kb = [0] # Índice 0 = Solo Wikipedia Top Miniaturas
-        def_ia = []  # Dejamos IA vacío por la restricción pesada
+        def_ia = [0, 1]  # Sugerir tanto el mínimo como el básico
     else:
         log_info("Se detectaron recursos óptimos de almacenamiento. Se ha activado la pre-configuración enriquecida.")
         def_kb = [1] # Índice 1 = Wikipedia versión masificada completa (11 GB)
-        def_ia = [0] # Índice 0 = Modelo conversacional base de Microsoft Phi-4
+        def_ia = [1, 2] # Sugerir modelos básico y medio
 
     # Criterio interno para cuando se abortan instalaciones a medias o se actualiza versiones viejas.
     force_dl = simple_question("MODO REESCRITURA", "¿Forzar descarga de componentes aunque ya existan?", default_yes=False)
@@ -416,7 +416,8 @@ def main():
 
     # 3. Elección de Motores Inteligencia Artificial Auto-Hospedada (LLM)
     ia_opts = [
-        {"label": "🟢 Mínimo: Emplear Microsoft Phi-4-mini (~2.5 GB almacenamiento | Requiere 4GB memoria RAM)"},
+        {"label": "🔵 Mínimo: Emplear Qwen2.5-0.5B (~0.5 GB almacenamiento | Requiere 1GB memoria RAM)"},
+        {"label": "🟢 Básico: Emplear Microsoft Phi-4-mini (~2.5 GB almacenamiento | Requiere 4GB memoria RAM)"},
         {"label": "🟡 Intermedio: Emplear modelo analítico Qwen3-8B (~5 GB almacenamiento | Requiere 8GB memoria RAM)"},
         {"label": "🔴 Máximo: Emplear modelo complejo Qwen3-14B (~9 GB almacenamiento | Requiere 16GB memoria de cálculo)"}
     ]
@@ -498,7 +499,8 @@ def main():
         run_cmd(f"ln -sf '{kiwix_path}' '{os.path.join(env.apps_dir, '../kiwix-desktop.appimage')}'")
         exec_path = os.path.join(env.base, "Apps", "kiwix-desktop.appimage")
     else:
-        exec_path = "kiwix-desktop" if not sys_info.is_rpi else "kiwix"
+        # En Raspberry Pi (ARM) o instalaciones vía APT, forzamos la ruta al binario nativo
+        exec_path = "/usr/bin/kiwix-desktop" if sys_info.is_rpi else "kiwix-desktop"
 
     # Fase 3: Bases de Conocimiento (Peticiones complejas a granjas de datos de Kiwix Foundation)
     log_info("Analizando repositorios de conocimiento masivo ZIM...")
@@ -554,12 +556,13 @@ def main():
              # Proveerle al usuario un lanzador gráfico decorativo directo a ese contenido específico en el escritorio.
              desktop_file = os.path.join(env.desktop, f"Conocimiento_{opt['name'].capitalize()}.desktop")
              with open(desktop_file, 'w') as f:
+                  # Para la ruta del binario y el archivo ZIM, usamos el formato solicitado para máxima compatibilidad
                   f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
 Name={opt['name'].capitalize()} (Offline Centralizado)
 Comment=Acciona directamente el panel indexado y optimizado en caché de la base de registros en español.
-Exec={exec_path} "{os.path.join(env.base, 'Conocimiento', sym_name)}"
+Exec={exec_path} "refugiOS/Conocimiento/{sym_name}"
 Icon=accessories-dictionary
 Terminal=false
 """)
@@ -632,6 +635,7 @@ Terminal=false
 
         # Los vectores pre-entrenados del modelo GGUF basados puramente en su escala.
         modelos = [
+            ("Qwen2.5-0.5B-Instruct-Q4_K_M.gguf", "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/", "modelo-minimo.gguf"),
             ("microsoft_Phi-4-mini-instruct-Q4_K_M.gguf", "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF/resolve/main/", "modelo-basico.gguf"),
             ("Qwen_Qwen3-8B-Q4_K_M.gguf", "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/main/", "modelo-medio.gguf"),
             ("Qwen_Qwen3-14B-Q4_K_M.gguf", "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/", "modelo-avanzado.gguf")
