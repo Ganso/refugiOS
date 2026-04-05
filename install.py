@@ -416,10 +416,10 @@ def main():
 
     # 3. Elección de Motores Inteligencia Artificial Auto-Hospedada (LLM)
     ia_opts = [
-        {"label": "🔵 Mínimo: Emplear Qwen2.5-0.5B (~0.5 GB almacenamiento | Requiere 1GB memoria RAM)"},
-        {"label": "🟢 Básico: Emplear Microsoft Phi-4-mini (~2.5 GB almacenamiento | Requiere 4GB memoria RAM)"},
-        {"label": "🟡 Intermedio: Emplear modelo analítico Qwen3-8B (~5 GB almacenamiento | Requiere 8GB memoria RAM)"},
-        {"label": "🔴 Máximo: Emplear modelo complejo Qwen3-14B (~9 GB almacenamiento | Requiere 16GB memoria de cálculo)"}
+        {"label": "Mínimo: Emplear Qwen2.5-0.5B (~0.5 GB almacenamiento | Requiere 1GB memoria RAM)"},
+        {"label": "Básico: Emplear Microsoft Phi-4-mini (~2.5 GB almacenamiento | Requiere 4GB memoria RAM)"},
+        {"label": "Intermedio: Emplear modelo analítico Qwen3-8B (~5 GB almacenamiento | Requiere 8GB memoria RAM)"},
+        {"label": "Máximo: Emplear modelo complejo Qwen3-14B (~9 GB almacenamiento | Requiere 16GB memoria ram)"}
     ]
     ia_selected = multi_select_menu("MODELOS DE INTELIGENCIA ARTIFICIAL (IA)", ia_opts, def_ia)
 
