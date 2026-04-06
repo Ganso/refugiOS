@@ -97,10 +97,11 @@ El instalador detectará automáticamente que estás en una Raspberry Pi y adapt
 | Plataforma | Estado | Notas |
 | :--- | :--- | :--- |
 | **XUbuntu 24.04 LTS** | ✅ Certificado | Plataforma de referencia |
+| **Xubuntu 25.10** | ✅ Certificado | Necesario retestear cada nueva release |
 | **Raspberry Pi 3B+** | ✅ Certificado | Raspberry Pi OS 64-bit, Wayland |
 | **Raspberry Pi 4 / 5** | 🧪 Sin testar (teoricamente funcional) | Se buscan testers |
 | **Raspberry Pi Zero 2W** | 🧪 Sin testar | Se buscan testers |
-| **Debian 12** | 🧪 Sin testar | Se buscan testers |
+| **Otras distros basadas en Debian** | 🧪 Sin testar | Se buscan testers |
 
 ## 📚 Documentación Detallada
 
