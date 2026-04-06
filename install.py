@@ -886,6 +886,9 @@ Terminal=false
         with open(libfm_conf, 'w') as f:
             f.write('[General]\nquick_exec=1\n')
 
+    # Asegurar que el script intermediario de Kiwix existe
+    fetch_script("refugios-kiwix.sh")
+    
     # Sincronización final de enlaces con las mejores versiones en disco y sus iconos
     if 'exec_path' not in locals():
          exec_path = "kiwix-desktop"
