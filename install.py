@@ -718,6 +718,23 @@ def main():
 
     # Fase 4: Despliegue Cartográfico Opcional de Organic Maps OpenSource
     # Carga toda la cartografía en local a demanda sin depender de Google o cobertura celular.
+
+    # Función de ayuda para extraer los scripts externos de su repositorio principal
+    repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
+    
+    def fetch_script(s_name):
+        d_path = os.path.join(env.scripts_dir, s_name)
+        ok = run_cmd(f"wget -q \"{repo_url}/scripts/{s_name}\" -O \"{d_path}\"", quiet=True)
+        if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
+            local_dir = os.path.dirname(os.path.realpath(__file__))
+            local_s = os.path.join(local_dir, "scripts", s_name)
+            if os.path.exists(local_s):
+                shutil.copy(local_s, d_path)
+            else:
+                log_err(f"No fue posible ubicar el {s_name} remoto ni local.")
+        os.chmod(d_path, 0o755)
+        return d_path
+
     if install_maps:
         install_package(env, "Mapas GPS Offline (Organic Maps)", sys_info.is_rpi, flatpak_id="app.organicmaps.desktop")
         
@@ -739,21 +756,6 @@ Terminal=false
     else:
         log_info("Se omitirá la provisión de las librerías cartográficas (Organic Maps).")
 
-    # Función de ayuda para extraer los scripts externos de su repositorio principal
-    repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
-    
-    def fetch_script(s_name):
-        d_path = os.path.join(env.scripts_dir, s_name)
-        ok = run_cmd(f"wget -q \"{repo_url}/scripts/{s_name}\" -O \"{d_path}\"", quiet=True)
-        if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
-            local_dir = os.path.dirname(os.path.realpath(__file__))
-            local_s = os.path.join(local_dir, "scripts", s_name)
-            if os.path.exists(local_s):
-                shutil.copy(local_s, d_path)
-            else:
-                log_err(f"No fue posible ubicar el {s_name} remoto ni local.")
-        os.chmod(d_path, 0o755)
-        return d_path
 
     # Fase 5: IA Residente e Inferencia de Lenguaje Natural (Llamafile portado para ser autónomo).
     if ia_selected:
