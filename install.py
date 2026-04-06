@@ -163,11 +163,10 @@ class SystemInfo:
         self.free_space_mb = 0
         self.gpu_info = "Desconocida"
         self.vram_info = "Desconocida"
-        # Obtener idioma configurado en el sistema (ej: pasa de 'es_ES.UTF-8' a 'es')
-        raw_lang = os.environ.get("LANG", "es").split('_')[0].lower()
-        if raw_lang == "c" or len(raw_lang) != 2:
-            self.lang = "es"
-        else:
+        self.lang = "es"  # Idioma por defecto del proyecto
+        # Intentar detectar idioma del sistema (solo si es un código válido de 2 letras)
+        raw_lang = os.environ.get("LANG", "").split('_')[0].lower()
+        if raw_lang and raw_lang != "c" and len(raw_lang) == 2 and raw_lang.isalpha():
             self.lang = raw_lang
         
         self.detect_os()
@@ -389,28 +388,56 @@ def sync_resources(env, sys_info, exec_path):
             target = os.path.join(env.know_dir, best)
             run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', c['symlink'])}'", quiet=True)
 
-    # 3. Lanzadores para Bases de Conocimiento (Wikipedia, WikiMed, WikiHow)
+    # 3. Lanzadores para Bases de Conocimiento
     kiwix_script = os.path.join(env.scripts_dir, 'refugios-kiwix.sh')
+    valid_kb_desktops = set()  # nombres de .desktop válidos que deben existir
+
+    # Wikipedia: sólo UN icono para la mejor versión disponible
+    wiki_sym_path = os.path.join(env.base, 'Conocimiento', 'wikipedia.zim')
+    if os.path.exists(wiki_sym_path):
+        desktop_name = "Conocimiento_wikipedia.desktop"
+        valid_kb_desktops.add(desktop_name)
+        desktop_file = os.path.join(env.desktop, desktop_name)
+        with open(desktop_file, 'w') as f:
+            f.write(f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Wikipedia
+Comment=Enciclopedia libre offline.
+Exec=bash "{kiwix_script}" "{wiki_sym_path}"
+Icon=accessories-dictionary
+Terminal=false
+""")
+        os.chmod(desktop_file, 0o755)
+
+    # Resto de ZIMs (WikiMed, WikiHow): un icono por recurso
     for c in KNOWLEDGE_CONFIG:
-        # Usamos el symlink definitivo para el lanzador
-        sym_name = c.get('symlink', 'wikipedia.zim')
-        sym_path = os.path.join(env.base, 'Conocimiento', sym_name)
-        
+        if c['name'] == 'wikipedia': continue  # ya tratado arriba
+        if not c.get('symlink'): continue
+        sym_path = os.path.join(env.base, 'Conocimiento', c['symlink'])
         if os.path.exists(sym_path):
-            desktop_file = os.path.join(env.desktop, f"Conocimiento_{c['id'].capitalize()}.desktop")
-            # Forzamos creación si no existe (pues el usuario pudo borrarlos)
-            if not os.path.exists(desktop_file):
-                with open(desktop_file, 'w') as f:
-                    f.write(f"""[Desktop Entry]
+            desktop_name = f"Conocimiento_{c['id']}.desktop"
+            valid_kb_desktops.add(desktop_name)
+            desktop_file = os.path.join(env.desktop, desktop_name)
+            with open(desktop_file, 'w') as f:
+                f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
 Name={c['name'].capitalize()}
-Comment=Acciona directamente el panel indexado y optimizado en caché de la base de registros en español.
+Comment=Recurso offline disponible sin conexión.
 Exec=bash "{kiwix_script}" "{sym_path}"
 Icon=accessories-dictionary
 Terminal=false
 """)
-                os.chmod(desktop_file, 0o755)
+            os.chmod(desktop_file, 0o755)
+
+    # Eliminar iconos de Conocimiento obsoletos (versiones antiguas o recursos eliminados)
+    for fname in os.listdir(env.desktop):
+        if fname.startswith('Conocimiento_') and fname.endswith('.desktop'):
+            if fname not in valid_kb_desktops:
+                stale = os.path.join(env.desktop, fname)
+                os.remove(stale)
+                log_info(f"Icono obsoleto eliminado: {fname}")
 
     # 4. Modelos IA
     if not os.path.exists(env.ia_dir): return
