@@ -3,6 +3,7 @@
 </h1>
 
 <p align="center">
+  <img src="logo/refugiOS_480.png" alt="logo de refugiOS"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
   <img src="https://img.shields.io/badge/Versión-0.05-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
