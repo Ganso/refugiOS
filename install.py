@@ -261,6 +261,26 @@ def fix_flatpak_permissions():
         except Exception as e:
             log_info(f"Aviso: No se pudo verificar/aplicar el parche de AppArmor: {e}")
 
+def fix_rpi_pcmanfm_warnings():
+    """
+    Desactiva la advertencia de ejecución de archivos no ejecutables en PCManFM (Raspberry Pi OS).
+    Esto es necesario para que los iconos del escritorio que llaman a scripts funcionen sin preguntar.
+    """
+    script = r"""
+F="$HOME/.config/pcmanfm/default/pcmanfm.conf"
+mkdir -p "$(dirname "$F")"
+if [ -f "$F" ]; then
+    grep -q "^\[ui\]" "$F" || echo "[ui]" >> "$F"
+    sed -i '/cx_non_exec_warning/d' "$F"
+    sed -i '/^\[ui\]/a cx_non_exec_warning=0' "$F"
+else
+    echo -e "[ui]\ncx_non_exec_warning=0" > "$F"
+fi
+pcmanfm --reconfigure
+"""
+    log_info("Optimizando configuración de PCManFM para ejecución de scripts...")
+    run_cmd(script, quiet=True)
+
 # ==============================================================================
 # SECCIÓN 3: MENÚS DE INTERACCIÓN MÚLTIPLE
 # ==============================================================================
@@ -674,8 +694,10 @@ def main():
     log_info(f"Sincronizando paquetes de idioma para '{sys_info.lang}'...")
     run_cmd(f"check-language-support -l {sys_info.lang} 2>/dev/null | xargs sudo apt-get install -y", quiet=True)
 
-    # Aplicar parche de seguridad para Flatpak si es necesario
+    # Aplicar parches de compatibilidad del sistema
     fix_flatpak_permissions()
+    if sys_info.is_rpi:
+        fix_rpi_pcmanfm_warnings()
 
     # Fase 2: Instalar la interfaz visual lectora Kiwix 
     # Esta interfaz decodifica la compresión .zim y te abre los wikis fuera de línea simulando Firefox.
