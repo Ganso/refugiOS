@@ -19,18 +19,31 @@ Mapas vectoriales detallados con búsqueda y rutas offline.
 *   **Idioma:** 🌐 **Multilingüe.** La interfaz y los nombres de los mapas se adaptan a tu región.
 
 ### 3. Asistente de Inteligencia Artificial ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
-Asistente inteligente privado que funciona 100% en tu ordenador local. Disponible en tres niveles de potencia según la capacidad del PC:
+Asistente inteligente privado que funciona 100% en tu ordenador local. Disponible en cuatro niveles según la capacidad del dispositivo:
+*   ⚪ **Mínimo:** [Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (0.5B) — ~0.5 GB. Para dispositivos con recursos muy limitados (min. 1 GB RAM).
 *   🟢 **Básico:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.5 GB. Funciona en cualquier PC con 4 GB de RAM.
 *   🟡 **Medio:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~5 GB. Para portátiles modernos con 8 GB de RAM.
 *   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~9 GB. Para PCs potentes con 16 GB de RAM.
 *   **Selector automático:** Al lanzar el asistente, un script detecta la RAM disponible y recomienda el modelo adecuado.
 *   **Idioma:** 🌐 **Multilingüe.** Todos los modelos entienden y responden en más de 20 idiomas.
 
+### 4. Bóvedas Criptográficas (LUKS)
+Sistema de almacenamiento seguro y cifrado para datos sensibles.
+*   **Estado:** 🧪 **Prueba de Concepto (PoC).** El sistema es funcional y utiliza el estándar industrial LUKS, pero se encuentra en una fase primitiva de usabilidad.
+*   **Limitaciones actuales:** Actualmente solo soporta una bóveda de tamaño fijo.
+*   **Próximas mejoras:** Soporte para múltiples bóvedas, tamaños variables y una interfaz de gestión más intuitiva.
 
-### 4. Herramientas de Trabajo Estándar
-Programas esenciales para el día a día.
-*   **Contenidos:** [LibreOffice](https://www.libreoffice.org/) (documentos y tablas), [VLC](https://www.videolan.org/) (vídeo/audio), [Evince](https://wiki.gnome.org/Apps/Evince) (PDF) y [Syncthing](https://syncthing.net/) (compartir archivos sin red).
+
+### 5. Herramientas de Trabajo Estándar
+Programas esenciales para el día a día, adaptados para la máxima compatibilidad.
+*   **Ofimática y Multimedia:** [LibreOffice](https://www.libreoffice.org/), [VLC](https://www.videolan.org/), [Evince](https://wiki.gnome.org/Apps/Evince) (PDF).
+*   **Sistema y Navegación:** [Epiphany Browser](https://wiki.gnome.org/Apps/Web) (Navegador ligero), [Gedit](https://wiki.gnome.org/Apps/Gedit) (Editor de texto), [XFCE Terminal](https://docs.xfce.org/apps/terminal/start).
+*   **Sincronización:** [Syncthing](https://syncthing.net/) (compartir archivos entre dispositivos sin necesidad de nube ni Internet).
 *   **Idioma:** 🌐 **Multilingüe.** Todas las aplicaciones se instalan con el soporte de idioma local seleccionado.
+
+### 6. Soporte de Hardware
+*   **PC Terrestre:** Optimizado para arquitecturas x86_64 (Intel/AMD) mediante AppImages y Flatpaks.
+*   **Raspberry Pi:** 🍓 **Soporte Oficial.** El instalador detecta automáticamente dispositivos Raspberry Pi y utiliza paquetes nativos ARM para garantizar el rendimiento.
 
 ---
 
@@ -38,39 +51,31 @@ Programas esenciales para el día a día.
 
 Estamos trabajando para integrar estas potentes herramientas en próximas versiones:
 
-### 1. Importación de datos en la bóbeda personal
-*   Scripts para automatizar la ingesta de datos en la bóbeda personal encriptada a partir de múltiples fuentes: Otros dispositivos USB conectados al equipo, discos duros locales, distintas plataformas en la nube, etc.
+### 1. Ingesta automatizada en la bóveda personal
+*   Mejorar los scripts para automatizar la importación de datos en las bóvedas personalizadas a partir de múltiples fuentes: Otros dispositivos USB, discos duros locales, etc.
 
 ### 2. Educación y Aprendizaje
 *   **[Khan Academy Offline](https://es.khanacademy.org/):** Descarga de lecciones interactivas de matemáticas, ciencia y economía para todas las edades.
-    *   **Idioma:** 🌐 **Multilingüe** (disponible en español e inglés).
 *   **Plataforma [Kolibri](https://learningequality.org/kolibri/):** Una completa biblioteca educativa con vídeos y ejercicios para escuelas en zonas remotas.
-    *   **Idioma:** 🌐 **Multilingüe.**
 
 ### 3. Bibliotecas de Literatura y Técnica
-*   **[Project Gutenberg](https://www.gutenberg.org/):** Acceso a más de 70,000 libros clásicos de dominio público en formato electrónico.
-    *   **Idioma:** 🌐 **Multilingüe** (especialmente rico en inglés, francés y alemán, con miles de títulos en español).
-*   **[Survivor Library](http://www.survivorlibrary.com/):** Una colección masiva de manuales sobre técnicas preindustriales (agricultura, forja, química básica).
-    *   **Idioma:** 🇺🇸 **Principalmente Inglés.**
-*   **[Otras Bibliotecas para Kiwix](https://download.kiwix.org/zim/):** Existen montones de bibliotecas listas para descargar en formato ZIM: Diccionarios, noticias, eduación viajes...
-    *   **Idioma:** 🌐 **Multilingüe** (puede depender de cada biblioteca en concreto).
+*   **[Project Gutenberg](https://www.gutenberg.org/):** Acceso a más de 70,000 libros clásicos de dominio público.
+*   **[Survivor Library](http://www.survivorlibrary.com/):** Colección masiva de manuales sobre técnicas preindustriales (agricultura, forja, química básica).
+*   **[Otras Bibliotecas para Kiwix](https://download.kiwix.org/zim/):** Diccionarios, física, matemáticas, educación, viajes, etc.
 
 ### 4. Análisis Avanzado con IA
-*   **[AnythingLLM](https://useanything.com/) para Análisis de PDF:** Una herramienta que permite "chatear" con tus propios documentos PDF locales. Podrás preguntarle a la IA sobre manuales técnicos de 500 páginas y obtener respuestas instantáneas.
-    *   **Idioma:** 🌐 **Multilingüe.** Funciona con documentos en cualquier idioma que entienda el modelo base.
-*   ** Aumentar el número de modelos de IA disponibles, según las capacidades del dispositivo y de los equipos donde se plantea utiliarlo.
+*   **[AnythingLLM](https://useanything.com/) para Análisis de PDF:** Herramienta para "chatear" con tus propios documentos PDF locales.
+*   **Expansión de Modelos:** Aumentar el catálogo de modelos disponibles (Vision, Codificación) según las capacidades del hardware.
 
 ### 5. Redes y Comunicación
-*   **Estaciones de Radio Digital ([SDR](https://gqrx.dk/)):** Integración de herramientas para conectar el ordenador a radios de onda corta (SDR) para recibir noticias o datos en situaciones de colapso total.
-    *   **Idioma:** 🌐 **Agnóstico al idioma.**
+*   **SDR (Radio Definida por Software):** Integración de herramientas como [Gqrx](https://gqrx.dk/) para recibir noticias o datos vía radio en situaciones de emergencia.
 
-### 6. Ocio y entetenimiento
-*   **Emuladores:** Emuladores de sistemas retro, con una selección de juegos libres y opciones para importar los que tengas en propiedad.
-*   **Juegos:** Una selección de juegos independientes y de código abierto.
+### 6. Ocio y entretenimiento
+*   **Emuladores:** Sistemas retro con selección de juegos libres.
+*   **Juegos:** Selección de juegos independientes de código abierto.
 
-### 7. ❗ Cambios técnicos
-*   **Migración del script a Python:** El script ha crecido demasiado y es complicado de manejar como un único fichero en Shell Script. Migrar a Python permitirá mejorar la legibilidad y funcionalidad.
-*   **Actualización:** Aunque los actuales scripts están pensados para poder ejecutarse varias veces, un script de autualización podría acelerar mucho este proceso, especialmente para actualizar rápidamente las carpetas de datos encriptados.
-*   **Imágenes pregeneradas para distintos idiomas y tamaños de dispositivo:** Para un despliegue rápido sin pasar por todo el proceso de descarga y configuración.
-*   **Hardware adicional:** Soporte de hardware adicional. Especialmente de GPU o NPU para aceleración de los modelos de IA locales.
-*   **Soporte para Rapberry OS y otros:** Adaptar el script de instalación para otros sistemas operativos. No debería ser complicado especialmente para los basados en Debian como Raspberry OS.
+### 7. ❗ Mejoras técnicas
+*   **Actualizador automático:** Sistema para actualizar componentes y bases de datos de forma incremental (aunque a día de hoy el instalador se puede lanzar todas las veces que sea necesario).
+*   **Imágenes pregeneradas:** Distribución de imágenes de disco listas para usar en distintos idiomas para un despliegue instantáneo.
+*   **Aceleración de IA por Hardware:** Optimización de GPU/NPU para modelos de IA locales.
+*   **Soporte de más Hardware:** Ampliar el soporte de hardware para incluir más dispositivos y arquitecturas, incluyendo dispositivos que pueda poseer el usuario y necesite utilizar en situaciones de emergencia (sistemas de comunicación, wereables, etc.)
