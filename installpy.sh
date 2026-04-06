@@ -26,7 +26,10 @@ DEPENDENCIAS="python3 pciutils wget curl bash jq rsync apt-utils"
 
 FALTAN=""
 for pkg in $DEPENDENCIAS; do
-    if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+    if dpkg -s "$pkg" >/dev/null 2>&1; then
+        echo -e "\e[1;34m[*]\e[0m $pkg: \e[1;31m[instalado]\e[0m"
+    else
+        echo -e "\e[1;34m[*]\e[0m $pkg: \e[1;34m[faltante]\e[0m"
         FALTAN="$FALTAN $pkg"
     fi
 done

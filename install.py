@@ -26,6 +26,78 @@ import re
 import time
 
 # ==============================================================================
+# CONFIGURACIÓN DE RECURSOS (ZIM Y IA)
+# ==============================================================================
+
+# Bases de Datos de Conocimiento (ZIM)
+KNOWLEDGE_CONFIG = [
+    {
+        "id": "wiki_lite",
+        "name": "wikipedia",
+        "label": "Wikipedia versión Ligera [Artículos top, sin imágenes, resúmenes cortos] (~200 MB)",
+        "type": "top_mini",
+        "search_url": "https://download.kiwix.org/zim/wikipedia/",
+        "priority": 1
+    },
+    {
+        "id": "wiki_total",
+        "name": "wikipedia",
+        "label": "Wikipedia Total Textual [Completa sin visuales grandes] (~11 GB)",
+        "type": "all_nopic",
+        "search_url": "https://download.kiwix.org/zim/wikipedia/",
+        "priority": 2
+    },
+    {
+        "id": "wikimed",
+        "name": "wikimed",
+        "label": "WikiMed Enciclopedia de Salud Abierta (~1.5 GB)",
+        "type": "maxi",
+        "search_url": "https://download.kiwix.org/zim/wikipedia/",
+        "symlink": "wikimed.zim"
+    },
+    {
+        "id": "wikihow",
+        "name": "wikihow",
+        "label": "WikiHow Base de Conocimiento Práctico (~25-50 GB)",
+        "type": "maxi",
+        "search_url": "https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/",
+        "symlink": "wikihow.zim"
+    }
+]
+
+# Modelos de Inteligencia Artificial (GGUF)
+AI_MODEL_CONFIG = [
+    {
+        "id": "ia_min",
+        "label": "Mínimo: Emplear Qwen2.5-0.5B (~0.5 GB almacenamiento | Requiere 1GB RAM)",
+        "filename": "Qwen2.5-0.5B-Instruct-Q4_K_M.gguf",
+        "url_base": "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/",
+        "symlink": "modelo-minimo.gguf"
+    },
+    {
+        "id": "ia_base",
+        "label": "Básico: Emplear Microsoft Phi-4-mini (~2.5 GB almacenamiento | Requiere 4GB RAM)",
+        "filename": "microsoft_Phi-4-mini-instruct-Q4_K_M.gguf",
+        "url_base": "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF/resolve/main/",
+        "symlink": "modelo-basico.gguf"
+    },
+    {
+        "id": "ia_med",
+        "label": "Intermedio: Emplear modelo analítico Qwen3-8B (~5 GB almacenamiento | Requiere 8GB RAM)",
+        "filename": "Qwen_Qwen3-8B-Q4_K_M.gguf",
+        "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/main/",
+        "symlink": "modelo-medio.gguf"
+    },
+    {
+        "id": "ia_max",
+        "label": "Máximo: Emplear modelo complejo Qwen3-14B (~9 GB almacenamiento | Requiere 16GB RAM)",
+        "filename": "Qwen_Qwen3-14B-Q4_K_M.gguf",
+        "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/",
+        "symlink": "modelo-avanzado.gguf"
+    }
+]
+
+# ==============================================================================
 # SECCIÓN 1: FUNCIONES DE UTILIDAD Y LOGS
 # ==============================================================================
 
@@ -198,20 +270,24 @@ def multi_select_menu(title, options, default_indices=[]):
     """
     print(f"\n\033[1;36m=== {title} ===\033[0m")
     for i, opt in enumerate(options, 1):
-        print(f"  {i}) {opt['label']}")
+        status = ""
+        if opt.get('installed'):
+            status = " \033[1;31m[instalado]\033[0m"
+        print(f"  {i}) {opt['label']}{status}")
     print("  0) [No seleccionar nada / Saltar esta sección]")
     
-    # Se añade +1 visualmente ya que los programadores cuentan desde 0, pero el usuario desde 1.
-    if default_indices:
-        default_str = ",".join(map(str, [i + 1 for i in default_indices]))
+    # Filtrar instalados de los índices por defecto
+    suggested_indices = [idx for idx in default_indices if not options[idx].get('installed')]
+    
+    if suggested_indices:
+        default_str = ",".join(map(str, [i + 1 for i in suggested_indices]))
         prompt = f"Escribe los números separados por comas o 0 para omitir (Ej: 1,3) [Enter para recomendada: {default_str}]: "
     else:
         prompt = f"Escribe los números separados por comas o 0 para omitir [Enter para omitir]: "
     
     val = input(prompt).strip()
     if not val:
-        # Retorna el valor sugerido si el usuario sólo pulsa Intro
-        return default_indices
+        return suggested_indices
     
     selected = []
     for part in val.split(','):
@@ -271,6 +347,50 @@ class TargetEnv:
         self.ia_dir = os.path.join(base_dir, "IA", "versiones")
         self.vault_dir = os.path.join(base_dir, "Bovedas")
         self.scripts_dir = os.path.join(base_dir, "Scripts")
+
+def update_all_symlinks(env, sys_info):
+    """
+    Escanea los directorios de versiones y enlaza los mejores componentes encontrados
+    independientemente de la elección actual del usuario.
+    """
+    log_info("Sincronizando enlaces simbólicos con las mejores versiones en disco...")
+    
+    if not os.path.exists(env.know_dir): return
+
+    # 1. Wikipedia (Elegir la de mayor prioridad encontrada)
+    wikis = sorted([c for c in KNOWLEDGE_CONFIG if c['name'] == 'wikipedia'], key=lambda x: x.get('priority', 0), reverse=True)
+    for w in wikis:
+        regex = rf"wikipedia_{sys_info.lang}_{w['type']}_[0-9-]*\.zim"
+        matches = [f for f in os.listdir(env.know_dir) if re.match(regex, f)]
+        if matches:
+            best = sorted(matches)[-1]
+            target = os.path.join(env.know_dir, best)
+            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', 'wikipedia.zim')}'", quiet=True)
+            break
+    
+    # 2. Otros ZIMs (WikiMed, WikiHow...)
+    for c in KNOWLEDGE_CONFIG:
+        if not c.get('symlink'): continue
+        prefix = "wikipedia" if c['name'] == 'wikimed' else c['name']
+        m_name = "_medicine" if c['name'] == 'wikimed' else ""
+        regex = rf"{prefix}_{sys_info.lang}{m_name}_{c['type']}_[0-9-]*\.zim"
+        
+        matches = [f for f in os.listdir(env.know_dir) if re.match(regex, f)]
+        if matches:
+            best = sorted(matches)[-1]
+            target = os.path.join(env.know_dir, best)
+            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', c['symlink'])}'", quiet=True)
+
+    # 3. Modelos IA
+    if not os.path.exists(env.ia_dir): return
+    for m in AI_MODEL_CONFIG:
+        # Escapamos el punto para la regex
+        pattern = m['filename'].replace('.', r'\.')
+        matches = [f for f in os.listdir(env.ia_dir) if re.match(pattern, f)]
+        if matches:
+            best = sorted(matches)[-1]
+            target = os.path.join(env.ia_dir, best)
+            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'IA', m['symlink'])}'", quiet=True)
 
 def ensure_dirs(env):
     """Crea la estructura de carpetas maestras del proyecto sobre el disco duro si aún no existe."""
@@ -396,16 +516,53 @@ def main():
     force_dl = simple_question("MODO REESCRITURA", "¿Forzar descarga de componentes aunque ya existan?", default_yes=False)
 
     # ==========================
+    # DETECCIÓN DE COMPONENTES INSTALADOS
+    # ==========================
+    base_dir = os.path.join(os.environ['HOME'], "refugiOS")
+    desktop_dir = os.path.join(os.environ['HOME'], "Escritorio")
+    if not os.path.isdir(desktop_dir):
+        desktop_dir = os.path.join(os.environ['HOME'], "Desktop")
+    env = TargetEnv(base_dir, desktop_dir)
+
+    # Detectar ZIMs
+    kb_opts = []
+    for c in KNOWLEDGE_CONFIG:
+        opt = {
+            "label": c['label'],
+            "name": c['name'],
+            "type": c['type'],
+            "id": c['id'],
+            "search_url": c['search_url'],
+            "symlink": c.get('symlink')
+        }
+        if os.path.exists(env.know_dir):
+            prefix = "wikipedia" if c['name'] in ['wikipedia', 'wikimed'] else c['name']
+            m_name = "_medicine" if c['name'] == 'wikimed' else ""
+            pattern = rf"{prefix}_{sys_info.lang}{m_name}_{c['type']}_[0-9-]*\.zim"
+            if any(re.match(pattern, f) for f in os.listdir(env.know_dir)):
+                opt['installed'] = True
+        kb_opts.append(opt)
+
+    # Detectar Modelos IA
+    ia_opts = []
+    for m in AI_MODEL_CONFIG:
+        opt = {
+            "label": m['label'],
+            "filename": m['filename'],
+            "url_base": m['url_base'],
+            "symlink": m['symlink'],
+            "id": m['id']
+        }
+        if os.path.exists(env.ia_dir):
+            pattern = m['filename'].replace('.', r'\.')
+            if any(re.match(pattern, f) for f in os.listdir(env.ia_dir)):
+                opt['installed'] = True
+        ia_opts.append(opt)
+
+    # ==========================
     # CUESTIONARIOS DEL INSTALADOR
     # ==========================
 
-    # 1. Elección de Enciclopedias fuera de línea 
-    kb_opts = [
-        {"label": "Wikipedia versión Ligera [Artículos top, sin imágenes, resúmenes cortos] (~200 MB)", "type": "top_mini", "name": "wikipedia"},
-        {"label": "Wikipedia Total Textual [Completa sin visuales grandes] (~11 GB)", "type": "all_nopic", "name": "wikipedia"},
-        {"label": "WikiMed Enciclopedia de Salud Abierta (~1.5 GB)", "type": "maxi", "name": "wikimed"},
-        {"label": "WikiHow Base de Conocimiento Práctico de Supervivencia y manualidades (~25-50 GB)", "type": "maxi", "name": "wikihow"}
-    ]
     kb_selected = multi_select_menu("BASES DE DATOS DE CONOCIMIENTO (OFFLINE)", kb_opts, def_kb)
 
     # 2. Elección de Mapas (Opción de Organic Maps ahora puede omitirse según demanda del usuario)
@@ -414,13 +571,6 @@ def main():
     # 2.5 Paquetes Extra: Ofimática y multimedia
     install_extras = simple_question("SOFTWARE OFIMÁTICO Y MULTIMEDIA", "¿Deseas instalar el paquete de software extra no directamente relacionado con la base (ofimática, reproducción de vídeos...)?", default_yes=True)
 
-    # 3. Elección de Motores Inteligencia Artificial Auto-Hospedada (LLM)
-    ia_opts = [
-        {"label": "Mínimo: Emplear Qwen2.5-0.5B (~0.5 GB almacenamiento | Requiere 1GB memoria RAM)"},
-        {"label": "Básico: Emplear Microsoft Phi-4-mini (~2.5 GB almacenamiento | Requiere 4GB memoria RAM)"},
-        {"label": "Intermedio: Emplear modelo analítico Qwen3-8B (~5 GB almacenamiento | Requiere 8GB memoria RAM)"},
-        {"label": "Máximo: Emplear modelo complejo Qwen3-14B (~9 GB almacenamiento | Requiere 16GB memoria ram)"}
-    ]
     ia_selected = multi_select_menu("MODELOS DE INTELIGENCIA ARTIFICIAL (IA)", ia_opts, def_ia)
 
     # Configuración de red para P2P (Alivia servidores externos voluntarios usando Torrents)
@@ -506,69 +656,55 @@ def main():
     log_info("Analizando repositorios de conocimiento masivo ZIM...")
     for idx in kb_selected:
         opt = kb_opts[idx]
-        log_info(f"Rastreando el archivo {opt['name']} correcto para enpaquetarlo en tu dispositivo...")
+        log_info(f"Rastreando el archivo {opt['name']} ({opt['type']}) correcto...")
         zim_url = None
         zim_name = None
-        html = ""
-        base_search_url = ""
-        # Wikihow reside en otro servidor (mirror exterior) debido a su extremo tamaño en algunos lenguajes.
-        if opt['name'] == 'wikihow':
-            base_search_url = "https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/"
-        else:
-            base_search_url = "https://download.kiwix.org/zim/wikipedia/"
         
         try:
-            html = fetch_url(base_search_url)
-            # Extracción del archivo ZIM con RegEx dinámico basado en las variables del entorno del usuario (ID, Idioma).
-            # Ej: Genera `wikipedia_es_top_mini_2023-01.zim`
-            if opt['name'] in ['wikipedia', 'wikimed']:
-                regex = rf'href="(wikipedia_{sys_info.lang}_{opt["type"]}|{opt["type"]}_[A-Za-z0-9_-]*\.zim)"'
-                if opt['name'] == 'wikimed':
-                    regex = rf'href="(wikipedia_{sys_info.lang}_medicine_{opt["type"]}_[0-9-]*\.zim)"'
-                elif opt['name'] == 'wikipedia':
-                    regex = rf'href="(wikipedia_{sys_info.lang}_{opt["type"]}_[0-9-]*\.zim)"'
-            elif opt['name'] == 'wikihow':
-                regex = rf'href="(wikihow_{sys_info.lang}_{opt["type"]}_[0-9-]*\.zim)"'
+            html = fetch_url(opt['search_url'])
+            prefix = "wikipedia" if opt['name'] in ['wikipedia', 'wikimed'] else opt['name']
+            m_name = "_medicine" if opt['name'] == 'wikimed' else ""
+            regex = rf'href="({prefix}_{sys_info.lang}{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
             
             matches = re.findall(regex, html)
             if matches:
                  zim_name = sorted(matches)[-1]
-                 zim_url = base_search_url + zim_name
+                 zim_url = opt['search_url'] + zim_name
         except:
              pass
         
         if zim_name and zim_url:
              target_zim = os.path.join(env.know_dir, zim_name)
              if os.path.exists(target_zim) and not force_dl:
-                  log_info(f"El segmento {zim_name} ya figura localmente en el directorio de Conocimiento. No es necesaria interacción.")
+                  log_info(f"El segmento {zim_name} ya figura localmente. No es necesaria interacción.")
              else:
                   log_info(f"Descargando archivo: {zim_name}...")
-                  # Se usa Aria2 dado que sus conexiones múltiples asíncronas reducen críticamente los límites de red.
                   if use_torrent:
                        run_cmd(f"aria2c --seed-time=0 --continue=true --dir=\"{env.know_dir}\" \"{zim_url}.torrent\"")
                   else:
                        run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{zim_url}\"")
              
-             # Enlace para que el usuario o los scripts invoquen un archivo fijo pero enruten al cifrado descargado asumiendo su versión dinámica
-             sym_name = f"{opt['name']}.zim"
-             run_cmd(f"ln -sf '{target_zim}' '{os.path.join(env.base, 'Conocimiento', sym_name)}'")
+             # Enlace para que el usuario o los scripts invoquen un archivo fijo
+             if opt.get('symlink'):
+                 sym_name = opt['symlink']
+                 run_cmd(f"ln -sf '{target_zim}' '{os.path.join(env.base, 'Conocimiento', sym_name)}'")
              
-             # Proveerle al usuario un lanzador gráfico decorativo directo a ese contenido específico en el escritorio.
+             # Proveerle al usuario un lanzador gráfico decorativo
              desktop_file = os.path.join(env.desktop, f"Conocimiento_{opt['name'].capitalize()}.desktop")
-             with open(desktop_file, 'w') as f:
-                  # Para la ruta del binario y el archivo ZIM, usamos el formato solicitado para máxima compatibilidad
-                  f.write(f"""[Desktop Entry]
+             if not os.path.exists(desktop_file):
+                 with open(desktop_file, 'w') as f:
+                      f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
-Name={opt['name'].capitalize()} (Offline Centralizado)
+Name={opt['name'].capitalize()}
 Comment=Acciona directamente el panel indexado y optimizado en caché de la base de registros en español.
-Exec={exec_path} "refugiOS/Conocimiento/{sym_name}"
+Exec={exec_path} "refugiOS/Conocimiento/{opt.get('symlink', 'wikipedia.zim')}"
 Icon=accessories-dictionary
 Terminal=false
 """)
-             os.chmod(desktop_file, 0o755)
+                 os.chmod(desktop_file, 0o755)
         else:
-             log_err(f"No fue posible encontrar el rastreador/descarga para el elemento ZIM subyacente a {opt['name']} sobre el idioma codificado {sys_info.lang}.")
+             log_err(f"No fue posible encontrar el rastreador para {opt['name']} ({opt['type']}) en {sys_info.lang}.")
 
     # Fase 4: Despliegue Cartográfico Opcional de Organic Maps OpenSource
     # Carga toda la cartografía en local a demanda sin depender de Google o cobertura celular.
@@ -583,7 +719,7 @@ Terminal=false
             f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
-Name=Mapas GPS (Organic Maps)
+Name=Mapas GPS
 Exec=flatpak run app.organicmaps.desktop
 Icon=app.organicmaps.desktop
 Terminal=false
@@ -634,21 +770,15 @@ Terminal=false
              log_err("Error al conectar con GitHub para obtener Llamafile.")
 
         # Los vectores pre-entrenados del modelo GGUF basados puramente en su escala.
-        modelos = [
-            ("Qwen2.5-0.5B-Instruct-Q4_K_M.gguf", "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/", "modelo-minimo.gguf"),
-            ("microsoft_Phi-4-mini-instruct-Q4_K_M.gguf", "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF/resolve/main/", "modelo-basico.gguf"),
-            ("Qwen_Qwen3-8B-Q4_K_M.gguf", "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/main/", "modelo-medio.gguf"),
-            ("Qwen_Qwen3-14B-Q4_K_M.gguf", "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/", "modelo-avanzado.gguf")
-        ]
         
         for idx in ia_selected:
-            filename, url_base, symlink = modelos[idx]
-            full_url = url_base + filename
-            m_path = os.path.join(env.ia_dir, filename)
+            opt = ia_opts[idx]
+            full_url = opt['url_base'] + opt['filename']
+            m_path = os.path.join(env.ia_dir, opt['filename'])
             if not os.path.exists(m_path) or force_dl:
-                 log_info(f"Descargando archivo: {filename}...")
+                 log_info(f"Descargando archivo: {opt['filename']}...")
                  run_cmd(f"wget -c \"{full_url}\" -O \"{m_path}\"")
-            run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'IA', symlink)}'")
+            run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'IA', opt['symlink'])}'")
 
         script_path = fetch_script("refugios-ia-selector.sh")
         
@@ -705,6 +835,9 @@ Terminal=false
         run_cmd(f"sed -i 's/quick_exec=0/quick_exec=1/' '{libfm_conf}'", quiet=True)
         if not 'quick_exec=1' in open(libfm_conf).read():
             run_cmd(f"echo -e '\n[General]\nquick_exec=1' >> '{libfm_conf}'", quiet=True)
+
+    # Sincronización final de enlaces con las mejores versiones en disco
+    update_all_symlinks(env, sys_info)
 
     log_success("LA OPERACIÓN GLOBAL DE DESPLIEGUE FINALIZÓ. Revisa la integridad y accesibilidad de los iconos en el área de tu escritorio.")
 
