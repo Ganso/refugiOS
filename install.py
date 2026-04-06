@@ -348,12 +348,12 @@ class TargetEnv:
         self.vault_dir = os.path.join(base_dir, "Bovedas")
         self.scripts_dir = os.path.join(base_dir, "Scripts")
 
-def update_all_symlinks(env, sys_info):
+def sync_resources(env, sys_info, exec_path):
     """
-    Escanea los directorios de versiones y enlaza los mejores componentes encontrados
-    independientemente de la elección actual del usuario.
+    Escanea los directorios de versiones, enlaza los mejores componentes 
+    y asegura que los lanzadores del escritorio existan para todo lo disponible.
     """
-    log_info("Sincronizando enlaces simbólicos con las mejores versiones en disco...")
+    log_info("Sincronizando enlaces y lanzadores con los recursos en disco...")
     
     if not os.path.exists(env.know_dir): return
 
@@ -363,8 +363,8 @@ def update_all_symlinks(env, sys_info):
         regex = rf"wikipedia_{sys_info.lang}_{w['type']}_[0-9-]*\.zim"
         matches = [f for f in os.listdir(env.know_dir) if re.match(regex, f)]
         if matches:
-            best = sorted(matches)[-1]
-            target = os.path.join(env.know_dir, best)
+            best_wiki_file = sorted(matches)[-1]
+            target = os.path.join(env.know_dir, best_wiki_file)
             run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', 'wikipedia.zim')}'", quiet=True)
             break
     
@@ -381,7 +381,29 @@ def update_all_symlinks(env, sys_info):
             target = os.path.join(env.know_dir, best)
             run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', c['symlink'])}'", quiet=True)
 
-    # 3. Modelos IA
+    # 3. Lanzadores para Bases de Conocimiento (Wikipedia, WikiMed, WikiHow)
+    for c in KNOWLEDGE_CONFIG:
+        # Usamos el symlink definitivo para el lanzador
+        sym_name = c.get('symlink', 'wikipedia.zim')
+        sym_path = os.path.join(env.base, 'Conocimiento', sym_name)
+        
+        if os.path.exists(sym_path):
+            desktop_file = os.path.join(env.desktop, f"Conocimiento_{c['id'].capitalize()}.desktop")
+            # Forzamos creación si no existe (pues el usuario pudo borrarlos)
+            if not os.path.exists(desktop_file):
+                with open(desktop_file, 'w') as f:
+                    f.write(f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name={c['name'].capitalize()}
+Comment=Acciona directamente el panel indexado y optimizado en caché de la base de registros en español.
+Exec={exec_path} "refugiOS/Conocimiento/{sym_name}"
+Icon=accessories-dictionary
+Terminal=false
+""")
+                os.chmod(desktop_file, 0o755)
+
+    # 4. Modelos IA
     if not os.path.exists(env.ia_dir): return
     for m in AI_MODEL_CONFIG:
         # Escapamos el punto para la regex
@@ -576,7 +598,7 @@ def main():
     # Configuración de red para P2P (Alivia servidores externos voluntarios usando Torrents)
     use_torrent = simple_question("RED PEER-TO-PEER (P2P)", "¿Priorizar descargas en P2P (BitTorrent) sobre descargas directas cuando sea posible?", default_yes=False)
     
-    if not simple_question("CONFIRMACIÓN DE INSTALACIÓN", "Configuración terminada. ¿Deseas aplicar los cambios y comenzar la instalación ahora?", default_yes=False):
+    if not simple_question("CONFIRMACIÓN DE INSTALACIÓN", "Configuración terminada. ¿Deseas aplicar los cambios y comenzar la instalación ahora?", default_yes=True):
         log_err("La línea de comandos ha detenido formalmente la instalación.")
 
     if os.environ.get("DEBUG") == "1":
@@ -684,25 +706,7 @@ def main():
                   else:
                        run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{zim_url}\"")
              
-             # Enlace para que el usuario o los scripts invoquen un archivo fijo
-             if opt.get('symlink'):
-                 sym_name = opt['symlink']
-                 run_cmd(f"ln -sf '{target_zim}' '{os.path.join(env.base, 'Conocimiento', sym_name)}'")
-             
-             # Proveerle al usuario un lanzador gráfico decorativo
-             desktop_file = os.path.join(env.desktop, f"Conocimiento_{opt['name'].capitalize()}.desktop")
-             if not os.path.exists(desktop_file):
-                 with open(desktop_file, 'w') as f:
-                      f.write(f"""[Desktop Entry]
-Version=1.0
-Type=Application
-Name={opt['name'].capitalize()}
-Comment=Acciona directamente el panel indexado y optimizado en caché de la base de registros en español.
-Exec={exec_path} "refugiOS/Conocimiento/{opt.get('symlink', 'wikipedia.zim')}"
-Icon=accessories-dictionary
-Terminal=false
-""")
-                 os.chmod(desktop_file, 0o755)
+             # Paso final se encargará de los enlaces symlink y sus iconos visuales
         else:
              log_err(f"No fue posible encontrar el rastreador para {opt['name']} ({opt['type']}) en {sys_info.lang}.")
 
@@ -836,8 +840,10 @@ Terminal=false
         if not 'quick_exec=1' in open(libfm_conf).read():
             run_cmd(f"echo -e '\n[General]\nquick_exec=1' >> '{libfm_conf}'", quiet=True)
 
-    # Sincronización final de enlaces con las mejores versiones en disco
-    update_all_symlinks(env, sys_info)
+    # Sincronización final de enlaces con las mejores versiones en disco y sus iconos
+    if 'exec_path' not in locals():
+         exec_path = "kiwix-desktop"
+    sync_resources(env, sys_info, exec_path)
 
     log_success("LA OPERACIÓN GLOBAL DE DESPLIEGUE FINALIZÓ. Revisa la integridad y accesibilidad de los iconos en el área de tu escritorio.")
 
