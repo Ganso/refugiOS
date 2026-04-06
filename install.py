@@ -156,6 +156,7 @@ class SystemInfo:
     def __init__(self):
         self.os_type = "Desconocido"
         self.is_rpi = False
+        self.rpi_model = ""
         # Para saber si corre servidor gráfico antiguo (X11) o moderno (Wayland)
         self.desktop_env = os.environ.get("XDG_SESSION_TYPE", "Desconocido").capitalize()
         self.ram_mb = 0
@@ -194,11 +195,18 @@ class SystemInfo:
 
         try:
             # Modelos físicos pregrabados (típico de placas de desarrollo ARM)
-            with open('/sys/firmware/devicetree/base/model', 'r') as f:
-                model = f.read()
-                if 'Raspberry Pi' in model:
-                    self.is_rpi = True
-                    self.os_type = "Raspberry Pi OS"
+            # Se lee también de /proc/device-tree/model que es el estándar moderno
+            for model_path in ['/proc/device-tree/model', '/sys/firmware/devicetree/base/model']:
+                try:
+                    with open(model_path, 'r') as f:
+                        model = f.read().rstrip('\x00').strip()
+                        if 'Raspberry Pi' in model:
+                            self.is_rpi = True
+                            self.rpi_model = model
+                            self.os_type = "Raspberry Pi OS"
+                            break
+                except:
+                    continue
         except:
             pass
 
@@ -382,6 +390,7 @@ def sync_resources(env, sys_info, exec_path):
             run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', c['symlink'])}'", quiet=True)
 
     # 3. Lanzadores para Bases de Conocimiento (Wikipedia, WikiMed, WikiHow)
+    kiwix_script = os.path.join(env.scripts_dir, 'refugios-kiwix.sh')
     for c in KNOWLEDGE_CONFIG:
         # Usamos el symlink definitivo para el lanzador
         sym_name = c.get('symlink', 'wikipedia.zim')
@@ -397,7 +406,7 @@ Version=1.0
 Type=Application
 Name={c['name'].capitalize()}
 Comment=Acciona directamente el panel indexado y optimizado en caché de la base de registros en español.
-Exec={exec_path} "refugiOS/Conocimiento/{sym_name}"
+Exec=bash "{kiwix_script}" "{sym_path}"
 Icon=accessories-dictionary
 Terminal=false
 """)
@@ -502,6 +511,8 @@ def main():
     
     print("\n\033[1;36m=== DIAGNÓSTICO DEL SISTEMA ===\033[0m")
     print(f"Sistema Operativo: {sys_info.os_type}")
+    if sys_info.rpi_model:
+        print(f"Modelo Raspberry Pi: {sys_info.rpi_model}")
     print(f"Entorno de Escritorio: {sys_info.desktop_env}")
     print(f"Memoria RAM Detectada: {sys_info.ram_mb} MB")
     print(f"Capacidad Libre en Raíz: {sys_info.free_space_mb} MB")
@@ -510,13 +521,8 @@ def main():
     print(f"Idioma Preferente: {sys_info.lang}")
     print("===============================\n")
 
-    # Limitación formal si está en arquitectura de RPi con recursos débiles.
     if sys_info.is_rpi:
-        print("\033[1;33m[!] ADVERTENCIA DE COMPATIBILIDAD:\033[0m")
-        print("Se ha detectado arquitectura de placa Raspberry Pi. El soporte completo todavía se encuentra bajo investigación y se forzarán paquetes nativos de repositorios ARM.")
-        ans = simple_question("IGNORAR ADVERTENCIA", "¿Deseas continuar a pesar de las limitaciones experimentales?", default_yes=False)
-        if not ans:
-            sys.exit(0)
+        log_info("Arquitectura Raspberry Pi detectada. Se usarán paquetes nativos ARM.")
 
     # El idioma es fundamental pues altera qué ficheros pesados se solicitan de los wikis (es, fr, en).
     print("En caso de que el perfil de idioma detectado automáticamente fuera incorrecto, corrígelo aquí (ejes: es, en, fr).")
@@ -719,12 +725,13 @@ def main():
             # Parche de bajo nivel si el entorno Pi sufre por el renderizado de OpenGL desde el contenedor.
             run_cmd("sudo flatpak override --device=dri app.organicmaps.desktop", quiet=True)
         
+        maps_script = fetch_script("refugios-maps.sh")
         with open(os.path.join(env.desktop, "Mapas_Offline.desktop"), "w") as f:
             f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
 Name=Mapas GPS
-Exec=flatpak run app.organicmaps.desktop
+Exec=bash "{maps_script}"
 Icon=app.organicmaps.desktop
 Terminal=false
 """)
@@ -823,22 +830,32 @@ Terminal=false
 
     # Eliminación de alertas para los gestores modulares del software sobre ejecutables carentes de firma formal.
     log_info("Certificando atajos y deshabilitando avisos de seguridad del escritorio local...")
-    if shutil.which("gio"):
-        for file in os.listdir(env.desktop):
-            if file.endswith('.desktop'):
-                fpath = os.path.join(env.desktop, file)
+    for file in os.listdir(env.desktop):
+        if file.endswith('.desktop'):
+            fpath = os.path.join(env.desktop, file)
+            # Asegurar permisos de ejecución explícitos
+            os.chmod(fpath, 0o755)
+            # GIO: marca el archivo como de confianza (XFCE, GNOME, Wayland)
+            if shutil.which("gio"):
                 run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
-                # Parche para XFCE de Checksum
+                # Checksum para XFCE
                 checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
                 if checksum:
                     run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
+            # Atributo extendido directo como fallback para Wayland sin GIO
+            run_cmd(f"attr -s trusted -V yes '{fpath}' 2>/dev/null || true", quiet=True)
 
-    # Parche para LXDE / PCManFM (Típico en Raspberry Pi)
+    # Parche para LXDE / PCManFM (Típico en Raspberry Pi OS con Wayfire/Labwc)
     libfm_conf = os.path.join(os.environ['HOME'], ".config", "libfm", "libfm.conf")
     if os.path.exists(libfm_conf):
         run_cmd(f"sed -i 's/quick_exec=0/quick_exec=1/' '{libfm_conf}'", quiet=True)
-        if not 'quick_exec=1' in open(libfm_conf).read():
-            run_cmd(f"echo -e '\n[General]\nquick_exec=1' >> '{libfm_conf}'", quiet=True)
+        if 'quick_exec=1' not in open(libfm_conf).read():
+            run_cmd(f"echo -e '\\n[General]\\nquick_exec=1' >> '{libfm_conf}'", quiet=True)
+    # Crear config si no existe aún
+    else:
+        os.makedirs(os.path.dirname(libfm_conf), exist_ok=True)
+        with open(libfm_conf, 'w') as f:
+            f.write('[General]\nquick_exec=1\n')
 
     # Sincronización final de enlaces con las mejores versiones en disco y sus iconos
     if 'exec_path' not in locals():

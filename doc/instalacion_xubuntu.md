@@ -1,6 +1,6 @@
-# Guía Técnica de Preparación de refugiOS
+# Guía de Instalación en XUbuntu
 
-Esta guía explica en detalle cómo preparar tu unidad de refugiOS desde cualquier sistema operativo (Windows o Linux).
+Esta guía explica en detalle cómo preparar tu unidad de refugiOS sobre una base de **XUbuntu** desde cualquier sistema operativo (Windows o Linux).
 
 ## 1. Elección del hardware (El soporte)
 

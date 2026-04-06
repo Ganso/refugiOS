@@ -5,7 +5,25 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.05] - 2026-04-06
+
+### Añadido
+- **Soporte Oficial Raspberry Pi:** Raspberry Pi 3B+ con Raspberry Pi OS (64-bit, Wayland) ya es una plataforma certificada. Eliminados todos los avisos de compatibilidad experimental.
+- **Modelo Raspberry Pi en el diagnóstico:** El instalador detecta y muestra la cadena exacta del modelo de Raspberry Pi desde `/proc/device-tree/model` al inicio.
+- **Scripts intermediarios de lanzado:** Todos los iconos del escritorio ahora invocan scripts en `~/refugiOS/Scripts/` que ejecutan la lógica en tiempo real al lanzarse:
+  - `refugios-maps.sh`: Detecta si la RPi es anterior a la versión 4 y activa automáticamente renderizado por software para Organic Maps (`LIBGL_ALWAYS_SOFTWARE=1`).
+  - `refugios-kiwix.sh`: Detecta el binario de Kiwix disponible (sistema, AppImage) y lo usa para abrir el recurso ZIM especificado.
+- **Guía de instalación para Raspberry Pi:** Nuevo documento `doc/instalacion_raspberry.md` con instrucciones, hardware recomendado, tabla de diferencias con la versión XUbuntu, y referencia al Raspberry Pi Imager oficial.
+- **Certificación de lanzadores mejorada:** La lógica de confianza de los `.desktop` ahora cubre GIO (XFCE, GNOME, Wayland), checksum XFCE, y fallback con atributos extendidos. También crea automáticamente `libfm.conf` con `quick_exec=1` si no existe (necesario para evitar diálogos de advertencia en PCManFM / Raspberry Pi OS con Wayfire).
+
+### Cambiado
+- **`installpy.sh` renombrado a `install.sh`:** El instalador Python es ahora el oficial y único punto de entrada. El antiguo instalador shell se ha archivado en `old/`.
+- **`doc/instalacion_manual.md` renombrado a `doc/instalacion_xubuntu.md`:** Refleja que esa guía es específica para XUbuntu.
+- **Todos los modelos y bases de conocimiento centralizados en constantes** `KNOWLEDGE_CONFIG` y `AI_MODEL_CONFIG` en la cabecera de `install.py`.
+- **Restauración inteligente de iconos:** Al final de cada instalación, `sync_resources()` recorre todo el disco y recrea los iconos faltantes para cualquier recurso ya descargado, incluso si no fue seleccionado en la sesión actual.
+
 ## [0.04] - 2026-04-03
+
 
 ### Añadido
 - **Instalador Python (Experimental)**: Nueva versión del instalador reescrita en Python (`install.py`) y lanzada a través de `installpy.sh`. Separa scripts internos, soluciona advertencias del escritorio (XFCE/PCManFM), mejora notablemente los menús interactivos permitiendo omitir (0) y hacer múltiples selecciones simultáneas, y resuelve conflictos idiomáticos locales. Esta versión es **más compatible con entornos ARM y Raspberry Pi OS**, aunque carece de testeos extensos de calidad total (se anima a la comunidad a probarla).

@@ -4,16 +4,14 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Sistema-Xubuntu_LTS-blue.svg" alt="Sistema Operativo">
+  <img src="https://img.shields.io/badge/Versión-0.05-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
+  <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
 </p>
 
 > [!WARNING]
 > **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Alpha**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores, mejoras en la interfaz de menús y la implementación de las funciones detalladas en el roadmap.
-
-> [!NOTE]
-> **Soporte Raspberry Pi (En pruebas):** Se están realizando pruebas preliminares en **Raspberry Pi 3B+**. Aunque existen desafíos técnicos con la arquitectura ARM y la aceleración gráfica, el uso del script **installpy.sh** (basado en Python) puede mitigar muchas de estas restricciones. Consulta el [Changelog](CHANGELOG.md) para los detalles técnicos.
 
 ---
 
@@ -23,11 +21,14 @@
 
 A diferencia de otras soluciones complejas, **refugiOS convierte cualquier ordenador normal (incluso uno antiguo) en una estación de información completa** que arranca directamente desde un pendrive USB. 
 
+También funciona en **Raspberry Pi**, convirtiéndola en una estación de información compacta, silenciosa y de bajo consumo.
+
 Es una herramienta pensada para tener a mano todos los conocimientos, mapas y documentos vitales de forma segura, privada y totalmente funcional sin depender de la nube.
 
 ## ✨ Características Principales
 
 *   **⚡ Arranca en cualquier PC (Plug-and-play):** No necesitas instalar nada en el ordenador que encuentres. Conectas el USB, enciendes el equipo y ya tienes tu refugio digital funcionando a máxima velocidad.
+*   **🍓 Soporte nativo para Raspberry Pi:** Instalación certificada en Raspberry Pi 3B+. El instalador detecta automáticamente la arquitectura ARM y adapta todas las decisiones (paquetes APT, renderizado gráfico, etc.).
 *   **📚 Conocimiento Universal Offline:** Incluye copias completas de la Wikipedia, WikiMed (medicina), enciclopedias de supervivencia y guías de oficios gracias a la tecnología de *Kiwix*.
 *   **🤖 Inteligencia Artificial Privada:** Incorpora un asistente que funciona de forma 100% local, sin Internet. Puede ayudarte a resolver problemas técnicos, médicos o de traducción usando solo la potencia de tu ordenador.
 *   **🗺️ Mapas y Navegación GPS:** Mapas detallados de todo el mundo mediante *Organic Maps*. Puedes buscar rutas y puntos de interés (fuentes, hospitales, refugios) sin emitir ninguna señal de red.
@@ -56,27 +57,32 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 
 ## 🚀 Instalación Rápida
 
-Si ya tienes un USB con una base de Linux (Xubuntu) recién instalada, solo tienes que conectar el equipo a Internet una vez y ejecutar este comando en la terminal:
+### 💻 En XUbuntu (PC / Laptop)
+
+Si ya tienes un USB con XUbuntu recién instalada, solo tienes que conectar el equipo a Internet una vez y ejecutar este comando en la terminal:
 
 ```bash
 sudo apt install curl -y
 curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
 ```
 
-> [!TIP]
-> **¿Usas Raspberry Pi o buscas mayor estabilidad?**
-> Hemos desarrollado un nuevo instalador basado en Python (**installpy.sh**) diseñado específicamente para mejorar la compatibilidad con arquitecturas **ARM** y **Raspberry Pi OS**. Ofrece menús interactivos más robustos y evita bloqueos en la terminal. ¡Te animamos a probarlo y darnos feedback! 
+> [!IMPORTANT] 
+> **¿Aún no tienes el USB de XUbuntu preparado?** 
+> Si estás empezando de cero, sigue primero nuestra **[Guía de Instalación en XUbuntu](doc/instalacion_xubuntu.md)** para preparar tu pendrive desde Windows o Linux.
+
+### 🍓 En Raspberry Pi
+
+Instala primero Raspberry Pi OS con la herramienta oficial **[Raspberry Pi Imager](https://www.raspberrypi.com/documentation/computers/getting-started.html#raspberry-pi-imager)** y luego ejecuta el mismo instalador:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/installpy.sh | bash
+sudo apt install curl -y
+curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
 ```
 
-> [!IMPORTANT] 
-> **¿Aún no tienes el USB de Linux preparado?** 
-> Si estás empezando de cero, sigue primero nuestra **[Guía de Instalación Manual](doc/instalacion_manual.md)** para preparar tu pendrive desde Windows o Linux.
+El instalador detectará automáticamente que estás en una Raspberry Pi y adaptará todo. Consulta la **[Guía de Instalación en Raspberry Pi](doc/instalacion_raspberry.md)** para los detalles y recomendaciones de hardware.
 
 > [!NOTE] 
-> El instalador te guiará paso a paso y te preguntará qué contenidos quieres incluir según el tamaño de tu USB. Es recomendable leerla en cualquier caso.
+> El instalador te guiará paso a paso y te preguntará qué contenidos quieres incluir según el tamaño de tu almacenamiento.
 
 > [!TIP]
 > **¿Ya tienes tu primer pendrive listo?** Una vez que lo hayas probado y configurado a tu gusto, te recomendamos **[clonarlo a otra unidad](doc/clonado_de_pendrive.md)** para tener una copia de seguridad o para dar copias a tus seres queridos.
@@ -85,10 +91,22 @@ curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/installpy.sh | 
 > **¿Quieres probarlo rápidamente sin tocar un pendrive?** Si tienes experiencia con máquinas virtuales, puedes montar refugiOS en una imagen de disco virtual y arrancarlo con QEMU o VirtualBox. Consulta nuestra **[Guía de Virtualización](doc/guia_virtualizacion_y_pendrive.md)** para los pasos detallados.
 
 
+## 📱 Plataformas Certificadas
+
+| Plataforma | Estado | Notas |
+| :--- | :--- | :--- |
+| **XUbuntu 24.04 LTS** | ✅ Certificado | Plataforma de referencia |
+| **Raspberry Pi 3B+** | ✅ Certificado | Raspberry Pi OS 64-bit, Wayland |
+| **Raspberry Pi 4 / 5** | 🧪 Sin testar (teoricamente funcional) | Se buscan testers |
+| **Raspberry Pi Zero 2W** | 🧪 Sin testar | Se buscan testers |
+| **Debian 12** | 🧪 Sin testar | Se buscan testers |
+
 ## 📚 Documentación Detallada
 
 Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido, consulta las guías en el directorio `/doc/`:
 
+*   **[Instalación en XUbuntu](doc/instalacion_xubuntu.md):** Cómo preparar tu USB con XUbuntu desde Windows o Linux.
+*   **[Instalación en Raspberry Pi](doc/instalacion_raspberry.md):** Guía específica para Raspberry Pi con Raspberry Pi OS.
 *   **[Visión y Experiencia del Usuario](doc/vision_y_experiencia.md):** El propósito del proyecto y qué esperar al usarlo.
 *   **[Comparativa de Soluciones](doc/soluciones_existentes.md):** Por qué refugiOS es diferente a otras alternativas.
 *   **[Aplicaciones y Software](doc/modulos_de_software.md):** Información sobre Kiwix, Mapas e Inteligencia Artificial.
@@ -103,6 +121,7 @@ Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido
 
 refugiOS es posible gracias al increíble trabajo de proyectos de código abierto como:
 *   [Xubuntu](https://xubuntu.org/) y la comunidad de Ubuntu para la base del sistema operativo.
+*   [Raspberry Pi Foundation](https://www.raspberrypi.com/) por el hardware y el ecosistema de software ARM.
 *   [Kiwix](https://www.kiwix.org/) y la [Fundación Wikimedia](https://wikimediafoundation.org/) por el acceso offline al conocimiento universal.
 *   [Mozilla Ocho](https://github.com/Mozilla-Ocho/llamafile) por el motor de inferencia **Llamafile**.
 *   [HuggingFace](https://huggingface.co/) y [bartowski](https://huggingface.co/bartowski) por las excelentes cuantizaciones de los modelos de IA.
