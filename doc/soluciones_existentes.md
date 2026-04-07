@@ -20,23 +20,50 @@ Son unidades USB o discos SSD que se venden ya configurados con miles de manuale
 
 ---
 
-## 2. Las ventajas de refugiOS
+## 2. Otros Linux autoarrancables
+
+### Tails (The Amnesic Incognito Live System)
+
+Es el sistema de referencia para privacidad extrema y anonimato en la red.
+*   **Limitación:** Está diseñado para "no dejar rastro" (es amnésico), lo que dificulta guardar documentos vitales de forma permanente sin una configuración compleja. Carece por defecto de la biblioteca de supervivencia offline y la IA local que refugiOS permite integrar.
+
+### Distros ultraligeras (Puppy Linux / AntiX)
+
+Famosas por revivir hardware antiguo debido a su bajo consumo de recursos.
+*   **Limitación:** Se entregan como un lienzo en blanco. Un usuario en una emergencia tendría que dedicar horas a configurar manualmente los mapas, lectores y modelos de IA. Son perfectas para un usuario con conocimientos y tiempo para analizar e integrar los módulos disponibles, pero no para la mayoría de usuarios.
+
+---
+
+## 3. Las ventajas de refugiOS
 
 refugiOS ha sido diseñado para superar estos obstáculos siguiendo una filosofía de **"arrancar y listo"**.
 
 ### ¿En qué se diferencia?
 
-1.  **Es un Sistema Operativo completo:**
-    No es solo un USB con archivos. refugiOS es un sistema Linux completo que arranca directamente desde el pendrive. Si el disco duro de tu ordenador deja de funcionar, refugiOS ignorará ese fallo y usará el hardware (procesador y memoria) para funcionar de forma independiente.
+1.  **Transformación Integral del Sistema:**
+No es solo un USB con archivos. refugiOS es una herramienta que personaliza sistemas como Xubuntu o Raspberry Pi OS para que funcionen de forma independiente y optimizada desde un pendrive.
+    Transformación Integral del Sistema:
+    No es solo un USB con archivos. refugiOS es una herramienta que personaliza sistemas como Xubuntu o Raspberry Pi OS para que funcionen de forma independiente y optimizada desde un pendrive.
 
-2.  **No necesita programas extra:**
-    Todas las herramientas (lectores de mapas, enciclopedias, inteligencia artificial, oficina) ya están instaladas y configuradas. No tienes que instalar nada en el ordenador anfitrión.
+    Entorno "Listo para el Desastre":
+    Todas las herramientas (lectores de mapas, enciclopedias, inteligencia artificial) quedan instaladas y configuradas por el script. No tienes que instalar nada manualmente en el sistema final.
 
-3.  **Funciona en equipos modestos:**
-    Al no usar sistemas complejos de virtualización (como Docker), refugiOS aprovecha al máximo la potencia del ordenador. Esto permite que la Inteligencia Artificial y los mapas funcionen rápido incluso en portátiles antiguos, consumiendo menos batería.
+    Máximo rendimiento en equipos modestos:
+    Al optimizar directamente el sistema operativo base (como Xubuntu), refugiOS aprovecha al máximo la potencia del hardware sin capas intermedias como Docker. Esto permite que la IA y los mapas funcionen rápido incluso en portátiles antiguos.
 
-4.  **Seguridad integrada:**
-    Incluye herramientas de cifrado profesional para proteger tus documentos personales (DNI, pasaportes) mediante contraseñas, algo que no suelen incluir otras soluciones comerciales.
+    Seguridad y Persistencia:
+    Implementa herramientas de cifrado profesional (LUKS) para proteger tus documentos personales, permitiendo que la información crítica sobreviva a los reinicios de forma segura.
 
-5.  **Gratuito y Abierto:**
-    refugiOS es un proyecto de código abierto. Cualquier persona puede descargar el instalador y crearse su propio dispositivo de emergencia usando un pendrive estándar, sin pagar suscripciones ni precios inflados por hardware básico.
+    Gratuito, Abierto y Auditable:
+    Es un proyecto de código abierto. Cualquier persona puede auditar los scripts de personalización, ver qué cambios se realizan y crear su propio dispositivo de emergencia sin depender de terceros.
+2.  **Entorno "Listo para el Desastre":**
+Todas las herramientas (lectores de mapas, enciclopedias, inteligencia artificial) quedan instaladas y configuradas por el script. No tienes que instalar nada manualmente en el sistema final.
+
+3.  **Máximo rendimiento en equipos modestos:**
+Al optimizar directamente el sistema operativo base (como Xubuntu), refugiOS aprovecha al máximo la potencia del hardware sin capas intermedias como Docker. Esto permite que la IA y los mapas funcionen rápido incluso en portátiles antiguos.
+
+4.  **Seguridad y Persistencia:**
+Implementa herramientas de cifrado profesional (LUKS) para proteger tus documentos personales, permitiendo que la información crítica sobreviva a los reinicios de forma segura.
+
+5.  **Gratuito, Abierto y Auditable:**
+Es un proyecto de código abierto. Cualquier persona puede auditar los scripts de personalización, ver qué cambios se realizan y crear su propio dispositivo de emergencia sin depender de terceros.
