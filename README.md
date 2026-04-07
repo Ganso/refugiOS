@@ -5,14 +5,14 @@
 <p align="center">
   <img src="logo/refugiOS_480.png" alt="logo de refugiOS"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versión-0.05-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versión-0.07-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
 </p>
 
 > [!WARNING]
-> **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Alpha**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores, mejoras en la interfaz de menús y la implementación de las funciones detalladas en el roadmap.
+> **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Alpha**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores y la implementación de las funciones detalladas en el roadmap.
 
 ---
 
@@ -35,7 +35,12 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 *   **🗺️ Mapas y Navegación GPS:** Mapas detallados de todo el mundo mediante *Organic Maps*. Puedes buscar rutas y puntos de interés (fuentes, hospitales, refugios) sin emitir ninguna señal de red.
 *   **🔒 Bóveda de Archivos Segura:** Sistema de cifrado profesional para guardar tus documentos más importantes (pasaportes, títulos, fotos) protegidos por una contraseña maestra.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español, inglés, francés, etc.), descargando solo los diccionarios y ayudas que necesitas.
-*   Puedes ver en el apartado de [Aplicaciones y Software](doc/modulos_de_software.md) el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
+*   Puedes ver en el apartado de **[Aplicaciones y Roadmap](doc/modulos_y_roadmap.md)** el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
+
+> [!IMPORTANT]
+> **Nota sobre el Idioma:** Actualmente, tanto el **instalador** como la **documentación** se encuentran exclusivamente en **español**. Tenemos planeado añadir soporte para inglés en el corto plazo y otros idiomas más adelante.
+>
+> **Documentación:** Estamos migrando todo el contenido técnico a la **Wiki de GitHub** para una mejor organización y facilidad de contribución.
 
 ## 📸 Capturas de Pantalla
 
@@ -111,7 +116,7 @@ Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido
 *   **[Instalación en Raspberry Pi](doc/instalacion_raspberry.md):** Guía específica para Raspberry Pi con Raspberry Pi OS.
 *   **[Visión y Experiencia del Usuario](doc/vision_y_experiencia.md):** El propósito del proyecto y qué esperar al usarlo.
 *   **[Comparativa de Soluciones](doc/soluciones_existentes.md):** Por qué refugiOS es diferente a otras alternativas.
-*   **[Aplicaciones y Software](doc/modulos_de_software.md):** Información sobre Kiwix, Mapas e Inteligencia Artificial.
+*   **[Aplicaciones y Roadmap](doc/modulos_y_roadmap.md):** Información sobre Kiwix, Mapas e Inteligencia Artificial.
 *   **[Arquitectura del Sistema](doc/arquitectura.md):** Detalles técnicos sobre la base Linux y su rendimiento.
 *   **[Bóvedas de Seguridad](doc/bovedas_criptograficas.md):** Cómo funciona el cifrado de tus archivos personales.
 *   **[Clonado de Unidades](doc/clonado_de_pendrive.md):** Cómo hacer copias exactas de tu USB en Windows o Linux.
@@ -134,4 +139,4 @@ refugiOS es posible gracias al increíble trabajo de proyectos de código abiert
 *   [Cryptsetup / LUKS](https://gitlab.com/cryptsetup/cryptsetup) para la seguridad y cifrado de datos personales.
 
 ---
-*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/modulos_de_software.md)).*
+*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/modulos_y_roadmap.md)).*

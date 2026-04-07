@@ -5,6 +5,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.07] - 2026-04-08
+
+### Añadido
+- **Clarificación de Idioma e Internacionalización:** Se ha añadido información explícita en el README y en el Roadmap sobre el estado actual del proyecto (solo español) y los planes futuros para el soporte de inglés.
+- **Migración a Wiki:** Se anuncia el inicio de la migración de la documentación técnica al formato Wiki de GitHub.
+
+### Cambiado
+- **Reestructuración de Documentación:** El archivo `doc/modulos_de_software.md` ha sido renombrado a `doc/modulos_y_roadmap.md` para reflejar mejor su contenido y se han actualizado todos los enlaces internos.
+
+## [0.06] - 2026-04-07
+
+### Cambiado
+- **Nueva Interfaz de Usuario:** El instalador ahora utiliza la librería `python-dialog` para mostrar menús interactivos, cuadros de diálogo de diagnóstico y selectores múltiples. Esto hace que la experiencia de instalación sea mucho más amigable, visual e intuitiva que la versión anterior basada en línea de comandos.
+
 ## [0.05] - 2026-04-06
 
 ### Añadido

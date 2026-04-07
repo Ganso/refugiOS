@@ -1,6 +1,11 @@
-# Aplicaciones y Contenidos Incluidos, y Roadmap a Futuro
+# Aplicaciones y Contenidos Incluidos, y Roadmap de Desarrollo
 
 refugiOS incluye una selección de herramientas diseñadas para funcionar totalmente sin conexión a Internet. A continuación se detallan los módulos ya disponibles y los que planeamos añadir próximamente.
+
+> [!IMPORTANT]
+> **Internacionalización (i18n):** Actualmente, tanto el instalador como la documentación están disponibles **únicamente en español**. Próximamente se acometerá la traducción al inglés y, más adelante, a otros idiomas según el interés de la comunidad.
+>
+> **Migración de Documentación:** Estamos en proceso de migrar toda la documentación técnica y de usuario al formato **Wiki de GitHub** para facilitar su consulta y colaboración.
 
 ---
 
