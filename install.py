@@ -24,6 +24,12 @@ import json
 import shutil
 import re
 import time
+try:
+    import dialog
+except ImportError:
+    print("\033[1;31m[X] ERROR:\033[0m No se encontró la librería 'python3-dialog'.")
+    print("Asegúrate de ejecutar 'install.sh' primero o instala el paquete manualmente.")
+    sys.exit(1)
 
 # ==============================================================================
 # CONFIGURACIÓN DE RECURSOS (ZIM Y IA)
@@ -282,83 +288,66 @@ pcmanfm --reconfigure
     run_cmd(script, quiet=True)
 
 # ==============================================================================
-# SECCIÓN 3: MENÚS DE INTERACCIÓN MÚLTIPLE
+# SECCIÓN 3: MENÚS DE INTERACCIÓN MÚLTIPLE (TUI con pythondialog)
 # ==============================================================================
 
-def multi_select_menu(title, options, default_indices=[]):
-    """
-    Muestra un menú con múltiples opciones que el usuario puede seleccionar al mismo tiempo
-    al separar los índices por comas (ejemplo: '1,3' instalaría la opción 1 y la 3).
-    
-    :param title: Título decorativo del menú.
-    :param options: Lista de diccionarios que definen las opciones disponibles, ej: [{'label': 'Opcion 1'}]
-    :param default_indices: Lista de enteros con los índices pre-seleccionados por defecto.
-    :return: Una lista de enteros correspondientes a los índices elegidos.
-    """
-    print(f"\n\033[1;36m=== {title} ===\033[0m")
-    for i, opt in enumerate(options, 1):
-        status = ""
-        if opt.get('installed'):
-            status = " \033[1;31m[instalado]\033[0m"
-        print(f"  {i}) {opt['label']}{status}")
-    print("  0) [No seleccionar nada / Saltar esta sección]")
-    
-    # Filtrar instalados de los índices por defecto
-    suggested_indices = [idx for idx in default_indices if not options[idx].get('installed')]
-    
-    if suggested_indices:
-        default_str = ",".join(map(str, [i + 1 for i in suggested_indices]))
-        prompt = f"Escribe los números separados por comas o 0 para omitir (Ej: 1,3) [Enter para recomendada: {default_str}]: "
-    else:
-        prompt = f"Escribe los números separados por comas o 0 para omitir [Enter para omitir]: "
-    
-    val = input(prompt).strip()
-    if not val:
-        return suggested_indices
-    
-    selected = []
-    for part in val.split(','):
-        part = part.strip()
-        if part == '0':
-            return []
-        if part.isdigit():
-            idx = int(part) - 1
-            if 0 <= idx < len(options):
-                selected.append(idx)
-    return selected
+def init_dialog():
+    d = dialog.Dialog(autowidgetsize=True)
+    # Habilitar interpretación de secuencias de escape para colores (\Z)
+    try:
+        d.add_persistent_args(["--colors"])
+    except AttributeError:
+        # Fallback para versiones muy antiguas de pythondialog si no existe el método
+        pass
+    return d
 
-def single_select_menu(title, options, default_index):
+def multi_select_menu(d, title, options, default_indices=[]):
     """
-    Muestra un menú convencional en el que sólo es posible escoger un único número a la vez.
+    Muestra un menú con múltiples opciones usando d.checklist de pythondialog.
+    Los elementos instalados aparecen premarcados y resaltados en color.
     """
-    print(f"\n\033[1;36m=== {title} ===\033[0m")
-    for i, opt in enumerate(options, 1):
-        print(f"  {i}) {opt['label']}")
-    print("  0) [No seleccionar nada / Saltar esta sección]")
+    choices = []
+    for i, opt in enumerate(options):
+        tag = str(i + 1)
+        item = opt['label']
+        is_installed = opt.get('installed', False)
+        
+        if is_installed:
+            item += r" \Z1[instalado]\Zn"
+            status = True
+        else:
+            status = (i in default_indices)
+            
+        choices.append((tag, item, status))
     
-    prompt = f"Opción [Enter para recomendada: {default_index + 1}]: "
-    val = input(prompt).strip()
-    if not val:
-        return default_index
-    if val == '0':
-        return None
-    if val.isdigit():
-        idx = int(val) - 1
-        if 0 <= idx < len(options):
-            return idx
-    return default_index
+    code, selected_tags = d.checklist(title, choices=choices, title="refugiOS Installer")
+    
+    if code == d.OK:
+        return [int(tag) - 1 for tag in selected_tags]
+    return []
 
-def simple_question(title, prompt_text, default_yes=False):
+def single_select_menu(d, title, options, default_index):
     """
-    Muestra una cabecera de sección y realiza una pregunta interactiva de Sí/No.
+    Muestra un menú convencional usando d.menu de pythondialog.
     """
-    print(f"\n\033[1;36m=== {title} ===\033[0m")
-    if default_yes:
-        val = input(f"{prompt_text} (S/n): ").strip().lower()
-        return val != 'n'
-    else:
-        val = input(f"{prompt_text} (s/N): ").strip().lower()
-        return val == 's'
+    choices = []
+    for i, opt in enumerate(options):
+        choices.append((str(i + 1), opt['label']))
+    
+    code, tag = d.menu(title, choices=choices, title="refugiOS Installer", default_item=str(default_index + 1))
+    
+    if code == d.OK:
+        return int(tag) - 1
+    return None
+
+def simple_question(d, title, prompt_text, default_yes=False):
+    """
+    Muestra una pregunta interactiva de Sí/No usando d.yesno de pythondialog.
+    """
+    # defaultno=True si queremos que el foco esté en "No" por defecto
+    code = d.yesno(f"{title}\n\n{prompt_text}", title="refugiOS Installer", 
+                   yes_label="Sí", no_label="No", defaultno=(not default_yes))
+    return code == d.OK
 
 # ==============================================================================
 # SECCIÓN 4: GESTIÓN JERÁRQUICA DE PAQUETES
@@ -553,28 +542,34 @@ def main():
     if os.geteuid() == 0:
         log_err("Operación bloqueada. Este script instalador no debe ejecutarse como root. Ejecútalo como tu usuario habitual e introducirá 'sudo' sólo allá donde se necesite de manera interna.")
 
+    # 0. Inicializar Dialog
+    d = init_dialog()
+
     # 1. Recuperación de Información Físico-Virtual.
     sys_info = SystemInfo()
     
-    print("\n\033[1;36m=== DIAGNÓSTICO DEL SISTEMA ===\033[0m")
-    print(f"Sistema Operativo: {sys_info.os_type}")
+    diag_info = f"""SISTEMA OPERATIVO: {sys_info.os_type}
+"""
     if sys_info.rpi_model:
-        print(f"Modelo Raspberry Pi: {sys_info.rpi_model}")
-    print(f"Entorno de Escritorio: {sys_info.desktop_env}")
-    print(f"Memoria RAM Detectada: {sys_info.ram_mb} MB")
-    print(f"Capacidad Libre en Raíz: {sys_info.free_space_mb} MB")
-    print(f"Hardware Gráfico: {sys_info.gpu_info}")
-    print(f"VRAM / Memoria Video: {sys_info.vram_info}")
-    print(f"Idioma Preferente: {sys_info.lang}")
-    print("===============================\n")
-
+        diag_info += f"MODELO RASPBERRY PI: {sys_info.rpi_model}\n"
+    
+    diag_info += f"""ENTORNO DE ESCRITORIO: {sys_info.desktop_env}
+MEMORIA RAM: {sys_info.ram_mb} MB
+ESPACIO DISCO: {sys_info.free_space_mb} MB
+HARDWARE GRÁFICO: {sys_info.gpu_info}
+VRAM DETECTADA: {sys_info.vram_info}
+IDIOMA DETECTADO: {sys_info.lang}
+"""
     if sys_info.is_rpi:
-        log_info("Arquitectura Raspberry Pi detectada. Se usarán paquetes nativos ARM.")
+        diag_info += "\nARQUITECTURA RASPBERRY PI DETECTADA.\nSE USARÁN PAQUETES NATIVOS ARM."
+
+    d.msgbox(diag_info, title="Diagnóstico de Sistema - refugiOS")
 
     # El idioma es fundamental pues altera qué ficheros pesados se solicitan de los wikis (es, fr, en).
-    print("En caso de que el perfil de idioma detectado automáticamente fuera incorrecto, corrígelo aquí (ejes: es, en, fr).")
-    new_lang = input(f"Idioma por defecto [pulsa Intro para consolidar '{sys_info.lang}']: ").strip().lower()
-    if new_lang: sys_info.lang = new_lang
+    code, new_lang = d.inputbox("Detectar idioma del sistema.\nEn caso de que fuera incorrecto, corrígelo aquí (ejemplos: es, en, fr):", 
+                               init=sys_info.lang, title="Configuración de Idioma")
+    if code == d.OK:
+        sys_info.lang = new_lang.strip().lower()
 
     # Según el disco, ofrecemos versiones ligeras en texto o de alta calidad compuestas de imágenes (media rica).
     lite_mode = sys_info.free_space_mb < 25000
@@ -588,7 +583,7 @@ def main():
         def_ia = [1, 2] # Sugerir modelos básico y medio
 
     # Criterio interno para cuando se abortan instalaciones a medias o se actualiza versiones viejas.
-    force_dl = simple_question("MODO REESCRITURA", "¿Forzar descarga de componentes aunque ya existan?", default_yes=False)
+    force_dl = simple_question(d, "MODO REESCRITURA", "¿Deseas forzar la descarga de componentes aunque ya existan localmente?", default_yes=False)
 
     # ==========================
     # DETECCIÓN DE COMPONENTES INSTALADOS
@@ -638,20 +633,20 @@ def main():
     # CUESTIONARIOS DEL INSTALADOR
     # ==========================
 
-    kb_selected = multi_select_menu("BASES DE DATOS DE CONOCIMIENTO (OFFLINE)", kb_opts, def_kb)
+    kb_selected = multi_select_menu(d, "BASES DE DATOS DE CONOCIMIENTO (OFFLINE)", kb_opts, def_kb)
 
-    # 2. Elección de Mapas (Opción de Organic Maps ahora puede omitirse según demanda del usuario)
-    install_maps = simple_question("CARTOGRAFÍA (OFFLINE)", "¿Deseas instalar el módulo de Organic Maps para Cartografía y posicionamiento GPS Offline?", default_yes=True)
+    # 2. Elección de Mapas
+    install_maps = simple_question(d, "CARTOGRAFÍA (OFFLINE)", "¿Deseas instalar el módulo de Organic Maps para Cartografía y posicionamiento GPS Offline?", default_yes=True)
 
-    # 2.5 Paquetes Extra: Ofimática y multimedia
-    install_extras = simple_question("SOFTWARE OFIMÁTICO Y MULTIMEDIA", "¿Deseas instalar el paquete de software extra no directamente relacionado con la base (ofimática, reproducción de vídeos...)?", default_yes=True)
+    # 2.5 Paquetes Extra
+    install_extras = simple_question(d, "SOFTWARE OFIMÁTICO Y MULTIMEDIA", "¿Deseas instalar el paquete de software extra (LibreOffice, VLC, etc.)?", default_yes=True)
 
-    ia_selected = multi_select_menu("MODELOS DE INTELIGENCIA ARTIFICIAL (IA)", ia_opts, def_ia)
+    ia_selected = multi_select_menu(d, "MODELOS DE INTELIGENCIA ARTIFICIAL (IA)", ia_opts, def_ia)
 
-    # Configuración de red para P2P (Alivia servidores externos voluntarios usando Torrents)
-    use_torrent = simple_question("RED PEER-TO-PEER (P2P)", "¿Priorizar descargas en P2P (BitTorrent) sobre descargas directas cuando sea posible?", default_yes=False)
+    # Configuración de red para P2P
+    use_torrent = simple_question(d, "RED PEER-TO-PEER (P2P)", "¿Priorizar descargas en P2P (BitTorrent) sobre descargas directas?", default_yes=False)
     
-    if not simple_question("CONFIRMACIÓN DE INSTALACIÓN", "Configuración terminada. ¿Deseas aplicar los cambios y comenzar la instalación ahora?", default_yes=True):
+    if not simple_question(d, "CONFIRMACIÓN DE INSTALACIÓN", "Configuración terminada. ¿Deseas aplicar los cambios y comenzar la instalación ahora?", default_yes=True):
         log_err("La línea de comandos ha detenido formalmente la instalación.")
 
     if os.environ.get("DEBUG") == "1":
@@ -683,7 +678,7 @@ def main():
     
     # dbus-user-session y xdg-desktop-portal son necesarios para que Flatpak (Organic Maps) funcione en sandbox.
     # language-selector-common permite el chequeo de traducciones del sistema.
-    base_pkgs = "curl wget aria2 jq rsync flatpak cryptsetup epiphany-browser gedit xfce4-terminal dbus-user-session xdg-desktop-portal language-selector-common"
+    base_pkgs = "python3 python3-dialog dialog aria2 pciutils wget curl bash jq rsync apt-utils flatpak cryptsetup epiphany-browser gedit xfce4-terminal dbus-user-session xdg-desktop-portal language-selector-common"
     if install_extras:
         log_info("Añadiendo suite multimedia y ofimática al instalador...")
         base_pkgs += " syncthing libreoffice vlc evince"

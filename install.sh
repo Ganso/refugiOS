@@ -22,7 +22,7 @@ fi
 
 # Lista de dependencias del sistema necesarias para que el instalador de Python funcione bien
 # pciutils provee 'lspci' usado para detectar la GPU/VRAM.
-DEPENDENCIAS="python3 pciutils wget curl bash jq rsync apt-utils"
+DEPENDENCIAS="python3 python3-dialog dialog aria2 pciutils wget curl bash jq rsync apt-utils"
 
 FALTAN=""
 for pkg in $DEPENDENCIAS; do
