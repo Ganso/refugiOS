@@ -30,7 +30,7 @@ Es el sistema de referencia para privacidad extrema y anonimato en la red.
 ### Distros ultraligeras (Puppy Linux / AntiX)
 
 Famosas por revivir hardware antiguo debido a su bajo consumo de recursos.
-*   **Limitación:** Se entregan como un lienzo en blanco. Un usuario en una emergencia tendría que dedicar horas a configurar manualmente los mapas, lectores y modelos de IA. Son perfectas para un usuario con conocimientos y tiempo para analizar e integrar los módulos disponibles, pero no para la mayoría de usuarios.
+*   **Limitación:** Se entregan como un lienzo en blanco. Un usuario en una emergencia tendría que dedicar horas a configurar manualmente los mapas, lectores y modelos de IA. También, pueden tener un soporte hardware más limitado y no son adaptables a sistemas como Raspberry OS. En general son perfectas para un usuario con conocimientos y tiempo para analizar e integrar los módulos disponibles, especialmente si tienes limitado el espectro de dispositivos donde planeas usarla, pero no son para la mayoría de usuarios.
 
 ---
 
