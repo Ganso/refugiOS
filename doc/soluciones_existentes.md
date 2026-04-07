@@ -42,20 +42,7 @@ refugiOS ha sido diseñado para superar estos obstáculos siguiendo una filosof�
 
 1.  **Transformación Integral del Sistema:**
 No es solo un USB con archivos. refugiOS es una herramienta que personaliza sistemas como Xubuntu o Raspberry Pi OS para que funcionen de forma independiente y optimizada desde un pendrive.
-    Transformación Integral del Sistema:
-    No es solo un USB con archivos. refugiOS es una herramienta que personaliza sistemas como Xubuntu o Raspberry Pi OS para que funcionen de forma independiente y optimizada desde un pendrive.
 
-    Entorno "Listo para el Desastre":
-    Todas las herramientas (lectores de mapas, enciclopedias, inteligencia artificial) quedan instaladas y configuradas por el script. No tienes que instalar nada manualmente en el sistema final.
-
-    Máximo rendimiento en equipos modestos:
-    Al optimizar directamente el sistema operativo base (como Xubuntu), refugiOS aprovecha al máximo la potencia del hardware sin capas intermedias como Docker. Esto permite que la IA y los mapas funcionen rápido incluso en portátiles antiguos.
-
-    Seguridad y Persistencia:
-    Implementa herramientas de cifrado profesional (LUKS) para proteger tus documentos personales, permitiendo que la información crítica sobreviva a los reinicios de forma segura.
-
-    Gratuito, Abierto y Auditable:
-    Es un proyecto de código abierto. Cualquier persona puede auditar los scripts de personalización, ver qué cambios se realizan y crear su propio dispositivo de emergencia sin depender de terceros.
 2.  **Entorno "Listo para el Desastre":**
 Todas las herramientas (lectores de mapas, enciclopedias, inteligencia artificial) quedan instaladas y configuradas por el script. No tienes que instalar nada manualmente en el sistema final.
 
