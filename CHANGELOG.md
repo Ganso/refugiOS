@@ -5,6 +5,12 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.08] - 2026-04-08
+
+### Añadido
+- **Nuevo logo del proyecto:** Gracias a [Felipe Monge "PlayOnRetro"](https://x.com/PlayOnRetro) por el diseño del logo.
+- **Readme en Inglés:** Gracias a [levonk](https://github.com/levonk) por la versión inicial.
+
 ## [0.07] - 2026-04-08
 
 ### Añadido

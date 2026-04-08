@@ -5,7 +5,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="logo de refugiOS"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versión-0.07-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versión-0.08-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -125,6 +125,8 @@ Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido
 ---
 
 ## 🗃️ Agradecimientos y Fuentes
+
+Gracias a [Felipe Monge "PlayOnRetro"](https://x.com/PlayOnRetro) por el diseño del logo.
 
 refugiOS es posible gracias al increíble trabajo de proyectos de código abierto como:
 *   [Xubuntu](https://xubuntu.org/) y la comunidad de Ubuntu para la base del sistema operativo.
