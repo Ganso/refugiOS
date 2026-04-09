@@ -1,7 +1,7 @@
 # refugiOS - Your Digital Refuge and Survival Library
 
 <p align="center">
-  <a href="README.md">Español 🇪🇸</a> | <strong>English 🏴󠁧󠁢󠁥󠁮󠁧󠁿🇺🇸</strong>
+  <a href="README.md">Español 🇪🇸</a> | <strong>English 🇬🇧🇺🇸</strong>
 </p>
 
 <p align="center">
