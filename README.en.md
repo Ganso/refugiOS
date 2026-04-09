@@ -1,7 +1,7 @@
 # refugiOS - Your Digital Refuge and Survival Library
 
 <p align="center">
-  <a href="README.md">Español 🇪🇸</a> | <strong>English 🇺🇸</strong>
+  <a href="README.md">Español 🇪🇸</a> | <strong>English 🏴󠁧󠁢󠁥󠁮󠁧󠁿🇺🇸</strong>
 </p>
 
 <p align="center">
@@ -36,13 +36,8 @@ It is a tool designed to have all vital knowledge, maps, and documents at hand i
 *   **🤖 Private Artificial Intelligence:** Incorporate an assistant that works 100% locally, without Internet. It can help you solve technical, medical, or translation problems using only the power of your computer.
 *   **🗺️ Maps and GPS Navigation:** Detailed maps of the entire world via *Organic Maps*. You can search for routes and points of interest (fountains, hospitals, shelters) without emitting any network signal.
 *   **🔒 Secure File Vault:** Professional encryption system to store your most important documents (passports, titles, photos) protected by a master password.
-*   **🌐 Adapted to Your Language:** The system automatically configures in your language (Spanish, English, French, etc.), downloading only the dictionaries and help files you need.
+*   **🌐 Adapted to Your Language:** The system automatically configures in your language (Spanish or English), downloading only the dictionaries and help files you need.
 *   You can see in the **[Applications and Roadmap](doc/Modules-and-Roadmap-EN.md)** section the current status of the project, with the modules that are already implemented and those that will be added in the future.
-
-> [!IMPORTANT]
-> **Language Note:** Currently, both the **installer** and the **documentation** are exclusively in **Spanish**. We plan to add support for English in the short term and other languages later.
->
-> **Documentation:** We are migrating all technical content to the **GitHub Wiki** for better organization and ease of contribution.
 
 ## 📸 Screenshots
 

@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <strong>Español 🇪🇸</strong> | <a href="README.en.md">English 🇺🇸</a>
+  <strong>Español 🇪🇸</strong> | <a href="README.en.md">English 🏴󠁧󠁢󠁥󠁮󠁧󠁿🇺🇸</a>
 </p>
 
 <p align="center">
@@ -38,13 +38,8 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 *   **🤖 Inteligencia Artificial Privada:** Incorpora un asistente que funciona de forma 100% local, sin Internet. Puede ayudarte a resolver problemas técnicos, médicos o de traducción usando solo la potencia de tu ordenador.
 *   **🗺️ Mapas y Navegación GPS:** Mapas detallados de todo el mundo mediante *Organic Maps*. Puedes buscar rutas y puntos de interés (fuentes, hospitales, refugios) sin emitir ninguna señal de red.
 *   **🔒 Bóveda de Archivos Segura:** Sistema de cifrado profesional para guardar tus documentos más importantes (pasaportes, títulos, fotos) protegidos por una contraseña maestra.
-*   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español, inglés, francés, etc.), descargando solo los diccionarios y ayudas que necesitas.
+*   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español o  inglés), descargando solo los diccionarios y ayudas que necesitas.
 *   Puedes ver en el apartado de **[Aplicaciones y Roadmap](doc/Modulos-y-Roadmap-ES.md)** el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
-
-> [!IMPORTANT]
-> **Nota sobre el Idioma:** Actualmente, tanto el **instalador** como la **documentación** se encuentran exclusivamente en **español**. Tenemos planeado añadir soporte para inglés en el corto plazo y otros idiomas más adelante.
->
-> **Documentación:** Estamos migrando todo el contenido técnico a la **Wiki de GitHub** para una mejor organización y facilidad de contribución.
 
 ## 📸 Capturas de Pantalla
 
