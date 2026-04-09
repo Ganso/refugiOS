@@ -1,0 +1,23 @@
+name: Sync Wiki
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'doc/**'
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync Wiki
+        uses: Andrew-Chen-Wang/github-wiki-action@v4
+        with:
+          strategy: clone
+          path: doc/
+          # Ensure GITHUB_TOKEN has write access to the wiki
+          token: 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

@@ -119,6 +119,6 @@ Si el sistema arrancó en inglés y necesitas el teclado en español:
 
 ## 7. Conocimiento Offline (ZIM)
 
-El proceso de descarga e instalación de bases de conocimiento (Wikipedia, WikiMed, WikiHow) es idéntico al de XUbuntu. Consulta la [Guía de instalación en XUbuntu](instalacion_xubuntu.md) para los detalles de selección de contenidos.
+El proceso de descarga e instalación de bases de conocimiento (Wikipedia, WikiMed, WikiHow) es idéntico al de XUbuntu. Consulta la [Guía de instalación en XUbuntu](Instalacion-Xubuntu-ES) para los detalles de selección de contenidos.
 
 Al finalizar, tu Raspberry Pi ejecutará **refugiOS** de forma **totalmente autónoma**, sin Internet, con conocimiento enciclopédico, mapas offline e inteligencia artificial local.

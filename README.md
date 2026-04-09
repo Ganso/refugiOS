@@ -3,6 +3,10 @@
 </h1>
 
 <p align="center">
+  <strong>Español 🇪🇸</strong> | <a href="README.en.md">English 🇺🇸</a>
+</p>
+
+<p align="center">
   <img src="logo/refugiOS.png" alt="logo de refugiOS"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
   <img src="https://img.shields.io/badge/Versión-0.08-blue.svg" alt="Versión">
@@ -35,7 +39,7 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 *   **🗺️ Mapas y Navegación GPS:** Mapas detallados de todo el mundo mediante *Organic Maps*. Puedes buscar rutas y puntos de interés (fuentes, hospitales, refugios) sin emitir ninguna señal de red.
 *   **🔒 Bóveda de Archivos Segura:** Sistema de cifrado profesional para guardar tus documentos más importantes (pasaportes, títulos, fotos) protegidos por una contraseña maestra.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español, inglés, francés, etc.), descargando solo los diccionarios y ayudas que necesitas.
-*   Puedes ver en el apartado de **[Aplicaciones y Roadmap](doc/modulos_y_roadmap.md)** el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
+*   Puedes ver en el apartado de **[Aplicaciones y Roadmap](doc/Modulos-y-Roadmap-ES.md)** el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
 
 > [!IMPORTANT]
 > **Nota sobre el Idioma:** Actualmente, tanto el **instalador** como la **documentación** se encuentran exclusivamente en **español**. Tenemos planeado añadir soporte para inglés en el corto plazo y otros idiomas más adelante.
@@ -74,7 +78,7 @@ curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | ba
 
 > [!IMPORTANT] 
 > **¿Aún no tienes el USB de XUbuntu preparado?** 
-> Si estás empezando de cero, sigue primero nuestra **[Guía de Instalación en XUbuntu](doc/instalacion_xubuntu.md)** para preparar tu pendrive desde Windows o Linux.
+> Si estás empezando de cero, sigue primero nuestra **[Guía de Instalación en XUbuntu](doc/Instalacion-Xubuntu-ES.md)** para preparar tu pendrive desde Windows o Linux.
 
 ### 🍓 En Raspberry Pi
 
@@ -85,16 +89,16 @@ sudo apt install curl -y
 curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh | bash
 ```
 
-El instalador detectará automáticamente que estás en una Raspberry Pi y adaptará todo. Consulta la **[Guía de Instalación en Raspberry Pi](doc/instalacion_raspberry.md)** para los detalles y recomendaciones de hardware.
+El instalador detectará automáticamente que estás en una Raspberry Pi y adaptará todo. Consulta la **[Guía de Instalación en Raspberry Pi](doc/Instalacion-Raspberry-ES.md)** para los detalles y recomendaciones de hardware.
 
 > [!NOTE] 
 > El instalador te guiará paso a paso y te preguntará qué contenidos quieres incluir según el tamaño de tu almacenamiento.
 
 > [!TIP]
-> **¿Ya tienes tu primer pendrive listo?** Una vez que lo hayas probado y configurado a tu gusto, te recomendamos **[clonarlo a otra unidad](doc/clonado_de_pendrive.md)** para tener una copia de seguridad o para dar copias a tus seres queridos.
+> **¿Ya tienes tu primer pendrive listo?** Una vez que lo hayas probado y configurado a tu gusto, te recomendamos **[clonarlo a otra unidad](doc/Clonado-de-Pendrive-ES.md)** para tener una copia de seguridad o para dar copias a tus seres queridos.
 
 > [!NOTE]
-> **¿Quieres probarlo rápidamente sin tocar un pendrive?** Si tienes experiencia con máquinas virtuales, puedes montar refugiOS en una imagen de disco virtual y arrancarlo con QEMU o VirtualBox. Consulta nuestra **[Guía de Virtualización](doc/guia_virtualizacion_y_pendrive.md)** para los pasos detallados.
+> **¿Quieres probarlo rápidamente sin tocar un pendrive?** Si tienes experiencia con máquinas virtuales, puedes montar refugiOS en una imagen de disco virtual y arrancarlo con QEMU o VirtualBox. Consulta nuestra **[Guía de Virtualización](doc/Guia-Virtualizacion-y-Pendrive-ES.md)** para los pasos detallados.
 
 
 ## 📱 Plataformas Certificadas
@@ -112,14 +116,14 @@ El instalador detectará automáticamente que estás en una Raspberry Pi y adapt
 
 Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido, consulta las guías en el directorio `/doc/`:
 
-*   **[Instalación en XUbuntu](doc/instalacion_xubuntu.md):** Cómo preparar tu USB con XUbuntu desde Windows o Linux.
-*   **[Instalación en Raspberry Pi](doc/instalacion_raspberry.md):** Guía específica para Raspberry Pi con Raspberry Pi OS.
-*   **[Visión y Experiencia del Usuario](doc/vision_y_experiencia.md):** El propósito del proyecto y qué esperar al usarlo.
-*   **[Comparativa de Soluciones](doc/soluciones_existentes.md):** Por qué refugiOS es diferente a otras alternativas.
-*   **[Aplicaciones y Roadmap](doc/modulos_y_roadmap.md):** Información sobre Kiwix, Mapas e Inteligencia Artificial.
-*   **[Arquitectura del Sistema](doc/arquitectura.md):** Detalles técnicos sobre la base Linux y su rendimiento.
-*   **[Bóvedas de Seguridad](doc/bovedas_criptograficas.md):** Cómo funciona el cifrado de tus archivos personales.
-*   **[Clonado de Unidades](doc/clonado_de_pendrive.md):** Cómo hacer copias exactas de tu USB en Windows o Linux.
+*   **[Instalación en XUbuntu](doc/Instalacion-Xubuntu-ES.md):** Cómo preparar tu USB con XUbuntu desde Windows o Linux.
+*   **[Instalación en Raspberry Pi](doc/Instalacion-Raspberry-ES.md):** Guía específica para Raspberry Pi con Raspberry Pi OS.
+*   **[Visión y Experiencia del Usuario](doc/Vision-y-Experiencia-ES.md):** El propósito del proyecto y qué esperar al usarlo.
+*   **[Comparativa de Soluciones](doc/Soluciones-Existentes-ES.md):** Por qué refugiOS es diferente a otras alternativas.
+*   **[Aplicaciones y Roadmap](doc/Modulos-y-Roadmap-ES.md):** Información sobre Kiwix, Mapas e Inteligencia Artificial.
+*   **[Arquitectura del Sistema](doc/Arquitectura-ES.md):** Detalles técnicos sobre la base Linux y su rendimiento.
+*   **[Bóvedas de Seguridad](doc/Bovedas-Criptograficas-ES.md):** Cómo funciona el cifrado de tus archivos personales.
+*   **[Clonado de Unidades](doc/Clonado-de-Pendrive-ES.md):** Cómo hacer copias exactas de tu USB en Windows o Linux.
 
 
 ---
@@ -141,4 +145,4 @@ refugiOS es posible gracias al increíble trabajo de proyectos de código abiert
 *   [Cryptsetup / LUKS](https://gitlab.com/cryptsetup/cryptsetup) para la seguridad y cifrado de datos personales.
 
 ---
-*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/modulos_y_roadmap.md)).*
+*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/Modulos-y-Roadmap-ES.md)).*

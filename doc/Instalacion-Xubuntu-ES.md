@@ -136,7 +136,7 @@ Si has elegido la opción de instalar **mkusb**, sigue estos pasos exactos en la
     ```
     > **Importante:** Al arrancar por primera vez desde un USB creado con `dd`, verás el menú de inicio (GRUB). Debes pulsar la tecla **`e`**, buscar la línea `linux` y añadir la palabra `persistent` antes de los tres guiones `---`. Pulsa **F10** para arrancar.
     > 
-    > Para evitar hacer esto cada vez tendrás que editar el arranque del sistema portable, un proceso técnico que detallamos en la **[Sección 3 de la Guía de Virtualización](guia_virtualizacion_y_pendrive.md#3-estabilización-de-la-persistencia-en-el-arranque-grub-dentro-de-la-imagen)**. Por eso, se recomienda usar Rufus o mkusb excepto que sepas muy bien lo que estás haciendo y te sientas cómodo con la línea de comandos.
+    > Para evitar hacer esto cada vez tendrás que editar el arranque del sistema portable, un proceso técnico que detallamos en la **[Sección 3 de la Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES#3-estabilización-de-la-persistencia-en-el-arranque-grub-dentro-de-la-imagen)**. Por eso, se recomienda usar Rufus o mkusb excepto que sepas muy bien lo que estás haciendo y te sientas cómodo con la línea de comandos.
 
 ### Opción B: Instalación Nativa (Solo expertos)
 No recomendamos este método en USBs convencionales porque el "journaling" de Linux los destruirá en pocos meses. **Úsalo solo si tienes un SSD por USB.**
@@ -151,7 +151,7 @@ No recomendamos este método en USBs convencionales porque el "journaling" de Li
 
 Si quieres montar RefugiOS en una imagen de disco local antes de tocar el pendrive físico, o si prefieres probar que todo funciona correctamente en una máquina virtual antes de reiniciar tu PC:
 
-*   👉 **[Guía de Virtualización y Preparación de Pendrive](guia_virtualizacion_y_pendrive.md)**
+*   👉 **[Guía de Virtualización y Preparación de Pendrive](Guia-Virtualizacion-y-Pendrive-ES)**
 
 Esta guía exhaustiva te enseñará a crear una imagen `.img`, instalar el sistema dentro de una VM (como VirtualBox o QEMU) y volcar el resultado final al USB de forma segura.
 
