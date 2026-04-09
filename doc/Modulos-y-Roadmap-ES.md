@@ -47,7 +47,7 @@ Programas esenciales para el día a día, adaptados para la máxima compatibilid
 *   **Idioma:** 🌐 **Multilingüe.** Todas las aplicaciones se instalan con el soporte de idioma local seleccionado.
 
 ### 6. Soporte de Hardware
-*   **PC Terrestre:** Optimizado para arquitecturas x86_64 (Intel/AMD) mediante AppImages y Flatpaks.
+*   **PC Estándar:** Optimizado para arquitecturas x86_64 (Intel/AMD) mediante AppImages y Flatpaks.
 *   **Raspberry Pi:** 🍓 **Soporte Oficial.** El instalador detecta automáticamente dispositivos Raspberry Pi y utiliza paquetes nativos ARM para garantizar el rendimiento.
 
 ---
@@ -84,3 +84,4 @@ Estamos trabajando para integrar estas potentes herramientas en próximas versio
 *   **Imágenes pregeneradas:** Distribución de imágenes de disco listas para usar en distintos idiomas para un despliegue instantáneo.
 *   **Aceleración de IA por Hardware:** Optimización de GPU/NPU para modelos de IA locales.
 *   **Soporte de más Hardware:** Ampliar el soporte de hardware para incluir más dispositivos y arquitecturas, incluyendo dispositivos que pueda poseer el usuario y necesite utilizar en situaciones de emergencia (sistemas de comunicación, wereables, etc.)
+*   **Internacionalización:** Traducción del instalador y la documentación a más idiomas.
