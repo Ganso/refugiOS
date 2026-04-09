@@ -180,3 +180,32 @@ Apaga tu PC y arranca desde el USB (F12/F8/Esc).
 2.  **Configuración:** El asistente detectará tu hardware y te sugerirá las mejores bibliotecas ZIM para tu capacidad.
 
 Al finalizar, tu dispositivo refugiOS será **totalmente autónomo**, privado y capaz de funcionar sin Internet para siempre.
+
+---
+
+## Anexo: Compatibilidad con equipos antiguos (BIOS / MBR)
+
+Si intentas arrancar refugiOS en un ordenador antiguo (aproximadamente de antes de 2012) y el USB no aparece en el menú de arranque o no es reconocido como unidad de inicio, es probable que tu equipo utilice el sistema **BIOS** tradicional en lugar del moderno **UEFI**.
+
+En estos casos, el USB debe estar configurado con una **Tabla de Particiones MBR** (Master Boot Record) para ser detectado.
+
+### Soluciones según tu herramienta de creación:
+
+#### 1. Desde Windows (Rufus)
+Rufus es la herramienta que ofrece más control manual sobre este aspecto. Para forzar la compatibilidad con equipos antiguos:
+*   En **Esquema de partición**, selecciona **MBR**.
+*   En **Sistema de destino**, selecciona **BIOS (o UEFI-CSM)**.
+*   El resto de opciones (Persistencia, ISO) se mantienen igual.
+
+#### 2. Desde Linux (mkusb / dus)
+**mkusb** es la herramienta más robusta para hardware antiguo. Por defecto, crea unidades **híbridas** que contienen tanto el arranque UEFI como el arranque BIOS (MBR), por lo que suele funcionar "a la primera" en casi cualquier equipo sin ajustes adicionales.
+*   Si el equipo es extremadamente antiguo, asegúrate de elegir el método `p: 'dus-Persistent', classic dus method`, ya que es el que mejor gestiona la compatibilidad heredada.
+
+#### 3. Creador de discos de arranque / comando `dd`
+Estas herramientas funcionan clonando la imagen ISO de forma literal.
+*   Dado que las imágenes oficiales de Xubuntu son **isohybrid**, incluyen soporte básico para BIOS y UEFI de fábrica. 
+*   Sin embargo, si tu placa base antigua tiene una implementación de arranque muy estricta, estas herramientas podrían fallar. En ese caso, la solución definitiva es usar **mkusb**.
+
+> [!TIP]
+> **¿Cómo saber si mi PC necesita MBR?**
+> Si al encender el ordenador ves el logo de la marca y un texto que dice *"Press F2 for Setup"* o *"F12 for Boot Menu"*, pero la interfaz de esa configuración parece de finales de los 90 (solo texto, sin soporte para ratón), casi con seguridad necesitas una unidad preparada para **BIOS/MBR**.
