@@ -89,15 +89,42 @@ Hay dos formas principales de configurar el sistema. Lee con atención:
 El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios se guardan en la partición `writable`. Esto evita el desgaste excesivo de la memoria y protege tu ordenador anfitrión.
 
 *   **Desde Windows:** Usa [**Rufus**](https://rufus.ie/). Al elegir la ISO, arrastra el deslizador de **"Tamaño de partición persistente"** al máximo posible (dejando un poco de aire).
-*   **Desde Ubuntu:** Usa la herramienta nativa **"Creador de discos de arranque"**.
-*   **Desde Debian (usando `mkusb`):**
-    Para instalar `mkusb` en Debian debes añadir sus llaves y repositorio:
-    ```bash
-    sudo apt install dirmngr
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 54B8C8AC
-    echo "deb http://ppa.launchpad.net/mkusb/ppa/ubuntu focal main" | sudo tee /etc/apt/sources.list.d/mkusb.list
-    sudo apt update && sudo apt install mkusb usb-pack-efi
-    ```
+*   **Desde Ubuntu:**
+    Tienes dos formas principales de preparar el USB:
+    1.  **Opción 1: [Creador de discos de arranque (Guía oficial)](https://help.ubuntu.com/stable/ubuntu-help/addremove-creator.html.es)**. Es la herramienta nativa y más sencilla si no necesitas persistencia avanzada.
+    2.  **Opción 2: mkusb (Usuarios avanzados)**. Es la opción recomendada para asegurar que la persistencia funcione correctamente y para guardar tus cambios en refugiOS.
+        ```bash
+        sudo add-apt-repository ppa:mkusb/ppa
+        sudo apt update
+        sudo apt install mkusb usb-pack-efi
+        ```
+
+*   **Desde Debian:**
+    Debido a que las versiones modernas de Debian (12, 13 y superiores) tienen políticas de seguridad estrictas que bloquean repositorios antiguos, realizaremos una instalación manual:
+    1. **Instalación de los paquetes necesarios:**
+       Descarga los archivos `.deb` (busca siempre la versión más reciente) de **dus**, **mkusb-common**, **mkusb-nox** y **usb-pack-efi** desde el [repositorio oficial de mkusb](https://ppa.launchpad.net/mkusb/ppa/ubuntu/pool/main/m/mkusb/).
+       
+       Abre una terminal en tu carpeta de descargas e instálalos todos a la vez:
+       ```bash
+       sudo apt update
+       sudo apt install ./dus_*.deb ./mkusb-common_*.deb ./mkusb-nox_*.deb ./usb-pack-efi_*.deb
+       ```
+
+#### Guía de uso de mkusb/dus (Común para Ubuntu y Debian)
+Si has elegido la opción de instalar **mkusb**, sigue estos pasos exactos en la herramienta:
+
+1.  **Inicio:** Ejecuta `sudo dus` en la terminal.
+2.  **Acción:** Selecciona `i: Install (make a boot device)`.
+3.  **Selección de imagen:** Elige el archivo `.iso` de Xubuntu que has descargado.
+4.  **Selección de destino:** Marca tu pendrive. 
+    > [!WARNING]
+    > **¡Atención!** Verifica por el tamaño que no estás marcando tu disco duro principal.
+5.  **Método (Tool):** Selecciona `p: 'dus-Persistent', classic dus method`.
+6.  **Opciones adicionales:** Para cualquier decisión que no se haya indicado aquí, selecciona siempre **"Use defaults"**.
+7.  **Espacio de Persistencia:** Aquí debes tomar una decisión:
+    - **100% (Recomendado):** Si quieres usar todo el pendrive para refugiOS y sus archivos.
+    - **50%:** Si quieres que la mitad del USB sea una partición de datos común (`usbdata`) visible desde cualquier sistema operativo (estos datos **no** estarán encriptados, así que no deberías tener información personal allí).
+8.  **Confirmación:** Aparecerá una pantalla de advertencia final (fondo rojo/naranja). Selecciona **Go (Yes)** y pulsa Aceptar.
 *   **Otros Linux (Manual con `dd`): (no recomendado)**
     Si grabas la imagen directamente, deberas crear la partición de datos y configurar el arranque a mano:
     ```bash
@@ -111,7 +138,7 @@ El sistema reside de forma segura en una imagen inerte (SquashFS) y los cambios 
     ```
     > **Importante:** Al arrancar por primera vez desde un USB creado con `dd`, verás el menú de inicio (GRUB). Debes pulsar la tecla **`e`**, buscar la línea `linux` y añadir la palabra `persistent` antes de los tres guiones `---`. Pulsa **F10** para arrancar.
     > 
-    > Para evitar hacer esto cada vez tendrás que editar el arranque del sistema portable, lo cual está fuera del acance de esta guía. Por eso, se recomienda usar Rufus o mkusb excepto que sepas muy bien lo que estás haciendo y te sientas cómodo con la línea de comandos.
+    > Para evitar hacer esto cada vez tendrás que editar el arranque del sistema portable, un proceso técnico que detallamos en la **[Sección 3 de la Guía de Virtualización](guia_virtualizacion_y_pendrive.md#3-estabilización-de-la-persistencia-en-el-arranque-grub-dentro-de-la-imagen)**. Por eso, se recomienda usar Rufus o mkusb excepto que sepas muy bien lo que estás haciendo y te sientas cómodo con la línea de comandos.
 
 ### Opción B: Instalación Nativa (Solo expertos)
 No recomendamos este método en USBs convencionales porque el "journaling" de Linux los destruirá en pocos meses. **Úsalo solo si tienes un SSD por USB.**
