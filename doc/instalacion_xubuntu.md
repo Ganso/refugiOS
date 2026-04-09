@@ -116,9 +116,7 @@ Si has elegido la opción de instalar **mkusb**, sigue estos pasos exactos en la
 1.  **Inicio:** Ejecuta `sudo dus` en la terminal.
 2.  **Acción:** Selecciona `i: Install (make a boot device)`.
 3.  **Selección de imagen:** Elige el archivo `.iso` de Xubuntu que has descargado.
-4.  **Selección de destino:** Marca tu pendrive. 
-    > [!WARNING]
-    > **¡Atención!** Verifica por el tamaño que no estás marcando tu disco duro principal.
+4.  **Selección de destino:** Marca tu pendrive. (**¡Atención!** Verifica por el tamaño que no estás marcando tu disco duro principal).
 5.  **Método (Tool):** Selecciona `p: 'dus-Persistent', classic dus method`.
 6.  **Opciones adicionales:** Para cualquier decisión que no se haya indicado aquí, selecciona siempre **"Use defaults"**.
 7.  **Espacio de Persistencia:** Aquí debes tomar una decisión:
