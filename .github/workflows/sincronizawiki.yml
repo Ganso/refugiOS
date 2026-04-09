@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'doc/**' # Solo se dispara si cambias algo en la carpeta doc
+    workflow_dispatch:
 
 jobs:
   build:
