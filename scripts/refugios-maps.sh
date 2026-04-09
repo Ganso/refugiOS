@@ -1,11 +1,17 @@
 #!/bin/bash
 # ============================================
-# refugiOS - Lanzador de Mapas (Organic Maps)
-# Detecta modelo RPi y activa software rendering si es necesario
+# refugiOS - Maps Launcher (Organic Maps)
+# Detects RPi model and activates software rendering if necessary
 # ============================================
 
-# En Raspberry Pi 1, 2, 3 o Zero no hay soporte de OpenGL ES 3.0,
-# así que forzamos renderizado por software para que Organic Maps funcione.
+SCRIPTS_DIR="$HOME/refugiOS/Scripts"
+
+# Source localization system
+t() { echo "$1"; }
+[ -s "$SCRIPTS_DIR/i18n.sh" ] && source "$SCRIPTS_DIR/i18n.sh"
+
+# In Raspberry Pi 1, 2, 3 or Zero there is no OpenGL ES 3.0 support,
+# so we force software rendering for Organic Maps to work.
 if grep -qE "Raspberry Pi ([1-3]|Zero)" /proc/device-tree/model 2>/dev/null; then
     exec flatpak run --env=LIBGL_ALWAYS_SOFTWARE=1 app.organicmaps.desktop
 else

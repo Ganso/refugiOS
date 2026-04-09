@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 
 """
-refugiOS - Instalador del Sistema (Python)
-(Preparación del entorno y aplicaciones)
+refugiOS - System Installer (Python)
+(Environment and applications preparation)
 
-Descripción Extendida:
-Este script se encarga de acondicionar el sistema operativo base para el uso de refugiOS.
-Automatiza la descarga e instalación de herramientas base, paquetes en diferentes formatos 
-(AppImage, Flatpak, APT), bases de conocimiento fuera de línea (Wikipedia, WikiMed, etc.),
-descarga condicional de modelos de Inteligencia Artificial (LLMs) ejecutables en local, 
-y la creación de entornos criptográficos seguros (Bóvedas).
+Extended Description:
+This script prepares the base operating system for refugiOS use.
+It automates downloading and installing base tools, packages in various formats
+(AppImage, Flatpak, APT), offline knowledge bases (Wikipedia, WikiMed, etc.),
+conditional download of local execution AI models (LLMs),
+and creation of secure cryptographic environments (Vaults).
 
-El script requiere ejecución con permisos de usuario normal (NO root) y solicitará 
-la contraseña para la elevación local vía `sudo` cuando necesite modificar el sistema.
+The script requires execution as a normal user (NOT root) and will request
+the password for local elevation via `sudo` when system modification is needed.
 """
 
 import os
@@ -24,23 +24,35 @@ import json
 import shutil
 import re
 import time
+
+# Localization system
+try:
+    import i18n
+except ImportError:
+    # If not in path, try current directory
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    try:
+        import i18n
+    except ImportError:
+        print("\033[1;31m[X] ERROR:\033[0m Could not find 'i18n.py'.")
+        sys.exit(1)
+
 try:
     import dialog
 except ImportError:
-    print("\033[1;31m[X] ERROR:\033[0m No se encontró la librería 'python3-dialog'.")
-    print("Asegúrate de ejecutar 'install.sh' primero o instala el paquete manualmente.")
+    print(i18n.T('dialog_error'))
     sys.exit(1)
 
 # ==============================================================================
-# CONFIGURACIÓN DE RECURSOS (ZIM Y IA)
+# RESOURCE CONFIGURATION (ZIM AND AI)
 # ==============================================================================
 
-# Bases de Datos de Conocimiento (ZIM)
+# Knowledge Databases (ZIM)
 KNOWLEDGE_CONFIG = [
     {
         "id": "wiki_lite",
         "name": "wikipedia",
-        "label": "Wikipedia versión Ligera [Artículos top, sin imágenes, resúmenes cortos] (~200 MB)",
+        "label": i18n.T('wiki_lite_label'),
         "type": "top_mini",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
         "priority": 1
@@ -48,7 +60,7 @@ KNOWLEDGE_CONFIG = [
     {
         "id": "wiki_total",
         "name": "wikipedia",
-        "label": "Wikipedia Total Textual [Completa sin visuales grandes] (~11 GB)",
+        "label": i18n.T('wiki_total_label'),
         "type": "all_nopic",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
         "priority": 2
@@ -56,7 +68,7 @@ KNOWLEDGE_CONFIG = [
     {
         "id": "wikimed",
         "name": "wikimed",
-        "label": "WikiMed Enciclopedia de Salud Abierta (~1.5 GB)",
+        "label": i18n.T('wikimed_label'),
         "type": "maxi",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
         "symlink": "wikimed.zim"
@@ -64,85 +76,85 @@ KNOWLEDGE_CONFIG = [
     {
         "id": "wikihow",
         "name": "wikihow",
-        "label": "WikiHow Base de Conocimiento Práctico (~25-50 GB)",
+        "label": i18n.T('wikihow_label'),
         "type": "maxi",
         "search_url": "https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/",
         "symlink": "wikihow.zim"
     }
 ]
 
-# Modelos de Inteligencia Artificial (GGUF)
+# Artificial Intelligence Models (GGUF)
 AI_MODEL_CONFIG = [
     {
         "id": "ia_min",
-        "label": "Mínimo: Emplear Qwen2.5-0.5B (~0.5 GB almacenamiento | Requiere 1GB RAM)",
+        "label": i18n.T('ia_min_label'),
         "filename": "Qwen2.5-0.5B-Instruct-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/",
-        "symlink": "modelo-minimo.gguf"
+        "symlink": "minimal-model.gguf"
     },
     {
         "id": "ia_base",
-        "label": "Básico: Emplear Microsoft Phi-4-mini (~2.5 GB almacenamiento | Requiere 4GB RAM)",
+        "label": i18n.T('ia_base_label'),
         "filename": "microsoft_Phi-4-mini-instruct-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF/resolve/main/",
-        "symlink": "modelo-basico.gguf"
+        "symlink": "basic-model.gguf"
     },
     {
         "id": "ia_med",
-        "label": "Intermedio: Emplear modelo analítico Qwen3-8B (~5 GB almacenamiento | Requiere 8GB RAM)",
+        "label": i18n.T('ia_med_label'),
         "filename": "Qwen_Qwen3-8B-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/main/",
-        "symlink": "modelo-medio.gguf"
+        "symlink": "intermediate-model.gguf"
     },
     {
         "id": "ia_max",
-        "label": "Máximo: Emplear modelo complejo Qwen3-14B (~9 GB almacenamiento | Requiere 16GB RAM)",
+        "label": i18n.T('ia_max_label'),
         "filename": "Qwen_Qwen3-14B-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/",
-        "symlink": "modelo-avanzado.gguf"
+        "symlink": "advanced-model.gguf"
     }
 ]
 
 # ==============================================================================
-# SECCIÓN 1: FUNCIONES DE UTILIDAD Y LOGS
+# SECTION 1: UTILITY FUNCTIONS AND LOGS
 # ==============================================================================
 
 def log_info(msg):
-    """Muestra un mensaje informativo en color azul."""
+    """Displays an informative message in blue."""
     print(f"\033[1;34m[*]\033[0m {msg}")
 
 def log_err(msg):
-    """Muestra un mensaje de error crítico en color rojo y finaliza la ejecución."""
-    print(f"\033[1;31m[X] ERROR:\033[0m {msg}")
+    """Displays a critical error message in red and terminates execution."""
+    print(f"\033[1;31m[X] {i18n.T('error')}:\033[0m {msg}")
     sys.exit(1)
 
 def log_success(msg):
-    """Muestra un mensaje de éxito en color verde."""
-    print(f"\033[1;32m[v] ÉXITO:\033[0m {msg}")
+    """Displays a success message in green."""
+    print(f"\033[1;32m[v] {i18n.T('success')}:\033[0m {msg}")
 
 def run_cmd(cmd, shell=True, check=True, quiet=False):
     """
-    Ejecuta un comando en la terminal del sistema.
-    :param cmd: El comando a ejecutar (string).
-    :param shell: Si es True, ejecuta a través de un shell (permite pipes, etc).
-    :param check: Si es True, lanza excepción si el comando falla.
-    :param quiet: Si es True, redirige la salida estándar y de errores a DEVNULL para un log más limpio.
-    :return: True si el comando tuvo éxito, False en caso contrario.
+    Executes a command in the system terminal.
+    :param cmd: The command to execute (string).
+    :param shell: If True, execute through a shell (allows pipes, etc).
+    :param check: If True, raise exception if command fails.
+    :param quiet: If True, redirect stdout and stderr to DEVNULL for cleaner logs.
+    :return: True if command succeeded, False otherwise.
     """
     try:
         stdout = subprocess.DEVNULL if quiet else None
         stderr = subprocess.DEVNULL if quiet else None
         subprocess.run(cmd, shell=shell, check=check, stdout=stdout, stderr=stderr)
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         if not quiet:
-            print(f"\033[1;33m[!] Aviso:\033[0m Comando falló al intentar ejecutar: {cmd}")
+            print(f"\033[1;33m[!] {i18n.T('warning')}:\033[0m Command failed attempting to execute: {cmd}")
         return False
     return True
 
 def get_cmd_output(cmd):
     """
-    Ejecuta un comando en la terminal y retorna el texto (string) resultante de la salida estándar.
-    Utilizado principalmente para obtener datos de consultas de información de hardware.
+    Executes a command in the terminal and returns the resulting stdout text.
+    Used mainly to get hardware information.
     """
     try:
         result = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
@@ -151,29 +163,25 @@ def get_cmd_output(cmd):
         return ""
 
 # ==============================================================================
-# SECCIÓN 2: DETECCIÓN Y DIAGNÓSTICO DEL SISTEMA
+# SECTION 2: SYSTEM DETECTION AND DIAGNOSIS
 # ==============================================================================
 
 class SystemInfo:
     """
-    Clase que recaba, procesa y expone toda la información acerca de la computadora
-    en la que se está ejecutando el script (SO, RAM, Almacenamiento, GPU).
+    Class that collects, processes, and exposes information about the computer
+    running the script (OS, RAM, Storage, GPU).
     """
     def __init__(self):
-        self.os_type = "Desconocido"
+        self.os_type = "Unknown"
         self.is_rpi = False
         self.rpi_model = ""
-        # Para saber si corre servidor gráfico antiguo (X11) o moderno (Wayland)
-        self.desktop_env = os.environ.get("XDG_SESSION_TYPE", "Desconocido").capitalize()
+        # Detect if running old graphics server (X11) or modern (Wayland)
+        self.desktop_env = os.environ.get("XDG_SESSION_TYPE", "Unknown").capitalize()
         self.ram_mb = 0
         self.free_space_mb = 0
-        self.gpu_info = "Desconocida"
-        self.vram_info = "Desconocida"
-        self.lang = "es"  # Idioma por defecto del proyecto
-        # Intentar detectar idioma del sistema (solo si es un código válido de 2 letras)
-        raw_lang = os.environ.get("LANG", "").split('_')[0].lower()
-        if raw_lang and raw_lang != "c" and len(raw_lang) == 2 and raw_lang.isalpha():
-            self.lang = raw_lang
+        self.gpu_info = "Unknown"
+        self.vram_info = "Unknown"
+        self.lang = i18n.REFUGIOS_LANG
         
         self.detect_os()
         self.detect_ram()
@@ -182,10 +190,10 @@ class SystemInfo:
 
     def detect_os(self):
         """
-        Determina si es Ubuntu, Debian o Raspberry Pi inspeccionando archivos nativos de Linux.
+        Determines if it is Ubuntu, Debian, or Raspberry Pi by inspecting Linux native files.
         """
         try:
-            # Archivo genérico presente en la mayoría de distros Linux
+            # Generic file present in most Linux distros
             with open('/etc/os-release', 'r') as f:
                 content = f.read()
                 if 'ID=ubuntu' in content:
@@ -199,8 +207,8 @@ class SystemInfo:
             pass
 
         try:
-            # Modelos físicos pregrabados (típico de placas de desarrollo ARM)
-            # Se lee también de /proc/device-tree/model que es el estándar moderno
+            # Physical models pre-recorded (typical for ARM development boards)
+            # Standard path /proc/device-tree/model
             for model_path in ['/proc/device-tree/model', '/sys/firmware/devicetree/base/model']:
                 try:
                     with open(model_path, 'r') as f:
@@ -216,7 +224,7 @@ class SystemInfo:
             pass
 
     def detect_ram(self):
-        """Lee la cantidad de memoria RAM total instalada leyendo /proc/meminfo en formato KB y lo pasa a MB."""
+        """Reads total installed RAM from /proc/meminfo in KB and converts to MB."""
         try:
             with open('/proc/meminfo', 'r') as f:
                 for line in f:
@@ -228,7 +236,7 @@ class SystemInfo:
             pass
 
     def detect_storage(self):
-        """Chequea el espacio disponible en disco en la partición donde está el sistema raíz (/)."""
+        """Checks available disk space on the root partition (/)."""
         try:
             stat = shutil.disk_usage('/')
             self.free_space_mb = stat.free // (1024 * 1024)
@@ -237,40 +245,40 @@ class SystemInfo:
 
     def detect_gpu(self):
         """
-        Ejecuta llamadas al sistema (lspci) para determinar el tipo de tarjeta gráfica
-        e intenta parsear su cantidad reservada de memoria VRAM (prefetchable memory segment).
+        Executes system calls (lspci) to determine graphics card type
+        and tries to parse reserved VRAM (prefetchable memory segment).
         """
         out = get_cmd_output("lspci -v 2>/dev/null")
         if out:
-            # Extraer el modelo exacto de la GPU
+            # Extract exact GPU model
             vga_match = re.search(r'(VGA compatible controller|3D controller): (.*)', out)
             if vga_match:
                 self.gpu_info = vga_match.group(2).strip()
-                # Extraer la memoria "prefetchable" que comúnmente indica el volumen de memoria de video (VRAM)
+                # Extract prefetchable memory, commonly indicating VRAM segments
                 mem_match = re.search(r'Memory at .*?\(prefetchable\) \[size=([A-Za-z0-9]+)\]', out)
                 if mem_match:
                     self.vram_info = mem_match.group(1)
 
 def fix_flatpak_permissions():
     """
-    Soluciona el error 'bwrap: Creating new namespace failed: Permission denied'
-    típico en Ubuntu 24.04 y Debian 13 debido a restricciones de AppArmor en namespaces de usuario.
+    Fixes 'bwrap: Creating new namespace failed: Permission denied' error
+    typical in Ubuntu 24.04 and Debian 13 due to AppArmor restrictions on unprivileged namespaces.
     """
     path = "/proc/sys/kernel/apparmor_restrict_unprivileged_userns"
     if os.path.exists(path):
         try:
             with open(path, 'r') as f:
                 if f.read().strip() == '1':
-                    log_info("Detectada restricción de AppArmor sobre namespaces. Aplicando parche de sistema...")
+                    log_info(i18n.T('patching_apparmor'))
                     run_cmd("echo 'kernel.apparmor_restrict_unprivileged_userns = 0' | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf", quiet=True)
                     run_cmd("sudo sysctl -p /etc/sysctl.d/60-apparmor-namespace.conf", quiet=True)
         except Exception as e:
-            log_info(f"Aviso: No se pudo verificar/aplicar el parche de AppArmor: {e}")
+            log_info(f"Notice: Could not verify/apply AppArmor patch: {e}")
 
 def fix_rpi_pcmanfm_warnings():
     """
-    Desactiva la advertencia de ejecución de archivos no ejecutables en PCManFM (Raspberry Pi OS).
-    Esto es necesario para que los iconos del escritorio que llaman a scripts funcionen sin preguntar.
+    Disables PCManFM warning for non-executable file shells (Raspberry Pi OS).
+    Required for desktop icons calling scripts to work without prompts.
     """
     script = r"""
 F="$HOME/.config/pcmanfm/default/pcmanfm.conf"
@@ -284,27 +292,27 @@ else
 fi
 pcmanfm --reconfigure
 """
-    log_info("Optimizando configuración de PCManFM para ejecución de scripts...")
+    log_info(i18n.T('optimizing_pcmanfm'))
     run_cmd(script, quiet=True)
 
 # ==============================================================================
-# SECCIÓN 3: MENÚS DE INTERACCIÓN MÚLTIPLE (TUI con pythondialog)
+# SECTION 3: MULTIPLE INTERACTION MENUS (TUI with pythondialog)
 # ==============================================================================
 
 def init_dialog():
     d = dialog.Dialog(autowidgetsize=True)
-    # Habilitar interpretación de secuencias de escape para colores (\Z)
+    # Enable interpretation of escape sequences for colors (\Z)
     try:
         d.add_persistent_args(["--colors"])
     except AttributeError:
-        # Fallback para versiones muy antiguas de pythondialog si no existe el método
+        # Fallback for old pythondialog versions
         pass
     return d
 
 def multi_select_menu(d, title, options, default_indices=[]):
     """
-    Muestra un menú con múltiples opciones usando d.checklist de pythondialog.
-    Los elementos instalados aparecen premarcados y resaltados en color.
+    Shows a menu with multiple options using d.checklist.
+    Installed elements are pre-marked and highlighted.
     """
     choices = []
     for i, opt in enumerate(options):
@@ -313,7 +321,7 @@ def multi_select_menu(d, title, options, default_indices=[]):
         is_installed = opt.get('installed', False)
         
         if is_installed:
-            item += r" \Z1[instalado]\Zn"
+            item += rf" \Z1{i18n.T('installed_tag')}\Zn"
             status = True
         else:
             status = (i in default_indices)
@@ -328,7 +336,7 @@ def multi_select_menu(d, title, options, default_indices=[]):
 
 def single_select_menu(d, title, options, default_index):
     """
-    Muestra un menú convencional usando d.menu de pythondialog.
+    Shows a standard menu using d.menu.
     """
     choices = []
     for i, opt in enumerate(options):
@@ -342,38 +350,37 @@ def single_select_menu(d, title, options, default_index):
 
 def simple_question(d, title, prompt_text, default_yes=False):
     """
-    Muestra una pregunta interactiva de Sí/No usando d.yesno de pythondialog.
+    Shows an interactive Yes/No question using d.yesno.
     """
-    # defaultno=True si queremos que el foco esté en "No" por defecto
     code = d.yesno(f"{title}\n\n{prompt_text}", title="refugiOS Installer", 
-                   yes_label="Sí", no_label="No", defaultno=(not default_yes))
+                   yes_label=i18n.T('yes'), no_label=i18n.T('no'), defaultno=(not default_yes))
     return code == d.OK
 
 # ==============================================================================
-# SECCIÓN 4: GESTIÓN JERÁRQUICA DE PAQUETES
+# SECTION 4: HIERARCHICAL PACKAGE MANAGEMENT
 # ==============================================================================
 
 class TargetEnv:
-    """Mantiene mapeadas de forma centralizada todas las rutas (paths) críticas donde refugiOS guardará o leerá cosas."""
+    """Maintains centrally mapped critical paths where refugiOS will store or read data."""
     def __init__(self, base_dir, desktop_dir):
         self.base = base_dir
         self.desktop = desktop_dir
-        self.apps_dir = os.path.join(base_dir, "Apps", "versiones")
-        self.know_dir = os.path.join(base_dir, "Conocimiento", "versiones")
-        self.ia_dir = os.path.join(base_dir, "IA", "versiones")
-        self.vault_dir = os.path.join(base_dir, "Bovedas")
+        self.apps_dir = os.path.join(base_dir, "Apps", "versions")
+        self.know_dir = os.path.join(base_dir, "Knowledge", "versions")
+        self.ai_dir = os.path.join(base_dir, "AI", "versions")
+        self.vault_dir = os.path.join(base_dir, "Vaults")
         self.scripts_dir = os.path.join(base_dir, "Scripts")
 
 def sync_resources(env, sys_info, exec_path):
     """
-    Escanea los directorios de versiones, enlaza los mejores componentes 
-    y asegura que los lanzadores del escritorio existan para todo lo disponible.
+    Scans version directories, links the best components,
+    and ensures desktop launchers exist for everything available.
     """
-    log_info("Sincronizando enlaces y lanzadores con los recursos en disco...")
+    log_info(i18n.T('syncing_resources'))
     
     if not os.path.exists(env.know_dir): return
 
-    # 1. Wikipedia (Elegir la de mayor prioridad encontrada)
+    # 1. Wikipedia (Choosing the highest priority version found)
     wikis = sorted([c for c in KNOWLEDGE_CONFIG if c['name'] == 'wikipedia'], key=lambda x: x.get('priority', 0), reverse=True)
     for w in wikis:
         regex = rf"wikipedia_{sys_info.lang}_{w['type']}_[0-9-]*\.zim"
@@ -381,10 +388,10 @@ def sync_resources(env, sys_info, exec_path):
         if matches:
             best_wiki_file = sorted(matches)[-1]
             target = os.path.join(env.know_dir, best_wiki_file)
-            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', 'wikipedia.zim')}'", quiet=True)
+            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Knowledge', 'wikipedia.zim')}'", quiet=True)
             break
     
-    # 2. Otros ZIMs (WikiMed, WikiHow...)
+    # 2. Other ZIMs (WikiMed, WikiHow...)
     for c in KNOWLEDGE_CONFIG:
         if not c.get('symlink'): continue
         prefix = "wikipedia" if c['name'] == 'wikimed' else c['name']
@@ -395,16 +402,16 @@ def sync_resources(env, sys_info, exec_path):
         if matches:
             best = sorted(matches)[-1]
             target = os.path.join(env.know_dir, best)
-            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Conocimiento', c['symlink'])}'", quiet=True)
+            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Knowledge', c['symlink'])}'", quiet=True)
 
-    # 3. Lanzadores para Bases de Conocimiento
+    # 3. Launchers for Knowledge Bases
     kiwix_script = os.path.join(env.scripts_dir, 'refugios-kiwix.sh')
-    valid_kb_desktops = set()  # nombres de .desktop válidos que deben existir
+    valid_kb_desktops = set()  # Names of valid .desktop files that should exist
 
-    # Wikipedia: sólo UN icono para la mejor versión disponible
-    wiki_sym_path = os.path.join(env.base, 'Conocimiento', 'wikipedia.zim')
+    # Wikipedia: only ONE icon for the best available version
+    wiki_sym_path = os.path.join(env.base, 'Knowledge', 'wikipedia.zim')
     if os.path.exists(wiki_sym_path):
-        desktop_name = "Conocimiento_wikipedia.desktop"
+        desktop_name = "Knowledge_wikipedia.desktop"
         valid_kb_desktops.add(desktop_name)
         desktop_file = os.path.join(env.desktop, desktop_name)
         with open(desktop_file, 'w') as f:
@@ -412,20 +419,20 @@ def sync_resources(env, sys_info, exec_path):
 Version=1.0
 Type=Application
 Name=Wikipedia
-Comment=Enciclopedia libre offline.
+Comment={i18n.T('wikipedia_comment')}
 Exec=bash "{kiwix_script}" "{wiki_sym_path}"
 Icon=accessories-dictionary
 Terminal=false
 """)
         os.chmod(desktop_file, 0o755)
 
-    # Resto de ZIMs (WikiMed, WikiHow): un icono por recurso
+    # Rest of ZIMs (WikiMed, WikiHow): one icon per resource
     for c in KNOWLEDGE_CONFIG:
-        if c['name'] == 'wikipedia': continue  # ya tratado arriba
+        if c['name'] == 'wikipedia': continue  # Already treated above
         if not c.get('symlink'): continue
-        sym_path = os.path.join(env.base, 'Conocimiento', c['symlink'])
+        sym_path = os.path.join(env.base, 'Knowledge', c['symlink'])
         if os.path.exists(sym_path):
-            desktop_name = f"Conocimiento_{c['id']}.desktop"
+            desktop_name = f"Knowledge_{c['id']}.desktop"
             valid_kb_desktops.add(desktop_name)
             desktop_file = os.path.join(env.desktop, desktop_name)
             with open(desktop_file, 'w') as f:
@@ -433,168 +440,180 @@ Terminal=false
 Version=1.0
 Type=Application
 Name={c['name'].capitalize()}
-Comment=Recurso offline disponible sin conexión.
+Comment={i18n.T('generic_zim_comment')}
 Exec=bash "{kiwix_script}" "{sym_path}"
 Icon=accessories-dictionary
 Terminal=false
 """)
             os.chmod(desktop_file, 0o755)
 
-    # Eliminar iconos de Conocimiento obsoletos (versiones antiguas o recursos eliminados)
+    # Remove obsolete Knowledge icons (old versions or removed resources)
     for fname in os.listdir(env.desktop):
-        if fname.startswith('Conocimiento_') and fname.endswith('.desktop'):
+        if fname.startswith('Knowledge_') and fname.endswith('.desktop'):
             if fname not in valid_kb_desktops:
                 stale = os.path.join(env.desktop, fname)
                 os.remove(stale)
-                log_info(f"Icono obsoleto eliminado: {fname}")
+                log_info(i18n.T('obsolete_icon').format(fname))
 
-    # 4. Modelos IA
-    if not os.path.exists(env.ia_dir): return
+    # 4. AI Models
+    if not os.path.exists(env.ai_dir): return
     for m in AI_MODEL_CONFIG:
-        # Escapamos el punto para la regex
         pattern = m['filename'].replace('.', r'\.')
-        matches = [f for f in os.listdir(env.ia_dir) if re.match(pattern, f)]
+        matches = [f for f in os.listdir(env.ai_dir) if re.match(pattern, f)]
         if matches:
             best = sorted(matches)[-1]
-            target = os.path.join(env.ia_dir, best)
-            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'IA', m['symlink'])}'", quiet=True)
+            target = os.path.join(env.ai_dir, best)
+            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'AI', m['symlink'])}'", quiet=True)
 
 def ensure_dirs(env):
-    """Crea la estructura de carpetas maestras del proyecto sobre el disco duro si aún no existe."""
-    log_info(f"Creando la estructura de directorios necesaria en {env.base}...")
-    for d in [env.apps_dir, env.know_dir, env.ia_dir, env.vault_dir, env.scripts_dir]:
+    """Creates project master folder structure on disk if it doesn't exist."""
+    log_info(i18n.T('creating_dirs').format(env.base))
+    for d in [env.apps_dir, env.know_dir, env.ai_dir, env.vault_dir, env.scripts_dir]:
         os.makedirs(d, exist_ok=True)
     os.makedirs(env.desktop, exist_ok=True)
 
 def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, flatpak_id=None, apt_deps=None):
     """
-    El motor de despliegue principal. Intenta instalar el recurso siguiendo un comportamiento en cascada
-    y prioridades, ideal para asegurar compatibilidad universal en distribuciones Linux convencionales.
+    Main deployment engine. Tries to install resources following a cascading behavior
+    and priorities, ideal for ensuring universal compatibility in Linux.
     
-    Jerarquía de intentos en Sistemas PC Normales:
-       1) Intenta descargar como paquetizado portátil nativo de AppImage
-       2) De fallar, intenta ubicarlo e instalarlo en el repositorio distribuido Flatpak
-       3) En último caso, cae de vuelta a la API de paquetería madre APT (Debian/Ubuntu)
+    PC Hierarchy:
+       1) Try AppImage (native portable)
+       2) Try Flatpak
+       3) Try APT (Debian/Ubuntu)
     
-    Jerarquía en Sistemas ARM (Raspberry Pi):
-       - Siempre interrumpe el ciclo e intenta forzar instalación mediante formato APT o interno
-         dado que las AppImages prefabricadas a menudo carecen del binario ARM.
+    ARM Hierarchy (Raspberry Pi):
+       - Prioritizes APT or internal installation since many AppImages lack ARM binaries.
     """
-    log_info(f"Instalando {name} mediante gestor jerárquico...")
+    log_info(i18n.T('installing_package').format(name))
     
-    # Manejo Especial para Raspberry Pi:
+    # Raspberry Pi Special Handling:
     if is_rpi:
         if apt_deps:
-            log_info(f"Modo Raspberry Pi: Bloqueando prioridades... Intentando instalación nativa APT de '{name}'...")
+            log_info(f"Raspberry Pi Mode: Overriding priorities... Trying native APT install for '{name}'...")
             if run_cmd(f"sudo apt-get install -y {apt_deps}", quiet=True):
-                log_success(f"{name} se instaló nativamente vía APT.")
+                log_success(i18n.T('installed_apt').format(name))
                 return True
-        log_info(f"No hay paquetes APT disponibles definidos para {name}. Se omitirá u empleará alternativa manual.")
+        log_info(f"No APT packages available for {name}. Skipping or using manual alternative.")
         return False
         
-    # PC - Nivel 1: Descarga AppImage
+    # PC - Level 1: AppImage
     if appimage_url and appimage_name:
         dest_path = os.path.join(env.apps_dir, appimage_name)
         if not os.path.exists(dest_path):
-            log_info(f"Probando AppImage vía link directo: {appimage_name}")
+            log_info(f"Testing AppImage via direct link: {appimage_name}")
             run_cmd(f"wget -c \"{appimage_url}\" -O \"{dest_path}\"")
         os.chmod(dest_path, 0o755)
-        log_success(f"{name} resuelto e instalado vía AppImage.")
+        log_success(i18n.T('installed_appimage').format(name))
         return dest_path
 
-    # PC - Nivel 2: Intento a través de Flatpak
+    # PC - Level 2: Flatpak
     if flatpak_id:
-        log_info(f"Saltando a repositorio Flatpak para resolver {name}...")
-        # Nos aseguramos primero que Flathub esté presente en el equipo como repositorio activo.
+        log_info(f"Jumping to Flatpak repository to resolve {name}...")
         run_cmd("sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo", quiet=True)
         if run_cmd(f"sudo flatpak install flathub {flatpak_id} -y", quiet=True):
-            log_success(f"{name} resuelto e instalado vía Flatpak.")
+            log_success(i18n.T('installed_flatpak').format(name))
             return True
             
-    # PC - Nivel 3: Retrocompatibilidad clásica mediante APT (Dependencias)
+    # PC - Level 3: APT
     if apt_deps:
-        log_info(f"Sin resoluciones portables. Intentando {name} vía repositorio APT clásico...")
+        log_info(f"No portable options. Trying {name} via classic APT repository...")
         if run_cmd(f"sudo apt-get install -y {apt_deps}", quiet=True):
-            log_success(f"{name} resuelto e instalado recursivamente vía APT.")
+            log_success(i18n.T('installed_recursive_apt').format(name))
             return True
             
-    log_err(f"Agotados los 3 niveles de distribución. No fue posible instalar {name}.")
+    log_err(i18n.T('install_failed').format(name))
     return False
 
 # ==============================================================================
-# SECCIÓN 5: HERRAMIENTAS ADICIONALES (Web Scraping Básico)
+# SECTION 5: ADDITIONAL TOOLS (Basic Web Scraping)
 # ==============================================================================
 
 def fetch_url(url):
     """
-    Realiza una solicitud HTTP simple y retorna el HTML/Texto de la respuesta simulando
-    estar accediendo de incógnito con un User-Agent generalista de navegador web tradicional.
+    Performs a simple HTTP request and returns HTML/Text response.
+    Simulates a traditional web browser User-Agent.
     """
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     with urllib.request.urlopen(req) as resp:
         return resp.read().decode('utf-8')
 
 # ==============================================================================
-# BLOQUE MAESTRO: CONTROLADOR GENERAL (main)
+# MASTER BLOCK: GENERAL CONTROLLER (main)
 # ==============================================================================
 def main():
-    # Salvaguarda de inicio para protección de permisos locales.
+    # Initial safeguard for local permissions.
     if os.geteuid() == 0:
-        log_err("Operación bloqueada. Este script instalador no debe ejecutarse como root. Ejecútalo como tu usuario habitual e introducirá 'sudo' sólo allá donde se necesite de manera interna.")
+        log_err("Operation blocked. This installer script should not be run as root. Run it as your regular user and it will use 'sudo' only where internally needed.")
 
-    # 0. Inicializar Dialog
+    # 0. Initialize Dialog
     d = init_dialog()
 
-    # 1. Recuperación de Información Físico-Virtual.
+    # 1. System Information Retrieval
     sys_info = SystemInfo()
     
-    diag_info = f"""SISTEMA OPERATIVO: {sys_info.os_type}
+    # 2. Language Selection (Persistent)
+    lang_options = [
+        {"label": "English", "code": "en"},
+        {"label": "Español", "code": "es"}
+    ]
+    # Find index of current detected language
+    default_lang_idx = 0
+    for i, opt in enumerate(lang_options):
+        if opt['code'] == sys_info.lang:
+            default_lang_idx = i
+            break
+            
+    selected_lang_idx = single_select_menu(d, i18n.T('lang_config_title'), lang_options, default_lang_idx)
+    if selected_lang_idx is not None:
+        new_lang = lang_options[selected_lang_idx]['code']
+        sys_info.lang = new_lang
+        i18n.save_lang(new_lang)
+    
+    # Diagnosis display
+    diag_info = f"""{i18n.T('os_label')}: {sys_info.os_type}
 """
     if sys_info.rpi_model:
-        diag_info += f"MODELO RASPBERRY PI: {sys_info.rpi_model}\n"
+        diag_info += f"{i18n.T('rpi_model_label')}: {sys_info.rpi_model}\n"
     
-    diag_info += f"""ENTORNO DE ESCRITORIO: {sys_info.desktop_env}
-MEMORIA RAM: {sys_info.ram_mb} MB
-ESPACIO DISCO: {sys_info.free_space_mb} MB
-HARDWARE GRÁFICO: {sys_info.gpu_info}
-VRAM DETECTADA: {sys_info.vram_info}
-IDIOMA DETECTADO: {sys_info.lang}
+    diag_info += f"""{i18n.T('desktop_env_label')}: {sys_info.desktop_env}
+{i18n.T('ram_label')}: {sys_info.ram_mb} MB
+{i18n.T('disk_space_label')}: {sys_info.free_space_mb} MB
+{i18n.T('gpu_label')}: {sys_info.gpu_info}
+{i18n.T('vram_label')}: {sys_info.vram_info}
+{i18n.T('detected_lang_label')}: {sys_info.lang}
 """
     if sys_info.is_rpi:
-        diag_info += "\nARQUITECTURA RASPBERRY PI DETECTADA.\nSE USARÁN PAQUETES NATIVOS ARM."
+        diag_info += f"\n{i18n.T('rpi_arch_detected')}"
 
-    d.msgbox(diag_info, title="Diagnóstico de Sistema - refugiOS")
+    d.msgbox(diag_info, title=i18n.T('sys_diag_title'))
 
-    # El idioma es fundamental pues altera qué ficheros pesados se solicitan de los wikis (es, fr, en).
-    code, new_lang = d.inputbox("Detectar idioma del sistema.\nEn caso de que fuera incorrecto, corrígelo aquí (ejemplos: es, en, fr):", 
-                               init=sys_info.lang, title="Configuración de Idioma")
-    if code == d.OK:
-        sys_info.lang = new_lang.strip().lower()
-
-    # Según el disco, ofrecemos versiones ligeras en texto o de alta calidad compuestas de imágenes (media rica).
+    # Depending on disk space, offer lightweight or enriched configurations
     lite_mode = sys_info.free_space_mb < 25000
     if lite_mode:
-        log_info("Se detectaron menos de 25 GB de almacenamiento. Se ha seleccionado la pre-configuración aligerada.")
-        def_kb = [0] # Índice 0 = Solo Wikipedia Top Miniaturas
-        def_ia = [0, 1]  # Sugerir tanto el mínimo como el básico
+        log_info(i18n.T('lite_mode_msg'))
+        def_kb = [0] # Only Wikipedia Top Miniatures
+        def_ai = [0, 1]  # Suggest Minimum and Basic
     else:
-        log_info("Se detectaron recursos óptimos de almacenamiento. Se ha activado la pre-configuración enriquecida.")
-        def_kb = [1] # Índice 1 = Wikipedia versión masificada completa (11 GB)
-        def_ia = [1, 2] # Sugerir modelos básico y medio
+        log_info(i18n.T('rich_mode_msg'))
+        def_kb = [1] # Wikipedia full textual (11 GB)
+        def_ai = [1, 2] # Suggest Basic and Intermediate
 
-    # Criterio interno para cuando se abortan instalaciones a medias o se actualiza versiones viejas.
-    force_dl = simple_question(d, "MODO REESCRITURA", "¿Deseas forzar la descarga de componentes aunque ya existan localmente?", default_yes=False)
+    # Force download mode
+    force_dl = simple_question(d, i18n.T('rewrite_mode_title'), i18n.T('rewrite_mode_prompt'), default_yes=False)
 
     # ==========================
-    # DETECCIÓN DE COMPONENTES INSTALADOS
+    # INSTALLED COMPONENT DETECTION
     # ==========================
-    base_dir = os.path.join(os.environ['HOME'], "refugiOS")
-    desktop_dir = os.path.join(os.environ['HOME'], "Escritorio")
+    home_dir = os.environ['HOME']
+    base_dir = os.path.join(home_dir, "refugiOS")
+    desktop_dir = os.path.join(home_dir, "Desktop")
     if not os.path.isdir(desktop_dir):
-        desktop_dir = os.path.join(os.environ['HOME'], "Desktop")
+        desktop_dir = os.path.join(home_dir, "Escritorio")
+    
     env = TargetEnv(base_dir, desktop_dir)
 
-    # Detectar ZIMs
+    # Detect ZIMs
     kb_opts = []
     for c in KNOWLEDGE_CONFIG:
         opt = {
@@ -613,8 +632,8 @@ IDIOMA DETECTADO: {sys_info.lang}
                 opt['installed'] = True
         kb_opts.append(opt)
 
-    # Detectar Modelos IA
-    ia_opts = []
+    # Detect AI Models
+    ai_opts = []
     for m in AI_MODEL_CONFIG:
         opt = {
             "label": m['label'],
@@ -623,112 +642,93 @@ IDIOMA DETECTADO: {sys_info.lang}
             "symlink": m['symlink'],
             "id": m['id']
         }
-        if os.path.exists(env.ia_dir):
+        if os.path.exists(env.ai_dir):
             pattern = m['filename'].replace('.', r'\.')
-            if any(re.match(pattern, f) for f in os.listdir(env.ia_dir)):
+            if any(re.match(pattern, f) for f in os.listdir(env.ai_dir)):
                 opt['installed'] = True
-        ia_opts.append(opt)
+        ai_opts.append(opt)
 
     # ==========================
-    # CUESTIONARIOS DEL INSTALADOR
+    # INSTALLER QUESTIONNAIRES
     # ==========================
 
-    kb_selected = multi_select_menu(d, "BASES DE DATOS DE CONOCIMIENTO (OFFLINE)", kb_opts, def_kb)
+    kb_selected = multi_select_menu(d, i18n.T('kb_menu_title'), kb_opts, def_kb)
 
-    # 2. Elección de Mapas
-    install_maps = simple_question(d, "CARTOGRAFÍA (OFFLINE)", "¿Deseas instalar el módulo de Organic Maps para Cartografía y posicionamiento GPS Offline?", default_yes=True)
+    install_maps = simple_question(d, i18n.T('maps_menu_title'), i18n.T('maps_menu_prompt'), default_yes=True)
 
-    # 2.5 Paquetes Extra
-    install_extras = simple_question(d, "SOFTWARE OFIMÁTICO Y MULTIMEDIA", "¿Deseas instalar el paquete de software extra (LibreOffice, VLC, etc.)?", default_yes=True)
+    install_extras = simple_question(d, i18n.T('extras_menu_title'), i18n.T('extras_menu_prompt'), default_yes=True)
 
-    ia_selected = multi_select_menu(d, "MODELOS DE INTELIGENCIA ARTIFICIAL (IA)", ia_opts, def_ia)
+    ai_selected = multi_select_menu(d, i18n.T('ia_menu_title'), ai_opts, def_ai)
 
-    # Configuración de red para P2P
-    use_torrent = simple_question(d, "RED PEER-TO-PEER (P2P)", "¿Priorizar descargas en P2P (BitTorrent) sobre descargas directas?", default_yes=False)
+    use_torrent = simple_question(d, i18n.T('p2p_menu_title'), i18n.T('p2p_menu_prompt'), default_yes=False)
     
-    if not simple_question(d, "CONFIRMACIÓN DE INSTALACIÓN", "Configuración terminada. ¿Deseas aplicar los cambios y comenzar la instalación ahora?", default_yes=True):
-        log_err("La línea de comandos ha detenido formalmente la instalación.")
+    if not simple_question(d, i18n.T('confirm_install_title'), i18n.T('confirm_install_prompt'), default_yes=True):
+        log_err(i18n.T('install_aborted'))
 
     if os.environ.get("DEBUG") == "1":
-        print("\n\033[1;33m[!] MODO DEBUG:\033[0m Simulacro completado. Abandonando el proceso antes de realizar cambios estructurales o descargar ficheros.")
+        print(f"\n\033[1;33m[!] {i18n.T('warning')}:\033[0m {i18n.T('debug_simulation')}")
         sys.exit(0)
 
     # =========================================================
-    # EJECUCIÓN E INSTALACIÓN FÍSICA
+    # PHYSICAL EXECUTION AND INSTALLATION
     # =========================================================
 
-    # Definir dónde se posarán los lanzadores accesibles visualmente. Ubuntu Español vs Inglés.
-    desktop_dir = os.path.join(os.environ['HOME'], "Escritorio")
-    if not os.path.isdir(desktop_dir):
-        desktop_dir = os.path.join(os.environ['HOME'], "Desktop")
-    
-    # Inicialización de Directorios Vitales
-    base_dir = os.path.join(os.environ['HOME'], "refugiOS")
-    env = TargetEnv(base_dir, desktop_dir)
     ensure_dirs(env)
 
-    # Fase 1: Despliegue de Utilidades Internas del SO. (Bloque no AppImage, por lo que va directo al APT).
-    log_info("Preparando gestor de paquetes y resolviendo posibles bloqueos...")
+    # Phase 1: OS Utilities Deployment
+    log_info(i18n.T('fixing_perms'))
     run_cmd("sudo systemctl stop unattended-upgrades 2>/dev/null || true", quiet=True)
     run_cmd("sudo dpkg --configure -a", quiet=True)
     run_cmd("sudo apt-get install -f -y", quiet=True)
     run_cmd("sudo apt-get update", quiet=True)
 
-    log_info("Instalando el paquete de dependencias primario que nutre el resto del ecosistema...")
+    log_info(i18n.T('installing_base_deps'))
     
-    # dbus-user-session y xdg-desktop-portal son necesarios para que Flatpak (Organic Maps) funcione en sandbox.
-    # language-selector-common permite el chequeo de traducciones del sistema.
     base_pkgs = "python3 python3-dialog dialog aria2 pciutils wget curl bash jq rsync apt-utils flatpak cryptsetup epiphany-browser gedit xfce4-terminal dbus-user-session xdg-desktop-portal language-selector-common"
     if install_extras:
-        log_info("Añadiendo suite multimedia y ofimática al instalador...")
+        log_info(i18n.T('adding_extras'))
         base_pkgs += " syncthing libreoffice vlc evince"
         
     run_cmd(f"sudo apt-get install -y {base_pkgs}", quiet=True)
 
-    # Instalación de soporte de idiomas para el sistema base
-    log_info(f"Sincronizando paquetes de idioma para '{sys_info.lang}'...")
+    # System-wide language support synchronization
+    log_info(i18n.T('syncing_lang_pkgs').format(sys_info.lang))
     run_cmd(f"check-language-support -l {sys_info.lang} 2>/dev/null | xargs sudo apt-get install -y", quiet=True)
 
-    # Aplicar parches de compatibilidad del sistema
+    # System compatibility patches
     fix_flatpak_permissions()
     if sys_info.is_rpi:
         fix_rpi_pcmanfm_warnings()
 
-    # Fase 2: Instalar la interfaz visual lectora Kiwix 
-    # Esta interfaz decodifica la compresión .zim y te abre los wikis fuera de línea simulando Firefox.
+    # Phase 2: Install Kiwix Visual Interface
     kiwix_appimage_url = None
     kiwix_appimage_name = None
     try:
-        # Raspando su último código liberado del repositorio de descargas.
         html = fetch_url("https://download.kiwix.org/release/kiwix-desktop/")
         matches = re.findall(r'href="(kiwix-desktop_x86_64_[0-9.-]*\.appimage)"', html)
         if matches:
-            # Una ordenación alfabética funciona aquí gracias a su nombrado de versión estricto.
             kiwix_appimage_name = sorted(matches)[-1]
             kiwix_appimage_url = f"https://download.kiwix.org/release/kiwix-desktop/{kiwix_appimage_name}"
     except Exception as e:
-        print(f"\033[1;33m[!] Aviso:\033[0m Ruptura en decodificación buscando Kiwix AppImage base: {e}")
+        print(f"\033[1;33m[!] {i18n.T('warning')}:\033[0m Error fetching Kiwix AppImage: {e}")
 
-    # Envia a la máquina enrutadora que prioriza la versión obtenida.
-    kiwix_path = install_package(env, "Lector de Enciclopedias (Kiwix Desktop)", sys_info.is_rpi, 
+    kiwix_path = install_package(env, "Knowledge Library (Kiwix Desktop)", sys_info.is_rpi, 
         appimage_url=kiwix_appimage_url, 
         appimage_name=kiwix_appimage_name, 
         flatpak_id="org.kiwix.desktop", 
         apt_deps="kiwix")
 
-    # Creamos un atajo (Enlace simbólico) llamado sin versión, simplificando mantenimientos futuros.
     if isinstance(kiwix_path, str) and kiwix_path.endswith('.appimage'):
         run_cmd(f"ln -sf '{kiwix_path}' '{os.path.join(env.apps_dir, '../kiwix-desktop.appimage')}'")
         exec_path = os.path.join(env.base, "Apps", "kiwix-desktop.appimage")
     else:
-        # En Raspberry Pi (ARM) o instalaciones vía APT, forzamos la ruta al binario nativo
         exec_path = "/usr/bin/kiwix-desktop" if sys_info.is_rpi else "kiwix-desktop"
 
-    # Fase 3: Bases de Conocimiento (Peticiones complejas a granjas de datos de Kiwix Foundation)
-    log_info("Analizando repositorios de conocimiento masivo ZIM...")
+    # Phase 3: Knowledge Bases (ZIM)
+    log_info(i18n.T('scanning_zim'))
     for idx in kb_selected:
         opt = kb_opts[idx]
-        log_info(f"Rastreando el archivo {opt['name']} ({opt['type']}) correcto...")
+        log_info(i18n.T('tracking_zim').format(opt['name'], opt['type']))
         zim_url = None
         zim_name = None
         
@@ -748,22 +748,17 @@ IDIOMA DETECTADO: {sys_info.lang}
         if zim_name and zim_url:
              target_zim = os.path.join(env.know_dir, zim_name)
              if os.path.exists(target_zim) and not force_dl:
-                  log_info(f"El segmento {zim_name} ya figura localmente. No es necesaria interacción.")
+                  log_info(i18n.T('zim_exists').format(zim_name))
              else:
-                  log_info(f"Descargando archivo: {zim_name}...")
+                  log_info(i18n.T('downloading_zim').format(zim_name))
                   if use_torrent:
                        run_cmd(f"aria2c --seed-time=0 --continue=true --dir=\"{env.know_dir}\" \"{zim_url}.torrent\"")
                   else:
                        run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{zim_url}\"")
-             
-             # Paso final se encargará de los enlaces symlink y sus iconos visuales
         else:
-             log_err(f"No fue posible encontrar el rastreador para {opt['name']} ({opt['type']}) en {sys_info.lang}.")
+             log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang))
 
-    # Fase 4: Despliegue Cartográfico Opcional de Organic Maps OpenSource
-    # Carga toda la cartografía en local a demanda sin depender de Google o cobertura celular.
-
-    # Función de ayuda para extraer los scripts externos de su repositorio principal
+    # Phase 4: Optional Cartographic Deployment (Organic Maps)
     repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
     
     def fetch_script(s_name):
@@ -775,37 +770,35 @@ IDIOMA DETECTADO: {sys_info.lang}
             if os.path.exists(local_s):
                 shutil.copy(local_s, d_path)
             else:
-                log_err(f"No fue posible ubicar el {s_name} remoto ni local.")
+                log_err(i18n.T('script_not_found').format(s_name))
         os.chmod(d_path, 0o755)
         return d_path
 
     if install_maps:
-        install_package(env, "Mapas GPS Offline (Organic Maps)", sys_info.is_rpi, flatpak_id="app.organicmaps.desktop")
+        install_package(env, "Offline GPS Maps (Organic Maps)", sys_info.is_rpi, flatpak_id="app.organicmaps.desktop")
         
         if sys_info.is_rpi:
-            # Parche de bajo nivel si el entorno Pi sufre por el renderizado de OpenGL desde el contenedor.
             run_cmd("sudo flatpak override --device=dri app.organicmaps.desktop", quiet=True)
         
         maps_script = fetch_script("refugios-maps.sh")
-        with open(os.path.join(env.desktop, "Mapas_Offline.desktop"), "w") as f:
+        maps_desktop = os.path.join(env.desktop, "Offline_Maps.desktop")
+        with open(maps_desktop, "w") as f:
             f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
-Name=Mapas GPS
+Name={i18n.T('maps_gps_name')}
 Exec=bash "{maps_script}"
 Icon=app.organicmaps.desktop
 Terminal=false
 """)
-        os.chmod(os.path.join(env.desktop, "Mapas_Offline.desktop"), 0o755)
+        os.chmod(maps_desktop, 0o755)
     else:
-        log_info("Se omitirá la provisión de las librerías cartográficas (Organic Maps).")
+        log_info("Skipping Cartographic module (Organic Maps).")
 
-
-    # Fase 5: IA Residente e Inferencia de Lenguaje Natural (Llamafile portado para ser autónomo).
-    if ia_selected:
-        log_info("Estableciendo fundaciones del motor central cognitivo, Llamafile...")
+    # Phase 5: AI Motor (Llamafile)
+    if ai_selected:
+        log_info("Establishing cognitive engine core foundations, Llamafile...")
         try:
-             # Exploración a través de las APIs públicas de las empresas de desarrollo para su ejecutador final.
              req = urllib.request.Request("https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest")
              with urllib.request.urlopen(req) as r:
                   release_data = json.loads(r.read().decode())
@@ -816,104 +809,103 @@ Terminal=false
                        llama_name = asset['name']
                        break
              if llama_url:
-                  l_path = os.path.join(env.ia_dir, llama_name)
+                  l_path = os.path.join(env.ai_dir, llama_name)
                   if not os.path.exists(l_path) or force_dl:
                        run_cmd(f"wget -c \"{llama_url}\" -O \"{l_path}\"")
                   os.chmod(l_path, 0o755)
-                  
-                  # Asignar un hiperenlace permanente en el directorio
-                  run_cmd(f"ln -sf '{l_path}' '{os.path.join(env.base, 'IA', 'llamafile')}'")
+                  run_cmd(f"ln -sf '{l_path}' '{os.path.join(env.base, 'AI', 'llamafile')}'")
         except:
-             log_err("Error al conectar con GitHub para obtener Llamafile.")
+             log_err("Error connecting to GitHub for Llamafile.")
 
-        # Los vectores pre-entrenados del modelo GGUF basados puramente en su escala.
-        
-        for idx in ia_selected:
-            opt = ia_opts[idx]
+        for idx in ai_selected:
+            opt = ai_opts[idx]
             full_url = opt['url_base'] + opt['filename']
-            m_path = os.path.join(env.ia_dir, opt['filename'])
+            m_path = os.path.join(env.ai_dir, opt['filename'])
             if not os.path.exists(m_path) or force_dl:
-                 log_info(f"Descargando archivo: {opt['filename']}...")
+                 log_info(f"Downloading file: {opt['filename']}...")
                  run_cmd(f"wget -c \"{full_url}\" -O \"{m_path}\"")
-            run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'IA', opt['symlink'])}'")
+            run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'AI', opt['symlink'])}'")
 
-        script_path = fetch_script("refugios-ia-selector.sh")
-        
-        with open(os.path.join(env.desktop, "Asistente_IA.desktop"), "w") as f:
+        script_path = fetch_script("refugios-ai-selector.sh")
+        ai_assist_desktop = os.path.join(env.desktop, "AI_Assistant.desktop")
+        with open(ai_assist_desktop, "w") as f:
              f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
-Name=Asistente IA Local
+Name=Local AI Assistant
 Exec=xfce4-terminal -e "{script_path}"
 Icon=utilities-terminal
 Terminal=false
 """)
-        os.chmod(os.path.join(env.desktop, "Asistente_IA.desktop"), 0o755)
+        os.chmod(ai_assist_desktop, 0o755)
 
-    # Fase 6: Cimientos Criptográficos de Privacidad
-    log_info("Ensamblando bóvedas de seguridad y directivas de privacidad...")
+    # Phase 6: Privacy Cryptographic Foundations
+    log_info("Assembling security vaults and privacy policies...")
     
     v_create = fetch_script("refugios-vault-create.sh")
     v_open = fetch_script("refugios-vault-open.sh")
     v_close = fetch_script("refugios-vault-close.sh")
 
-    # Interfaz gráfica sobre los módulos criptográficos.
+    # Vault shortcuts names in the current language
+    vault_names = {
+        'en': ["1. Create new Secure Vault (First time only)", "2. Open Secure Vault", "3. Close and Seal Active Vault"],
+        'es': ["1. Crear nueva Bóveda Segura (Sólo la primera vez)", "2. Abrir Bóveda Segura", "3. Cerrar y Sellar Bóveda Activa"]
+    }
+    current_vault_names = vault_names.get(sys_info.lang, vault_names['en'])
+
     for i, name, script, icon in [
-        (1, "Crear nueva Bóveda Segura (Solo la primera vez)", v_create, "dialog-password"),
-        (2, "Abrir Bóveda Segura", v_open, "folder-open"),
-        (3, "Cerrar y Sellar Bóveda Activa", v_close, "system-lock-screen")
+        (1, current_vault_names[0], v_create, "dialog-password"),
+        (2, current_vault_names[1], v_open, "folder-open"),
+        (3, current_vault_names[2], v_close, "system-lock-screen")
     ]:
         dfile = os.path.join(env.desktop, f"{i}_{name.replace(' ', '_')}.desktop")
         with open(dfile, "w") as f:
             f.write(f"""[Desktop Entry]
 Type=Application
-Name={i}. {name}
+Name={name}
 Exec=xfce4-terminal -e "{script}"
 Icon={icon}
 Terminal=false
 """)
         os.chmod(dfile, 0o755)
 
-    # Eliminación de alertas para los gestores modulares del software sobre ejecutables carentes de firma formal.
-    log_info("Certificando atajos y deshabilitando avisos de seguridad del escritorio local...")
+    # Desktop shortcut certification (Trusted marking)
+    log_info("Certifying shortcuts and disabling desktop security warnings...")
     for file in os.listdir(env.desktop):
         if file.endswith('.desktop'):
             fpath = os.path.join(env.desktop, file)
-            # Asegurar permisos de ejecución explícitos
             os.chmod(fpath, 0o755)
-            # GIO: marca el archivo como de confianza (XFCE, GNOME, Wayland)
+            # Mark as trusted (XFCE, GNOME, Wayland)
             if shutil.which("gio"):
                 run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
-                # Checksum para XFCE
+                # SHA256 checksum for XFCE
                 checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
                 if checksum:
                     run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
-            # Atributo extendido directo como fallback para Wayland sin GIO
             run_cmd(f"attr -s trusted -V yes '{fpath}' 2>/dev/null || true", quiet=True)
 
-    # Parche para LXDE / PCManFM (Típico en Raspberry Pi OS con Wayfire/Labwc)
-    libfm_conf = os.path.join(os.environ['HOME'], ".config", "libfm", "libfm.conf")
+    # PCManFM Quick execution hack (typical for Raspberry Pi OS)
+    # Ensuring quick_exec=1 to avoid prompting on script launch
+    libfm_conf = os.path.join(home_dir, ".config", "libfm", "libfm.conf")
     if os.path.exists(libfm_conf):
         run_cmd(f"sed -i 's/quick_exec=0/quick_exec=1/' '{libfm_conf}'", quiet=True)
         if 'quick_exec=1' not in open(libfm_conf).read():
             run_cmd(f"echo -e '\\n[General]\\nquick_exec=1' >> '{libfm_conf}'", quiet=True)
-    # Crear config si no existe aún
     else:
         os.makedirs(os.path.dirname(libfm_conf), exist_ok=True)
         with open(libfm_conf, 'w') as f:
             f.write('[General]\nquick_exec=1\n')
 
-    # Asegurar que el script intermediario de Kiwix existe
+    # Ensure intermediate scripts exist
     fetch_script("refugios-kiwix.sh")
     
-    # Sincronización final de enlaces con las mejores versiones en disco y sus iconos
+    # Final resource synchronization
     if 'exec_path' not in locals():
          exec_path = "kiwix-desktop"
     sync_resources(env, sys_info, exec_path)
 
-    log_success("LA OPERACIÓN GLOBAL DE DESPLIEGUE FINALIZÓ. Revisa la integridad y accesibilidad de los iconos en el área de tu escritorio.")
+    log_success("GLOBAL DEPLOYMENT OPERATION FINISHED. Please check desktop icon integrity and accessibility.")
 
 
-# Puerta de entrada estricta al intérprete evitando que se llame importando como módulo.
 if __name__ == "__main__":
     main()

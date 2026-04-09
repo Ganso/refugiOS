@@ -1,28 +1,33 @@
 #!/bin/bash
 # ============================================
-# refugiOS - Lanzador de Recursos Kiwix
-# Abre un archivo ZIM con Kiwix Desktop
+# refugiOS - Kiwix Resource Launcher
+# Opens a ZIM file with Kiwix Desktop
 # ============================================
 
 ZIM_FILE="$1"
+SCRIPTS_DIR="$HOME/refugiOS/Scripts"
+
+# Source localization system
+t() { echo "$1"; }
+[ -s "$SCRIPTS_DIR/i18n.sh" ] && source "$SCRIPTS_DIR/i18n.sh"
 
 if [ -z "$ZIM_FILE" ]; then
-    echo "Uso: refugios-kiwix.sh <ruta_al_archivo.zim>"
+    echo "Usage: refugios-kiwix.sh <path_to_zim_file>"
     exit 1
 fi
 
-# Detectar el ejecutable de Kiwix disponible
+# Detect available Kiwix executable
 if command -v kiwix-desktop &>/dev/null; then
     KIWIX_BIN="kiwix-desktop"
 elif [ -f "$HOME/refugiOS/Apps/kiwix-desktop.appimage" ]; then
     KIWIX_BIN="$HOME/refugiOS/Apps/kiwix-desktop.appimage"
 else
-    # Fallback: buscar cualquier AppImage de kiwix en la carpeta de Apps
+    # Fallback: search for any kiwix AppImage in Apps folder
     KIWIX_BIN=$(find "$HOME/refugiOS/Apps" -name "kiwix-desktop*.appimage" 2>/dev/null | sort | tail -1)
 fi
 
 if [ -z "$KIWIX_BIN" ]; then
-    echo "Error: No se encontró Kiwix Desktop instalado."
+    echo "$(t error): Kiwix Desktop not found."
     exit 1
 fi
 

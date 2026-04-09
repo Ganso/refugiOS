@@ -5,6 +5,12 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.09] - 2026-04-09
+
+### Añadido
+- **Documentación completa en Inglés:** Toda la documentación se ha traducido al inglés.
+- **Soporte multilingue en la instalación:** Todos los scripts soportan inglés y español.
+
 ## [0.08] - 2026-04-08
 
 ### Añadido
