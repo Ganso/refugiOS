@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10] - 2026-04-16
+
+### Añadido
+- **Rediseño Completo del Sistema de Bóvedas:** Migración de los scripts de gestión de bóvedas (`create`, `open`, `close`) a un sistema unificado en Python (`refugios-vault.py`).
+- **Nueva Interfaz TUI (Dialog):** Los menús de gestión de bóvedas ahora utilizan `python-dialog`, ofreciendo una experiencia visual y consistente con el resto del sistema.
+- **Soporte Multi-bóveda:** Posibilidad de crear, abrir y cerrar múltiples bóvedas con nombres personalizados.
+- **Detección Automática de USB:** El creador de bóvedas detecta pendrives conectados, sugiere un tamaño óptimo (1.5x el espacio ocupado) y permite importar los datos automáticamente al finalizar la creación.
+- **Integración con el Escritorio:** Al abrir una bóveda, se crea dinámicamente un icono en el escritorio con el nombre de la misma que desaparece automáticamente al cerrarla.
+- **Seguridad Mejorada:** Implementada reserva del 10% del espacio libre en el sistema raíz para evitar bloqueos del sistema y añadidas recomendaciones de seguridad localizadas para la elección de contraseñas.
+
 ## [0.09] - 2026-04-09
 
 ### Añadido

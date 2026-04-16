@@ -34,9 +34,10 @@ Private smart assistant that works 100% on your local computer. Available in fou
 
 ### 4. Cryptographic Vaults (LUKS)
 Secure and encrypted storage system for sensitive data.
-*   **Status:** 🧪 **Proof of Concept (PoC).** The system is functional and uses the LUKS industrial standard, but it is in a primitive phase of usability.
-*   **Current Limitations:** Currently only supports a fixed-size vault.
-*   **Next Improvements:** Support for multiple vaults, variable sizes, and a more intuitive management interface.
+*   **Status:** Unified Python system with an intuitive user interface (Dialog).
+*   **Features:** Support for multiple simultaneous vaults, custom names, and variable sizes.
+*   **Automation:** Intelligent USB drive detection for size suggestions and automated data import.
+
 
 ### 5. Standard Work Tools
 Essential programs for daily life, adapted for maximum compatibility.
@@ -55,8 +56,7 @@ Essential programs for daily life, adapted for maximum compatibility.
 
 We are working to integrate these powerful tools in upcoming versions:
 
-### 1. Automated Ingestion into Personal Vault
-*   Improve scripts to automate data import into personalized vaults from multiple sources: Other USB devices, local hard drives, etc.
+
 
 ### 2. Education and Learning
 *   **[Khan Academy Offline](https://en.khanacademy.org/):** Download of interactive math, science, and economics lessons for all ages.

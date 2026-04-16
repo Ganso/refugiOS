@@ -845,6 +845,13 @@ Terminal=false
     v_create = fetch_script("refugios-vault-create.sh")
     v_open = fetch_script("refugios-vault-open.sh")
     v_close = fetch_script("refugios-vault-close.sh")
+    fetch_script("refugios-vault.py")
+
+    # Ensure i18n.py is available in Scripts dir for vault manager
+    i18n_src = os.path.join(os.path.dirname(os.path.realpath(__file__)), "i18n.py")
+    i18n_dst = os.path.join(env.scripts_dir, "i18n.py")
+    if os.path.exists(i18n_src):
+        shutil.copy(i18n_src, i18n_dst)
 
     # Vault shortcuts names in the current language
     vault_names = {

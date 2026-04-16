@@ -34,9 +34,10 @@ Asistente inteligente privado que funciona 100% en tu ordenador local. Disponibl
 
 ### 4. Bóvedas Criptográficas (LUKS)
 Sistema de almacenamiento seguro y cifrado para datos sensibles.
-*   **Estado:** 🧪 **Prueba de Concepto (PoC).** El sistema es funcional y utiliza el estándar industrial LUKS, pero se encuentra en una fase primitiva de usabilidad.
-*   **Limitaciones actuales:** Actualmente solo soporta una bóveda de tamaño fijo.
-*   **Próximas mejoras:** Soporte para múltiples bóvedas, tamaños variables y una interfaz de gestión más intuitiva.
+*   **Estado:** Sistema unificado en Python con interfaz de usuario intuitiva (Dialog).
+*   **Características:** Soporte para múltiples bóvedas simultáneas, nombres personalizados y tamaños variables.
+*   **Automatización:** Detección inteligente de pendrives USB para sugerencia de tamaños e importación de datos automatizada.
+
 
 
 ### 5. Herramientas de Trabajo Estándar
@@ -56,8 +57,7 @@ Programas esenciales para el día a día, adaptados para la máxima compatibilid
 
 Estamos trabajando para integrar estas potentes herramientas en próximas versiones:
 
-### 1. Ingesta automatizada en la bóveda personal
-*   Mejorar los scripts para automatizar la importación de datos en las bóvedas personalizadas a partir de múltiples fuentes: Otros dispositivos USB, discos duros locales, etc.
+
 
 ### 2. Educación y Aprendizaje
 *   **[Khan Academy Offline](https://es.khanacademy.org/):** Descarga de lecciones interactivas de matemáticas, ciencia y economía para todas las edades.

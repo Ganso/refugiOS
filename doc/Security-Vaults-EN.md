@@ -19,15 +19,16 @@ A container is a special file (for example, `my_data.img`) that works like a saf
 
 ## How Vaults Work in refugiOS
 
-To make the system easy to use, we have created three direct buttons on your desktop:
+To make the system easy to use, we have created three direct wizards on your desktop:
 
 1.  **Create Vault:**
-    The first time you use the system, this button will guide you through creating your secure file. It will ask you to choose a **strong password** (don't forget it; if you lose it, you won't be able to recover your files!). The system will create a reserved space of about 3 GB for your documents.
+    This wizard will guide you step by step. It will detect if you have USB drives connected and suggest a size based on your data. You can choose a custom name for each vault. When finished, the system can automatically import your files from the USB.
 
 2.  **Open Vault:**
-    By double-clicking, a small window will open asking for your password. If it is correct, a folder called **MY_SECRET_DATA** will appear on your desktop. There you can copy, paste, and edit your files normally.
+    Allows you to select which vault you want to open. After entering the password, an **icon will automatically appear on the desktop** with the name of your vault. This icon gives you direct, secure access to your files.
 
 3.  **Close Vault:**
-    When you finish working, press this button. The folder will automatically disappear from the desktop and your files will be encrypted and protected again. No one will be able to see them even if they connect the USB to another computer.
+    By clicking this button, you can choose which vaults to close (or close them all at once). The desktop icon will disappear and your files will be protected by professional LUKS encryption again.
+
 
 **Security tip:** Always close your vault as soon as you finish using it. While it is open, anyone with physical access to your computer could see the files.
