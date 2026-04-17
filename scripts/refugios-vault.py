@@ -179,7 +179,7 @@ def detect_usb_drives():
 
             for part in children:
                 mountpoint = part.get('mountpoint')
-                if not mountpoint or mountpoint in ['/', '/boot', '/boot/efi']:
+                if not mountpoint or mountpoint in ['/', '/boot', '/boot/efi', '/cdrom']:
                     continue
 
                 # Calculate used space
