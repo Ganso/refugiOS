@@ -16,7 +16,14 @@
 </p>
 
 > [!WARNING]
-> **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Alpha**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores y la implementación de las funciones detalladas en el roadmap.
+> **Estado del Proyecto:** refugiOS se encuentra actualmente en su **primera versión Beta**. Es un proyecto en desarrollo activo y aún queda mucho camino por delante: internacionalización de la documentación, corrección de errores y la implementación de las funciones detalladas en el roadmap.
+
+> [!IMPORTANT]
+> **🚀 Guías de Instalación Rápida:**
+> *   💻 **[Instalación en PC Estándar (Xubuntu)](doc/Instalacion-Xubuntu-ES.md)**
+> *   🍓 **[Instalación en Raspberry Pi](doc/Instalacion-Raspberry-ES.md)**
+> 
+> 🌐 **¿Buscas la guías en inglés?** Ver el **[README en Inglés](README.en.md)** para documentación en ese idioma.
 
 ---
 
@@ -140,4 +147,4 @@ refugiOS es posible gracias al increíble trabajo de proyectos de código abiert
 *   [Cryptsetup / LUKS](https://gitlab.com/cryptsetup/cryptsetup) para la seguridad y cifrado de datos personales.
 
 ---
-*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Alpha, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/Modulos-y-Roadmap-ES.md)).*
+*(refugiOS es una iniciativa de código abierto para la resiliencia digital. Actualmente en fase Beta, buscamos colaboradores para internacionalizar la documentación, migrarla a formato wiki y pulir la experiencia de usuario según nuestro [Roadmap](doc/Modulos-y-Roadmap-ES.md)).*

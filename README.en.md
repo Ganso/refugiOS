@@ -14,7 +14,14 @@
 </p>
 
 > [!WARNING]
-> **Project Status:** refugiOS is currently in its **first Alpha version**. It is an actively developing project and there is still a long way to go: internationalization of the documentation, bug fixing, and the implementation of the features detailed in the roadmap.
+> **Project Status:** refugiOS is currently in its **first Beta version**. It is an actively developing project and there is still a long way to go: internationalization of the documentation, bug fixing, and the implementation of the features detailed in the roadmap.
+
+> [!IMPORTANT]
+> **🚀 Quick Installation Guides:**
+> *   💻 **[Standard PC Installation (Xubuntu)](doc/Xubuntu-Installation-EN.md)**
+> *   🍓 **[Raspberry Pi Installation](doc/Raspberry-Pi-Installation-EN.md)**
+> 
+> 🌐 **Looking for the Spanish version?** See the **[Spanish README](README.md)** for documentation in that language.
 
 ---
 
@@ -138,4 +145,4 @@ refugiOS is possible thanks to the incredible work of open source projects like:
 *   [Cryptsetup / LUKS](https://gitlab.com/cryptsetup/cryptsetup) for personal data security and encryption.
 
 ---
-*(refugiOS is an open source initiative for digital resilience. Currently in Alpha phase, we are looking for collaborators to internationalize the documentation, migrate it to wiki format, and polish the user experience according to our [Roadmap](doc/Modules-and-Roadmap-EN.md)).*
+*(refugiOS is an open source initiative for digital resilience. Currently in Beta phase, we are looking for collaborators to internationalize the documentation, migrate it to wiki format, and polish the user experience according to our [Roadmap](doc/Modules-and-Roadmap-EN.md)).*
