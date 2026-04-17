@@ -15,7 +15,8 @@ These components are installed automatically or through the welcome wizard:
 
 ### 1. Offline Library and Encyclopedias ([Kiwix](https://www.kiwix.org/))
 Access to massive databases using the ZIM format.
-*   **Contents:** [Wikipedia](https://en.wikipedia.org/) (General), [WikiMed](https://www.kiwix.org/en/get-kiwix/download-content/) (Medicine), [WikiHow](https://www.wikihow.com/) (Practical guides).
+*   **Contents:** [Wikipedia](https://en.wikipedia.org/) (General), [WikiMed](https://www.kiwix.org/en/get-kiwix/download-content/) (Medicine), WikiHow (Manuals - *Temporarily unavailable*).
+*   **Note on WikiHow:** Since WikiHow no longer allows direct download of the ZIM file, it has been temporarily disabled. In the future, a proprietary *scraper* will be added to generate an optimized version for refugiOS.
 *   **Language:** 🌐 **Multilingual.** The installer downloads the files specifically in the language you choose (en, es, fr, etc.).
 
 ### 2. Maps and Navigation ([Organic Maps](https://organicmaps.app/))

@@ -24,6 +24,7 @@ import json
 import shutil
 import re
 import time
+import random
 
 # Localization system
 try:
@@ -79,7 +80,8 @@ KNOWLEDGE_CONFIG = [
         "label": i18n.T('wikihow_label'),
         "type": "maxi",
         "search_url": "https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/",
-        "symlink": "wikihow.zim"
+        "symlink": "wikihow.zim",
+        "available": False
     }
 ]
 
@@ -616,6 +618,8 @@ def main():
     # Detect ZIMs
     kb_opts = []
     for c in KNOWLEDGE_CONFIG:
+        if not c.get('available', True):
+            continue
         opt = {
             "label": c['label'],
             "name": c['name'],
@@ -773,7 +777,9 @@ def main():
     
     def fetch_script(s_name):
         d_path = os.path.join(env.scripts_dir, s_name)
-        ok = run_cmd(f"wget -q \"{repo_url}/scripts/{s_name}\" -O \"{d_path}\"", quiet=True)
+        # Force download latest version with cache busting
+        nocache = random.randint(1000, 9999)
+        ok = run_cmd(f"wget -q \"{repo_url}/scripts/{s_name}?nocache={nocache}\" -O \"{d_path}\"", quiet=True)
         if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
             local_dir = os.path.dirname(os.path.realpath(__file__))
             local_s = os.path.join(local_dir, "scripts", s_name)
