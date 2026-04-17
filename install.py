@@ -673,6 +673,8 @@ def main():
     # PHYSICAL EXECUTION AND INSTALLATION
     # =========================================================
 
+    d.msgbox(i18n.T('install_starting_msg'), title=i18n.T('install_starting_title'))
+
     ensure_dirs(env)
 
     # Phase 1: OS Utilities Deployment
@@ -736,9 +738,17 @@ def main():
             html = fetch_url(opt['search_url'])
             prefix = "wikipedia" if opt['name'] in ['wikipedia', 'wikimed'] else opt['name']
             m_name = "_medicine" if opt['name'] == 'wikimed' else ""
-            regex = rf'href="({prefix}_{sys_info.lang}{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
             
+            # Try current language
+            regex = rf'href="({prefix}_{sys_info.lang}{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
             matches = re.findall(regex, html)
+            
+            # Fallback to English if not found
+            if not matches and sys_info.lang != 'en':
+                log_info(i18n.T('zim_fallback').format(sys_info.lang, opt['name']))
+                regex_en = rf'href="({prefix}_en{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
+                matches = re.findall(regex_en, html)
+            
             if matches:
                  zim_name = sorted(matches)[-1]
                  zim_url = opt['search_url'] + zim_name
@@ -912,6 +922,8 @@ Terminal=false
     sync_resources(env, sys_info, exec_path)
 
     log_success("GLOBAL DEPLOYMENT OPERATION FINISHED. Please check desktop icon integrity and accessibility.")
+
+    d.msgbox(i18n.T('install_finished_msg'), title=i18n.T('install_finished_title'))
 
 
 if __name__ == "__main__":
