@@ -21,7 +21,7 @@
 > *   💻 **[Standard PC Installation (Xubuntu)](doc/Xubuntu-Installation-EN.md)**
 > *   🍓 **[Raspberry Pi Installation](doc/Raspberry-Pi-Installation-EN.md)**
 > 
-> 🌐 **Looking for the Spanish version?** See the **[Spanish README](README.md)** for documentation in that language.
+> 🌐 **¿Buscas la versión en español?** [Lee el Manual en Español aquí](README.md) / **Looking for the Spanish version?** [Read the Spanish Guide here](README.md).
 
 ---
 

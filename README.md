@@ -23,7 +23,7 @@
 > *   💻 **[Instalación en PC Estándar (Xubuntu)](doc/Instalacion-Xubuntu-ES.md)**
 > *   🍓 **[Instalación en Raspberry Pi](doc/Instalacion-Raspberry-ES.md)**
 > 
-> 🌐 **¿Buscas la guías en inglés?** Ver el **[README en Inglés](README.en.md)** para documentación en ese idioma.
+> 🌐 **Looking for the English version?** [Read the English Guide here](README.en.md) / **¿Buscas la guía en inglés?** [Consulta el manual en inglés aquí](README.en.md).
 
 ---
 
