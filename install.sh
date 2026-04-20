@@ -40,11 +40,9 @@ if [ -f "$LOCAL_SCRIPTS/install.py" ] && [ ! -s "$PYTHON_SCRIPT" ]; then
     cp "$LOCAL_SCRIPTS/install.py" "$PYTHON_SCRIPT"
 fi
 
-# Download localization system if missing or empty
-if [ ! -s "$I18N_SH" ] || [ "${FORCE_UPDATE:-0}" == "1" ]; then
-    log_info "Fetching localization system..."
-    wget -q "$REPO_URL/scripts/i18n.sh?nocache=$RANDOM" -O "$I18N_SH" || true
-fi
+# Download localization system
+log_info "Fetching latest localization system..."
+wget -q "$REPO_URL/scripts/i18n.sh?nocache=$RANDOM" -O "$I18N_SH" || true
 
 # Try to source i18n if it exists and is not empty
 if [ -s "$I18N_SH" ]; then
@@ -85,19 +83,15 @@ if [ -n "$MISSING" ]; then
     fi
 fi
 
-# Download Python installer components if missing or empty
+# Download Python installer components
 log_info "$(t downloading_installer)"
 
-if [ ! -s "$I18N_PY" ] || [ "${FORCE_UPDATE:-0}" == "1" ]; then
-    wget -q "$REPO_URL/i18n.py?nocache=$RANDOM" -O "$I18N_PY" || true
-fi
+wget -q "$REPO_URL/i18n.py?nocache=$RANDOM" -O "$I18N_PY" || true
 
-if [ ! -s "$PYTHON_SCRIPT" ] || [ "${FORCE_UPDATE:-0}" == "1" ]; then
-    if wget -q "$REPO_URL/install.py?nocache=$RANDOM" -O "$PYTHON_SCRIPT"; then
-        log_info "$(t download_success)"
-    else
-        log_info "$(t download_fallback)"
-    fi
+if wget -q "$REPO_URL/install.py?nocache=$RANDOM" -O "$PYTHON_SCRIPT"; then
+    log_info "$(t download_success)"
+else
+    log_info "$(t download_fallback)"
 fi
 
 if [ ! -s "$PYTHON_SCRIPT" ]; then
