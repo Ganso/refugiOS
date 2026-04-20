@@ -101,22 +101,20 @@ The installer will automatically detect that you are on a Raspberry Pi and adapt
 > **Want to try it quickly without touching a USB drive?** If you have experience with virtual machines, you can mount refugiOS on a virtual disk image and boot it with QEMU or VirtualBox. See our **[Virtualization Guide](doc/Virtualization-Guide-EN.md)** for detailed steps.
 
 
-## 📱 Certified Platforms
+## 📱 Recommended Platforms
 
-| Platform | Status | Notes |
-| :--- | :--- | :--- |
-| **XUbuntu 24.04 LTS** | ✅ Certified | Reference platform |
-| **Xubuntu 25.10** | ✅ Certified | Needs retesting every new release |
-| **Raspberry Pi 3B+** | ✅ Certified | Raspberry Pi OS 64-bit, Wayland |
-| **Raspberry Pi 4 / 5** | 🧪 Untested (theoretically functional) | Testers wanted |
-| **Raspberry Pi Zero 2W** | 🧪 Untested | Testers wanted |
-| **Other Debian-based distros** | 🧪 Untested | Testers wanted |
+> [!NOTE]
+> refugiOS is designed to work on a wide range of hardware, but we specifically recommend **Xubuntu 24 LTS** and **Raspberry OS** for the best experience.
+> 
+> Consult the **[Full Compatibility Table](doc/Compatibility-EN.md)** to see all tested systems and known issues.
+
 
 ## 📚 Detailed Documentation
 
 To learn more about how refugiOS works and how to get the most out of it, consult the guides in the `/doc/` directory:
 
 *   **[XUbuntu Installation](doc/Xubuntu-Installation-EN.md):** How to prepare your XUbuntu USB from Windows or Linux.
+*   **[Compatibility Table](doc/Compatibility-EN.md):** Linux distributions and hardware certified or in testing.
 *   **[Raspberry Pi Installation](doc/Raspberry-Pi-Installation-EN.md):** Specific guide for Raspberry Pi with Raspberry Pi OS.
 *   **[Vision and User Experience](doc/Vision-and-User-Experience-EN.md):** The purpose of the project and what to expect when using it.
 *   **[Comparison of Solutions](doc/Comparison-of-Solutions-EN.md):** Why refugiOS is different from other alternatives.

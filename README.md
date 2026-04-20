@@ -103,22 +103,20 @@ El instalador detectará automáticamente que estás en una Raspberry Pi y adapt
 > **¿Quieres probarlo rápidamente sin tocar un pendrive?** Si tienes experiencia con máquinas virtuales, puedes montar refugiOS en una imagen de disco virtual y arrancarlo con QEMU o VirtualBox. Consulta nuestra **[Guía de Virtualización](doc/Guia-Virtualizacion-y-Pendrive-ES.md)** para los pasos detallados.
 
 
-## 📱 Plataformas Certificadas
+## 📱 Plataformas Recomendadas
 
-| Plataforma | Estado | Notas |
-| :--- | :--- | :--- |
-| **XUbuntu 24.04 LTS** | ✅ Certificado | Plataforma de referencia |
-| **Xubuntu 25.10** | ✅ Certificado | Necesario retestear cada nueva release |
-| **Raspberry Pi 3B+** | ✅ Certificado | Raspberry Pi OS 64-bit, Wayland |
-| **Raspberry Pi 4 / 5** | 🧪 Sin testar (teoricamente funcional) | Se buscan testers |
-| **Raspberry Pi Zero 2W** | 🧪 Sin testar | Se buscan testers |
-| **Otras distros basadas en Debian** | 🧪 Sin testar | Se buscan testers |
+> [!NOTE]
+> refugiOS está diseñado para funcionar en una amplia gama de hardware, pero recomendamos especialmente **Xubuntu 24 LTS** y **Raspberry OS** para la mejor experiencia.
+> 
+> Consulta la **[Tabla de Compatibilidad Completa](doc/Compatibilidad-ES.md)** para ver todos los sistemas testados y problemas conocidos.
+
 
 ## 📚 Documentación Detallada
 
 Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido, consulta las guías en el directorio `/doc/`:
 
 *   **[Instalación en XUbuntu](doc/Instalacion-Xubuntu-ES.md):** Cómo preparar tu USB con XUbuntu desde Windows o Linux.
+*   **[Tabla de Compatibilidad](doc/Compatibilidad-ES.md):** Distribuciones Linux y hardware certificado o en pruebas.
 *   **[Instalación en Raspberry Pi](doc/Instalacion-Raspberry-ES.md):** Guía específica para Raspberry Pi con Raspberry Pi OS.
 *   **[Visión y Experiencia del Usuario](doc/Vision-y-Experiencia-ES.md):** El propósito del proyecto y qué esperar al usarlo.
 *   **[Comparativa de Soluciones](doc/Soluciones-Existentes-ES.md):** Por qué refugiOS es diferente a otras alternativas.
