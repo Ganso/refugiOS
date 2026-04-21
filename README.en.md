@@ -46,23 +46,14 @@ It is a tool designed to have all vital knowledge, maps, and documents at hand i
 *   **🌐 Adapted to Your Language:** The system automatically configures in your language (Spanish or English), downloading only the dictionaries and help files you need.
 *   You can see in the **[Applications and Roadmap](doc/Modules-and-Roadmap-EN.md)** section the current status of the project, with the modules that are already implemented and those that will be added in the future.
 
-## 📸 Screenshots
-
-| Element | Screenshot |
-| :--- | :--- |
-| **Main Interface** | ![Main menu](screenshots/Menu+Bobeda.png)<br>*Main menu with an open vault* |
-| **Knowledge** | ![Medical encyclopedia](screenshots/Medicina.png)<br>*Medical encyclopedia (WikiMed)* |
-| **Navigation** | ![Cartography](screenshots/Mapas.png)<br>*Cartography and offline navigation* |
-| **Assistant** | ![Local AI](screenshots/IA%20local.png)<br>*Local Artificial Intelligence* |
-
 ### 📺 Demo Video
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=VrP8VIxQZGg">
-    <img src="https://img.youtube.com/vi/VrP8VIxQZGg/maxresdefault.jpg" alt="refugiOS in action" width="800">
+  <a href="https://www.youtube.com/watch?v=ZsVwWdWbtng">
+    <img src="https://img.youtube.com/vi/ZsVwWdWbtng/maxresdefault.jpg" alt="refugiOS in action" width="800">
   </a>
   <br>
-  <em>refugiOS running on a 2018 Microsoft Surface, booted from a 16GB USB drive and completely offline</em>
+  <em>refugiOS running on a Ryzen 5500, booting from a consumer 3.2 USB flashdrive</em>
 </p>
 
 ## 🚀 Quick Installation
