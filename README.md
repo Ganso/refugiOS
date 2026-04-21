@@ -60,11 +60,11 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 ### 📺 Vídeo de Demostración
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=VrP8VIxQZGg">
-    <img src="https://img.youtube.com/vi/VrP8VIxQZGg/maxresdefault.jpg" alt="refugiOS en acción" width="800">
+  <a href="https://www.youtube.com/watch?v=ZsVwWdWbtng">
+    <img src="https://img.youtube.com/vi/ZsVwWdWbtng/maxresdefault.jpg" alt="refugiOS en acción" width="800">
   </a>
   <br>
-  <em>refugiOS corriendo en un Microsoft Surface de 2018, arrancado desde un pendrive de 16Gb y completamente offline</em>
+  <em>refugiOS corriendo en un Ryzen 5500, arrancado desde un pendrive USB 3.2 de gama de consumo</em>
 </p>
 
 ## 🚀 Instalación Rápida
