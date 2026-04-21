@@ -48,15 +48,6 @@ Es una herramienta pensada para tener a mano todos los conocimientos, mapas y do
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en tu idioma (español o  inglés), descargando solo los diccionarios y ayudas que necesitas.
 *   Puedes ver en el apartado de **[Aplicaciones y Roadmap](doc/Modulos-y-Roadmap-ES.md)** el estado actual del proyecto, con los módulos que están ya implementados y los que se añadirán en un futuro.
 
-## 📸 Capturas de Pantalla
-
-| Elemento | Captura de Pantalla |
-| :--- | :--- |
-| **Interfaz Principal** | ![Menú principal](screenshots/Menu+Bobeda.png)<br>*Menú principal con una bóveda abierta* |
-| **Conocimiento** | ![Enciclopedia médica](screenshots/Medicina.png)<br>*Enciclopedia médica (WikiMed)* |
-| **Navegación** | ![Cartografía](screenshots/Mapas.png)<br>*Cartografía y navegación offline* |
-| **Asistente** | ![IA local](screenshots/IA%20local.png)<br>*Inteligencia Artificial local* |
-
 ### 📺 Vídeo de Demostración
 
 <p align="center">
