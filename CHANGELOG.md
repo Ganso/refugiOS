@@ -5,6 +5,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11] - 2026-04-28
+
+### Añadido
+- **Sistema de información de errores:** Implementado un sistema de registro de fallos no fatales con soporte multi-idioma (ES/EN) para mostrar un resumen detallado al finalizar la instalación si algún componente falló.
+
+### Cambiado
+- **Mejora en la robustez del Instalador:** El proceso de instalación ya no se detiene ante errores individuales de descarga o instalación. Los fallos se acumulan permitiendo que el despliegue continúe con el resto de componentes.
+- **Certificación de iconos optimizada:** El instalador ahora solo intenta certificar y marcar como confiables los iconos creados durante la sesión actual, ignorando archivos preexistentes en el escritorio y evitando así errores de permisos.
+
 ## [0.10] - 2026-04-16
 
 ### Añadido

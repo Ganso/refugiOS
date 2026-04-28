@@ -167,7 +167,10 @@ TRANSLATIONS = {
         'vault_all_closed': "All vaults have been closed and sealed.",
         'vault_error_create': "Error creating vault. Check available space and permissions.",
         'vault_error_open': "Error opening vault. Check the password and file integrity.",
-        'vault_error_close': "Error closing vault. Some files may be in use."
+        'vault_error_close': "Error closing vault. Some files may be in use.",
+        'install_errors_found': "The following components could not be installed and will need to be reviewed manually:",
+        'install_errors_summary': "Installation finished with some errors.",
+        'desktop_cert_error': "Error certifying desktop shortcut {0}: {1}"
     },
     'es': {
         'info': 'INFO',
@@ -288,7 +291,10 @@ TRANSLATIONS = {
         'vault_all_closed': "Todas las bóvedas han sido cerradas y selladas.",
         'vault_error_create': "Error al crear la bóveda. Verifica el espacio disponible y los permisos.",
         'vault_error_open': "Error al abrir la bóveda. Verifica la contraseña y la integridad del fichero.",
-        'vault_error_close': "Error al cerrar la bóveda. Algunos ficheros podrían estar en uso."
+        'vault_error_close': "Error al cerrar la bóveda. Algunos ficheros podrían estar en uso.",
+        'install_errors_found': "Los siguientes componentes no pudieron instalarse y deberán revisarse manualmente:",
+        'install_errors_summary': "Instalación finalizada con algunos errores.",
+        'desktop_cert_error': "Error al certificar el acceso directo {0}: {1}"
     }
 }
 

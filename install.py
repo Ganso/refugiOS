@@ -121,14 +121,19 @@ AI_MODEL_CONFIG = [
 # SECTION 1: UTILITY FUNCTIONS AND LOGS
 # ==============================================================================
 
+FAILED_ITEMS = []
+
 def log_info(msg):
     """Displays an informative message in blue."""
     print(f"\033[1;34m[*]\033[0m {msg}")
 
-def log_err(msg):
-    """Displays a critical error message in red and terminates execution."""
+def log_err(msg, fatal=True):
+    """Displays a critical error message in red and optionally terminates execution."""
     print(f"\033[1;31m[X] {i18n.T('error')}:\033[0m {msg}")
-    sys.exit(1)
+    if fatal:
+        sys.exit(1)
+    else:
+        FAILED_ITEMS.append(msg)
 
 def log_success(msg):
     """Displays a success message in green."""
@@ -163,6 +168,24 @@ def get_cmd_output(cmd):
         return result.stdout.strip()
     except Exception:
         return ""
+
+def certify_icon(fpath):
+    """
+    Marks a shortcut as trusted and sets appropriate permissions.
+    Only called for icons created by the installer.
+    """
+    try:
+        os.chmod(fpath, 0o755)
+        # Mark as trusted (XFCE, GNOME, Wayland)
+        if shutil.which("gio"):
+            run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
+            # SHA256 checksum for XFCE
+            checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
+            if checksum:
+                run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
+        run_cmd(f"attr -s trusted -V yes '{fpath}' 2>/dev/null || true", quiet=True)
+    except Exception as e:
+        log_err(i18n.T('desktop_cert_error').format(os.path.basename(fpath), e), fatal=False)
 
 # ==============================================================================
 # SECTION 2: SYSTEM DETECTION AND DIAGNOSIS
@@ -426,7 +449,7 @@ Exec=bash "{kiwix_script}" "{wiki_sym_path}"
 Icon=accessories-dictionary
 Terminal=false
 """)
-        os.chmod(desktop_file, 0o755)
+        certify_icon(desktop_file)
 
     # Rest of ZIMs (WikiMed, WikiHow): one icon per resource
     for c in KNOWLEDGE_CONFIG:
@@ -447,7 +470,7 @@ Exec=bash "{kiwix_script}" "{sym_path}"
 Icon=accessories-dictionary
 Terminal=false
 """)
-            os.chmod(desktop_file, 0o755)
+            certify_icon(desktop_file)
 
     # Remove obsolete Knowledge icons (old versions or removed resources)
     for fname in os.listdir(env.desktop):
@@ -524,7 +547,7 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
             log_success(i18n.T('installed_recursive_apt').format(name))
             return True
             
-    log_err(i18n.T('install_failed').format(name))
+    log_err(i18n.T('install_failed').format(name), fatal=False)
     return False
 
 # ==============================================================================
@@ -770,7 +793,7 @@ def main():
                   else:
                        run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{zim_url}\"")
         else:
-             log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang))
+             log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
 
     # Phase 4: Optional Cartographic Deployment (Organic Maps)
     repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
@@ -786,7 +809,7 @@ def main():
             if os.path.exists(local_s):
                 shutil.copy(local_s, d_path)
             else:
-                log_err(i18n.T('script_not_found').format(s_name))
+                log_err(i18n.T('script_not_found').format(s_name), fatal=False)
         os.chmod(d_path, 0o755)
         return d_path
 
@@ -807,7 +830,7 @@ Exec=bash "{maps_script}"
 Icon=app.organicmaps.desktop
 Terminal=false
 """)
-        os.chmod(maps_desktop, 0o755)
+        certify_icon(maps_desktop)
     else:
         log_info("Skipping Cartographic module (Organic Maps).")
 
@@ -831,7 +854,7 @@ Terminal=false
                   os.chmod(l_path, 0o755)
                   run_cmd(f"ln -sf '{l_path}' '{os.path.join(env.base, 'AI', 'llamafile')}'")
         except:
-             log_err("Error connecting to GitHub for Llamafile.")
+              log_err("Error connecting to GitHub for Llamafile.", fatal=False)
 
         for idx in ai_selected:
             opt = ai_opts[idx]
@@ -853,7 +876,7 @@ Exec=xfce4-terminal -e "{script_path}"
 Icon=utilities-terminal
 Terminal=false
 """)
-        os.chmod(ai_assist_desktop, 0o755)
+        certify_icon(ai_assist_desktop)
 
     # Phase 6: Privacy Cryptographic Foundations
     log_info("Assembling security vaults and privacy policies...")
@@ -890,22 +913,8 @@ Exec=xfce4-terminal -e "{script}"
 Icon={icon}
 Terminal=false
 """)
-        os.chmod(dfile, 0o755)
+        certify_icon(dfile)
 
-    # Desktop shortcut certification (Trusted marking)
-    log_info("Certifying shortcuts and disabling desktop security warnings...")
-    for file in os.listdir(env.desktop):
-        if file.endswith('.desktop'):
-            fpath = os.path.join(env.desktop, file)
-            os.chmod(fpath, 0o755)
-            # Mark as trusted (XFCE, GNOME, Wayland)
-            if shutil.which("gio"):
-                run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
-                # SHA256 checksum for XFCE
-                checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
-                if checksum:
-                    run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
-            run_cmd(f"attr -s trusted -V yes '{fpath}' 2>/dev/null || true", quiet=True)
 
     # PCManFM Quick execution hack (typical for Raspberry Pi OS)
     # Ensuring quick_exec=1 to avoid prompting on script launch
@@ -927,9 +936,15 @@ Terminal=false
          exec_path = "kiwix-desktop"
     sync_resources(env, sys_info, exec_path)
 
-    log_success("GLOBAL DEPLOYMENT OPERATION FINISHED. Please check desktop icon integrity and accessibility.")
-
-    d.msgbox(i18n.T('install_finished_msg'), title=i18n.T('install_finished_title'))
+    if FAILED_ITEMS:
+        log_err(i18n.T('install_errors_summary'), fatal=False)
+        report = f"{i18n.T('install_errors_found')}\n\n"
+        for item in FAILED_ITEMS:
+            report += f" • {item}\n"
+        d.msgbox(report, title=i18n.T('warning'))
+    else:
+        log_success("GLOBAL DEPLOYMENT OPERATION FINISHED. Please check desktop icon integrity and accessibility.")
+        d.msgbox(i18n.T('install_finished_msg'), title=i18n.T('install_finished_title'))
 
 
 if __name__ == "__main__":
