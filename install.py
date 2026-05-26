@@ -79,9 +79,12 @@ KNOWLEDGE_CONFIG = [
         "name": "wikihow",
         "label": i18n.T('wikihow_label'),
         "type": "maxi",
-        "search_url": "https://mirrors.dotsrc.org/kiwix/archive/zim/wikihow/",
-        "symlink": "wikihow.zim",
-        "available": False
+        "search_urls": [
+            "https://cdimage.debian.org/mirror/kiwix.org/archive/zim/wikihow/",
+            "https://mirror.netcologne.de/kiwix/zim/wikihow/",
+            "https://mirror-sites-ca.mblibrary.info/mirror-sites/download.kiwix.org/archive/zim/wikihow/"
+        ],
+        "symlink": "wikihow.zim"
     }
 ]
 
@@ -527,10 +530,15 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
         dest_path = os.path.join(env.apps_dir, appimage_name)
         if not os.path.exists(dest_path):
             log_info(f"Testing AppImage via direct link: {appimage_name}")
-            run_cmd(f"wget -c \"{appimage_url}\" -O \"{dest_path}\"")
-        os.chmod(dest_path, 0o755)
-        log_success(i18n.T('installed_appimage').format(name))
-        return dest_path
+            if run_cmd(f"wget -c \"{appimage_url}\" -O \"{dest_path}\""):
+                os.chmod(dest_path, 0o755)
+                log_success(i18n.T('installed_appimage').format(name))
+                return dest_path
+            log_info(f"AppImage download failed for {name}. Trying next method...")
+        else:
+            os.chmod(dest_path, 0o755)
+            log_success(i18n.T('installed_appimage').format(name))
+            return dest_path
 
     # PC - Level 2: Flatpak
     if flatpak_id:
@@ -539,13 +547,15 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
         if run_cmd(f"sudo flatpak install flathub {flatpak_id} -y", quiet=True):
             log_success(i18n.T('installed_flatpak').format(name))
             return True
-            
+        log_info(f"Flatpak installation failed for {name}. Trying next method...")
+
     # PC - Level 3: APT
     if apt_deps:
         log_info(f"No portable options. Trying {name} via classic APT repository...")
         if run_cmd(f"sudo apt-get install -y {apt_deps}", quiet=True):
             log_success(i18n.T('installed_recursive_apt').format(name))
             return True
+        log_info(f"APT installation failed for {name}.")
             
     log_err(i18n.T('install_failed').format(name), fatal=False)
     return False
@@ -648,7 +658,8 @@ def main():
             "name": c['name'],
             "type": c['type'],
             "id": c['id'],
-            "search_url": c['search_url'],
+            "search_url": c.get('search_url'),
+            "search_urls": c.get('search_urls', []),
             "symlink": c.get('symlink')
         }
         if os.path.exists(env.know_dir):
@@ -758,42 +769,57 @@ def main():
     for idx in kb_selected:
         opt = kb_opts[idx]
         log_info(i18n.T('tracking_zim').format(opt['name'], opt['type']))
-        zim_url = None
+
+        search_urls = opt.get('search_urls', [])
+        if opt.get('search_url'):
+            search_urls = [opt['search_url']] + search_urls
+        if not search_urls:
+            log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
+            continue
+
         zim_name = None
-        
-        try:
-            html = fetch_url(opt['search_url'])
-            prefix = "wikipedia" if opt['name'] in ['wikipedia', 'wikimed'] else opt['name']
-            m_name = "_medicine" if opt['name'] == 'wikimed' else ""
-            
-            # Try current language
-            regex = rf'href="({prefix}_{sys_info.lang}{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
-            matches = re.findall(regex, html)
-            
-            # Fallback to English if not found
-            if not matches and sys_info.lang != 'en':
-                log_info(i18n.T('zim_fallback').format(sys_info.lang, opt['name']))
-                regex_en = rf'href="({prefix}_en{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
-                matches = re.findall(regex_en, html)
-            
-            if matches:
-                 zim_name = sorted(matches)[-1]
-                 zim_url = opt['search_url'] + zim_name
-        except:
-             pass
-        
+        zim_url = None
+        prefix = "wikipedia" if opt['name'] in ['wikipedia', 'wikimed'] else opt['name']
+        m_name = "_medicine" if opt['name'] == 'wikimed' else ""
+
+        # Discover ZIM filename by trying mirrors in order
+        for base_url in search_urls:
+            try:
+                html = fetch_url(base_url)
+                regex = rf'href="({prefix}_{sys_info.lang}{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
+                matches = re.findall(regex, html)
+                if not matches and sys_info.lang != 'en':
+                    log_info(i18n.T('zim_fallback').format(sys_info.lang, opt['name']))
+                    regex_en = rf'href="({prefix}_en{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
+                    matches = re.findall(regex_en, html)
+                if matches:
+                    zim_name = sorted(matches)[-1]
+                    zim_url = base_url + zim_name
+                    break
+            except:
+                continue
+
         if zim_name and zim_url:
-             target_zim = os.path.join(env.know_dir, zim_name)
-             if os.path.exists(target_zim) and not force_dl:
-                  log_info(i18n.T('zim_exists').format(zim_name))
-             else:
-                  log_info(i18n.T('downloading_zim').format(zim_name))
-                  if use_torrent:
-                       run_cmd(f"aria2c --seed-time=0 --continue=true --dir=\"{env.know_dir}\" \"{zim_url}.torrent\"")
-                  else:
-                       run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{zim_url}\"")
+            target_zim = os.path.join(env.know_dir, zim_name)
+            if os.path.exists(target_zim) and not force_dl:
+                log_info(i18n.T('zim_exists').format(zim_name))
+            else:
+                log_info(i18n.T('downloading_zim').format(zim_name))
+                ok = False
+                # Try direct download from each mirror in order
+                for base_url in search_urls:
+                    url = base_url + zim_name
+                    log_info(f"Trying direct download from: {url}")
+                    if run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{url}\""):
+                        ok = True
+                        break
+                if not ok:
+                    log_info(i18n.T('zim_torrent_fallback').format(zim_name))
+                    ok = run_cmd(f"aria2c --seed-time=0 --continue=true --dir=\"{env.know_dir}\" \"{zim_url}.torrent\"")
+                    if not ok:
+                        log_err(i18n.T('zim_all_methods_failed').format(zim_name), fatal=False)
         else:
-             log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
+            log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
 
     # Phase 4: Optional Cartographic Deployment (Organic Maps)
     repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")

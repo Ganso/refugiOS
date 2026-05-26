@@ -5,7 +5,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.12] - 2026-05-26
+## [0.13] - 2026-05-26
 
 ### Añadido
 - **Sistema de construcción de imagen de sistema:** Nuevo script `scripts/build_refugios.sh` que genera automáticamente una imagen de disco base de refugiOS desde cero usando debootstrap (Debian Bookworm + XFCE), sin depender de una ISO de Xubuntu preexistente. Incluye particionado GPT (EFI + ROOT), instalación de GRUB en modo removible, autologin en LightDM, autoexpansión del disco en el primer arranque, lanzador del instalador en el escritorio, popup de bienvenida y personalización del escritorio XFCE.
@@ -18,6 +18,16 @@ y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Errores conocidos
 - **Iconos del escritorio no marcados como fiables:** En la imagen generada por `build_refugios.sh`, los lanzadores `.desktop` del escritorio no se marcan correctamente como fiables por XFCE. El mecanismo de confianza inyectado (checksum SHA-256 vía GIO `metadata::xfce-exe-checksum`) no es reconocido por XFCE, que muestra un diálogo de advertencia antes de permitir la ejecución. Se requiere intervención manual del usuario (clic derecho → "Permitir lanzamiento") hasta que este bug sea corregido.
+
+## [0.12] - 2026-05-07
+
+### Añadido
+- **Soporte de múltiples mirrors para ZIM:** Los entries en `KNOWLEDGE_CONFIG` ahora pueden tener `search_urls` (lista) además de `search_url`. Si la descarga directa desde un mirror falla, se prueba el siguiente en orden antes de caer a torrent.
+- **Fallback a torrent en descargas ZIM:** Si la descarga directa agota todos los mirrors, el instalador intenta automáticamente la descarga por BitTorrent como respaldo antes de reportar el error.
+- **Cascada de métodos de instalación robustecida:** Ahora si la descarga de un AppImage falla (wget retorna error), el instalador continúa probando Flatpak y APT en lugar de asumir éxito.
+
+### Cambiado
+- **WikiHow con triple mirror:** WikiHow ahora usa `cdimage.debian.org`, `mirror.netcologne.de` y `mirror-sites-ca.mblibrary.info` como fuentes de descarga, probándose en orden.
 
 ## [0.11] - 2026-04-28
 
