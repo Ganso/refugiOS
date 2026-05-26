@@ -7,7 +7,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="refugiOS logo"><br />
   <img src="https://img.shields.io/badge/Status-Development-green.svg" alt="Project Status">
-  <img src="https://img.shields.io/badge/Version-0.11-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.12-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/Paradigm-Offline_First-orange.svg" alt="Offline First">
   <img src="https://img.shields.io/badge/AI-Llamafile_(Local)-purple.svg" alt="Offline AI">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certified-red.svg" alt="Raspberry Pi">
@@ -105,6 +105,7 @@ The installer will automatically detect that you are on a Raspberry Pi and adapt
 To learn more about how refugiOS works and how to get the most out of it, consult the guides in the `/doc/` directory:
 
 *   **[XUbuntu Installation](doc/Xubuntu-Installation-EN.md):** How to prepare your XUbuntu USB from Windows or Linux.
+*   **[Choosing Installation Media](doc/Choosing-Installation-Media-EN.md):** How to choose the physical device (pendrive, SSD, adapter) based on your budget.
 *   **[Compatibility Table](doc/Compatibility-EN.md):** Linux distributions and hardware certified or in testing.
 *   **[Raspberry Pi Installation](doc/Raspberry-Pi-Installation-EN.md):** Specific guide for Raspberry Pi with Raspberry Pi OS.
 *   **[Vision and User Experience](doc/Vision-and-User-Experience-EN.md):** The purpose of the project and what to expect when using it.
@@ -113,6 +114,7 @@ To learn more about how refugiOS works and how to get the most out of it, consul
 *   **[System Architecture](doc/System-Architecture-EN.md):** Technical details about the Linux base and its performance.
 *   **[Security Vaults](doc/Security-Vaults-EN.md):** How the encryption of your personal files works.
 *   **[Unit Cloning](doc/Cloning-Units-EN.md):** How to make exact copies of your USB on Windows or Linux.
+*   **[System Image Build](doc/System-Image-Build-EN.md):** How to generate a base refugiOS image from scratch and test it with QEMU.
 
 
 ---

@@ -9,7 +9,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="logo de refugiOS"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versión-0.11-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versión-0.12-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -107,6 +107,7 @@ El instalador detectará automáticamente que estás en una Raspberry Pi y adapt
 Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido, consulta las guías en el directorio `/doc/`:
 
 *   **[Instalación en XUbuntu](doc/Instalacion-Xubuntu-ES.md):** Cómo preparar tu USB con XUbuntu desde Windows o Linux.
+*   **[Elección del Medio de Instalación](doc/Eleccion-Medio-Instalacion-ES.md):** Cómo elegir el dispositivo físico (pendrive, SSD, adaptador) según tu presupuesto.
 *   **[Tabla de Compatibilidad](doc/Compatibilidad-ES.md):** Distribuciones Linux y hardware certificado o en pruebas.
 *   **[Instalación en Raspberry Pi](doc/Instalacion-Raspberry-ES.md):** Guía específica para Raspberry Pi con Raspberry Pi OS.
 *   **[Visión y Experiencia del Usuario](doc/Vision-y-Experiencia-ES.md):** El propósito del proyecto y qué esperar al usarlo.
@@ -115,6 +116,7 @@ Para saber más sobre cómo funciona refugiOS y cómo sacarle el máximo partido
 *   **[Arquitectura del Sistema](doc/Arquitectura-ES.md):** Detalles técnicos sobre la base Linux y su rendimiento.
 *   **[Bóvedas de Seguridad](doc/Bovedas-Criptograficas-ES.md):** Cómo funciona el cifrado de tus archivos personales.
 *   **[Clonado de Unidades](doc/Clonado-de-Pendrive-ES.md):** Cómo hacer copias exactas de tu USB en Windows o Linux.
+*   **[Construcción de Imagen de Sistema](doc/Construccion-Imagen-Sistema-ES.md):** Cómo generar una imagen base de refugiOS desde cero y probarla con QEMU.
 
 
 ---

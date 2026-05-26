@@ -2,76 +2,12 @@
 
 This guide explains in detail how to prepare your refugiOS unit on a **XUbuntu** base from any operating system (Windows or Linux).
 
-## 1. Choice of Hardware (The Support)
-
-Before starting, the speed and lifespan of your refuge will depend on your hardware:
-
-*   **Golden Recommendation:** Although a standard pendrive works, the ideal for good performance is a **pocket SSD drive** (or a USB adapter for M.2 NVMe drives). Cheap USB sticks wear out quickly under constant Linux use and their writing speed is very poor.
-*   **Capacity and Content:**
-    *   **16 GB (Absolute Minimum):** Base system + WikiMed + Basic Maps + Light AI. No space for Wikipedia.
-    *   **32 GB (Balanced):** All of the above + "Mini" Wikipedia (only text or reduced images).
-    *   **64 GB (Standard):** The ideal point! Includes **full Wikipedia with images**, Phi-4-mini AI model, and detailed maps.
-    *   **128 GB or more:** Allows massive libraries (Survivor Library), world maps, and multiple AI models.
-
-> [!TIP]
-> **Buying Tips (What to look for?):**
-> *   **USB Version:** Always look for **USB 3.0, 3.1, or 3.2** (sometimes marked as "Gen 1" or "Gen 2"). The connector is usually blue or red inside.
-> *   **Speed:** On the box, look for read speeds above **150 MB/s** and write speeds above **50 MB/s**.
-> *   **Format:** Those with metal casings dissipate heat better during intensive use.
->
-> **⚠️ What to avoid:**
-> *   **USB 2.0:** It is desperately slow to run an operating system. A boot that takes 30 seconds on USB 3.0 can take 10 minutes on USB 2.0.
-> *   **Unknown Brands:** Flee from "too good to be true" offers of 1 TB for €10; they are usually scams with tiny real capacity.
->
-> **Backup Strategy:**
-> If you have old or smaller pendrives (16 GB), don't throw them away. You can leave them as **backup units** in a backpack, first aid kit, or vehicle with the base system. Always carry "the good one" (fast SSD or USB 3.2) as your main unit.
-
-### How to distinguish an SSD from a Pendrive?
-It's easy to confuse them by name, but their performance is worlds apart:
-*   **Pendrive (USB Memory):** It's the size of a thumb, very light and cheap. It gets very hot and its speed drops drastically after 5 minutes of use.
-*   **Pocket SSD:** It's somewhat larger (like a lighter or a matchbox), usually has a metal case and speeds that don't drop below 400 MB/s. It's a real disk drive, but miniaturized.
-
-### What to ask for in the store (or search on Amazon)
-If you go to a physical store or search online, use these magic words not to fail:
-*   **In physical store:** *"I want an external pocket SSD drive, that is USB 3.2 and at least 64GB (or 128GB), with read speed above 400 MB/s"*.
-*   **In online stores:** Search for *"Portable SSD 128GB USB 3.2"* or *"External solid state unit USB-C"*. Make sure the description says **"SSD"** and not just "Flash Drive" or "USB Stick".
-
-### Reference Devices and Budgets (Spain)
-
-To facilitate the choice, here are three recommended configurations. Keep in mind that technology prices are very volatile and serve only as a guide, and that at the time of writing this (March/April 2026) prices are undergoing an upward trend:
-
-1.  **Base Option (Economic / Replicas):**
-    *   **What it is:** A 32GB or 64GB metallic USB 3.2 pendrive (e.g., SanDisk Ultra Luxe or Kingston DataTraveler Kyson).
-    *   **What for:** Ideal for having **multiple cheap security replicas** of the base system in backpacks, vehicles, or kits. Not recommended for intensive daily use.
-    *   **Real 2026 Price:** Between **€8 and €20**.
-    *   *Note:* A standard 64GB model is found for about **€10**. 32GB versions start at **€14**, going up to **€15-€25** for the fastest 64GB. Plastic models are cheaper (**€8**), but their low durability doesn't justify the small saving.
-
-2.  **Intermediate Option (SATA Adapter):**
-    *   **What it is:** A USB to SATA III adapter (cable or casing) to connect existing 2.5" or 3.5" HDD or SSD disks.
-    *   **What for:** The best way to **recycle old computer disks** to have a high-speed, high-capacity refugiOS for day-to-day use without spending much. An SSD will give us a read and write speed comparable to a modern computer, while a well-cared-for HDD can have enormous durability (although we'll have to be more careful with bumps or magnetic fields).
-    *   **Real 2026 Price:** Between **€10 and €20**, plus the price of the hard drive we already have.
-    *   *Note:* Basic aluminum casings are found between **€5 and €10**. High-fidelity cable adapters with UASP support range between **€15 and €20**.
-
-3.  **Premium Option (Main Unit):**
-    *   **What it is:** A dedicated 250GB Portable SSD or a DIY assembly (NVMe + Casing).
-    *   **What for:** As a **high-performance main unit**. Essential for intensive use of complex AI models, full Wikipedia with images, and detailed world maps.
-    *   **Real 2026 Price:** Between **€60 and €90**.
-    *   *Note:* "Assembled" premium models usually start at 500GB (**€100-€150**). The real 250GB option is around **€65**. Assembling an NVMe module by parts can cost **€80-€90**, being more expensive but allowing future upgrades.
-
-#### Performance and Experience Comparison (2026)
-
-| Use Profile | Capacity | Investment (Est.) | Installation Time | User Experience |
-| :--- | :--- | :--- | :--- | :--- |
-| **OS Distribution** | 32 GB - 64 GB | 10 € - 20 € | A full afternoon | With continuous waits |
-| **SSD Recycling** | 128 GB - 256 GB | 15 € (Adap. only) | ~1 hour | Fluid (almost native) |
-| **High Performance** | 250 GB | 60 € - 90 € | < 45 minutes | Responsive (like local) |
-
 > [!IMPORTANT]
-> This price ecosystem reflects that the 2026 market penalizes lower capacities. The price difference between a slow pendrive and a 250GB SSD is today one of the most important value gaps for the end user.
+> **Before you start:** The choice of physical device (pendrive, SSD, adapter) and its capacity affect performance and the content you can install. Check the **[Choosing Installation Media Guide](Choosing-Installation-Media-EN.md)** to make the best decision based on your budget.
 
 ---
 
-## 2. Base Image Download (The Software)
+## 1. Base Image Download (The Software)
 
 We use light versions of Xubuntu to maximize available free space:
 
@@ -81,7 +17,7 @@ We use light versions of Xubuntu to maximize available free space:
 
 ---
 
-## 3. Creation of the Boot Drive
+## 2. Creation of the Boot Drive
 
 There are two main ways to configure the system. Read carefully:
 
@@ -151,7 +87,7 @@ We do not recommend this method on conventional USBs because Linux "journaling" 
 
 ---
 
-## 4. Testing, Virtualization, and Dump
+## 3. Testing, Virtualization, and Dump
 
 If you want to mount RefugiOS on a local disk image before touching the physical pendrive, or if you prefer to test that everything works correctly in a virtual machine before restarting your PC:
 
@@ -161,9 +97,12 @@ This comprehensive guide will teach you how to create an `.img` image, install t
 
 This is the recommended option for advanced users, as it allows for much faster local work, and then dumping the final result to the USB safely. It is also perfect if you want to prepare a batch of USB devices of similar size.
 
+> [!NOTE]
+> If you prefer to generate the refugiOS image from scratch without depending on a Xubuntu ISO, check the **[System Image Build Guide](System-Image-Build-EN.md)**. This method produces a native system based on Debian Bookworm with XFCE and offers better performance and less device wear.
+
 ---
 
-## 5. First Boot and refugiOS Installation
+## 4. First Boot and refugiOS Installation
 
 Turn off your PC and boot from the USB (F12/F8/Esc).
 

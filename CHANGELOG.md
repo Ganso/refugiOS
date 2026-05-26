@@ -5,6 +5,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12] - 2026-05-26
+
+### Añadido
+- **Sistema de construcción de imagen de sistema:** Nuevo script `scripts/build_refugios.sh` que genera automáticamente una imagen de disco base de refugiOS desde cero usando debootstrap (Debian Bookworm + XFCE), sin depender de una ISO de Xubuntu preexistente. Incluye particionado GPT (EFI + ROOT), instalación de GRUB en modo removible, autologin en LightDM, autoexpansión del disco en el primer arranque, lanzador del instalador en el escritorio, popup de bienvenida y personalización del escritorio XFCE.
+- **Script de prueba de arranque UEFI:** Nuevo script `scripts/test_boot.sh` que permite verificar el arranque de la imagen generada mediante QEMU con firmware OVMF, detección automática de KVM y soporte multi-distribución para las rutas de firmware UEFI.
+- **Documentación del sistema de construcción:** Nuevas guías exhaustivas en español (`doc/Construccion-Imagen-Sistema-ES.md`) e inglés (`doc/System-Image-Build-EN.md`) detallando requisitos, proceso de construcción, prueba de arranque, volcado a dispositivo, estructura de particiones, scripts inyectados, bug conocido de iconos de escritorio y flujos de trabajo recomendados.
+- **Guía de elección del medio de instalación:** Nuevo documento compartido en español (`doc/Eleccion-Medio-Instalacion-ES.md`) e inglés (`doc/Choosing-Installation-Media-EN.md`) que centraliza la información sobre elección de dispositivo físico (pendrive vs SSD, capacidades, presupuestos, consejos de compra), anteriormente duplicada en la guía de XUbuntu. Incluye una tabla de implicaciones según el método de instalación elegido.
+
+### Cambiado
+- **Reestructuración de la documentación de instalación:** La sección "Elección del hardware" ha sido extraída de las guías de instalación en XUbuntu (ES/EN) y migrada a la nueva guía dedicada de elección del medio de instalación, ya que aplica igualmente a las imágenes de sistema nativas. Las guías de XUbuntu ahora referencian la nueva guía y tienen la numeración de secciones actualizada.
+
+### Errores conocidos
+- **Iconos del escritorio no marcados como fiables:** En la imagen generada por `build_refugios.sh`, los lanzadores `.desktop` del escritorio no se marcan correctamente como fiables por XFCE. El mecanismo de confianza inyectado (checksum SHA-256 vía GIO `metadata::xfce-exe-checksum`) no es reconocido por XFCE, que muestra un diálogo de advertencia antes de permitir la ejecución. Se requiere intervención manual del usuario (clic derecho → "Permitir lanzamiento") hasta que este bug sea corregido.
+
 ## [0.11] - 2026-04-28
 
 ### Añadido

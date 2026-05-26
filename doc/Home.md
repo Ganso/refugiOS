@@ -12,8 +12,10 @@
 
 ### Guías Rápidas:
 *   [**Visión y Experiencia del Usuario**](Vision-y-Experiencia-ES)
+*   [**Elección del Medio de Instalación**](Eleccion-Medio-Instalacion-ES)
 *   [**Guía de Instalación en XUbuntu**](Instalacion-Xubuntu-ES)
 *   [**Guía de Instalación en Raspberry Pi**](Instalacion-Raspberry-ES)
+*   [**Construcción de Imagen de Sistema**](Construccion-Imagen-Sistema-ES)
 *   [**Aplicaciones y Roadmap**](Modulos-y-Roadmap-ES)
 
 [**Ver todo el índice en Español**](_Sidebar#sección-en-español)
@@ -26,8 +28,10 @@
 
 ### Quick Guides:
 *   [**Vision and User Experience**](Vision-and-User-Experience-EN)
+*   [**Choosing Installation Media**](Choosing-Installation-Media-EN)
 *   [**XUbuntu Installation Guide**](Xubuntu-Installation-EN)
 *   [**Raspberry Pi Installation Guide**](Raspberry-Pi-Installation-EN)
+*   [**System Image Build Guide**](System-Image-Build-EN)
 *   [**Modules and Roadmap**](Modules-and-Roadmap-EN)
 
 [**View complete English index**](_Sidebar#english-section)
