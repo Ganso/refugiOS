@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14] - 2026-05-27
+
+### Añadido
+- **Wikipedia con imágenes:** Nueva opción de descarga "Wikipedia Total" (`all_maxi`) que incluye la Wikipedia completa con todas las imágenes y contenido multimedia (~38 GB). Anteriormente solo estaban disponibles las versiones sin imágenes (Lite y NoPics). El instalador ahora ofrece tres niveles de Wikipedia: Lite (artículos destacados, ~73 MB), NoPics (texto completo sin imágenes, ~9.5 GB) y Total (completa con imágenes, ~38 GB).
+
 ## [0.13] - 2026-05-26
 
 ### Añadido

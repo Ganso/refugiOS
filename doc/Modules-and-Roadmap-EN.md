@@ -16,6 +16,7 @@ These components are installed automatically or through the welcome wizard:
 ### 1. Offline Library and Encyclopedias ([Kiwix](https://www.kiwix.org/))
 Access to massive databases using the ZIM format.
 *   **Contents:** [Wikipedia](https://en.wikipedia.org/) (General), [WikiMed](https://www.kiwix.org/en/get-kiwix/download-content/) (Medicine), [WikiHow](https://wikihow.com/) (Manuals).
+*   **Wikipedia in three tiers:** The installer allows choosing between Wikipedia Lite (~73 MB, top articles without images), Wikipedia NoPics (~9.5 GB, complete text without images), or **Wikipedia Total with images and multimedia** (~38 GB).
 *   **Note on WikiHow:** WikiHow is now available for download via multiple mirrors (Debian CD image server, NetCologne, and MBL Library). The installer tries each mirror in order to ensure maximum reliability.
 *   **Language:** 🌐 **Multilingual.** The installer downloads the files specifically in the language you choose (en, es, fr, etc.).
 

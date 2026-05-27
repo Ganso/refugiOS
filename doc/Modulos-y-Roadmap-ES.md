@@ -16,6 +16,7 @@ Estos componentes se instalan automáticamente o mediante el asistente de bienve
 ### 1. Biblioteca y Enciclopedias Offline ([Kiwix](https://www.kiwix.org/))
 Acceso a bases de datos masivas mediante el formato ZIM.
 *   **Contenidos:** [Wikipedia](https://es.wikipedia.org/) (General), [WikiMed](https://www.kiwix.org/es/get-kiwix/download-content/) (Medicina), [WikiHow](https://wikihow.com/) (Manuales).
+*   **Wikipedia en tres niveles:** El instalador permite elegir entre Wikipedia versión ligera (~73 MB, artículos destacados sin imágenes), Wikipedia sin imágenes (~9.5 GB, texto completo sin imágenes) o **Wikipedia completa con imágenes y multimedia** (~38 GB).
 *   **Nota sobre WikiHow:** WikiHow ya está disponible para descarga a través de múltiples mirrors (servidor de imágenes de Debian, NetCologne y MBL Library). El instalador prueba cada mirror en orden para garantizar la máxima fiabilidad.
 *   **Idioma:** 🌐 **Multilingüe.** El instalador descarga los archivos específicamente en el idioma que elijas (es, en, fr, etc.).
 
