@@ -49,7 +49,7 @@ except ImportError:
 # ==============================================================================
 
 # Knowledge Databases (ZIM)
-KNOWLEDGE_CONFIG = [
+WIKIPEDIA_CONFIG = [
     {
         "id": "wiki_lite",
         "name": "wikipedia",
@@ -59,13 +59,24 @@ KNOWLEDGE_CONFIG = [
         "priority": 1
     },
     {
-        "id": "wiki_total",
+        "id": "wiki_nopics",
         "name": "wikipedia",
-        "label": i18n.T('wiki_total_label'),
+        "label": i18n.T('wiki_nopics_label'),
         "type": "all_nopic",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
         "priority": 2
     },
+    {
+        "id": "wiki_total",
+        "name": "wikipedia",
+        "label": i18n.T('wiki_total_label'),
+        "type": "all_maxi",
+        "search_url": "https://download.kiwix.org/zim/wikipedia/",
+        "priority": 3
+    }
+]
+
+OTHER_WIKIS_CONFIG = [
     {
         "id": "wikimed",
         "name": "wikimed",
@@ -378,13 +389,17 @@ def multi_select_menu(d, title, options, default_indices=[]):
 def single_select_menu(d, title, options, default_index):
     """
     Shows a standard menu using d.menu.
+    Installed elements are highlighted with a tag.
     """
     choices = []
     for i, opt in enumerate(options):
-        choices.append((str(i + 1), opt['label']))
-    
+        item = opt['label']
+        if opt.get('installed'):
+            item += rf" \Z1{i18n.T('installed_tag')}\Zn"
+        choices.append((str(i + 1), item))
+
     code, tag = d.menu(title, choices=choices, title="refugiOS Installer", default_item=str(default_index + 1))
-    
+
     if code == d.OK:
         return int(tag) - 1
     return None
@@ -422,7 +437,7 @@ def sync_resources(env, sys_info, exec_path):
     if not os.path.exists(env.know_dir): return
 
     # 1. Wikipedia (Choosing the highest priority version found)
-    wikis = sorted([c for c in KNOWLEDGE_CONFIG if c['name'] == 'wikipedia'], key=lambda x: x.get('priority', 0), reverse=True)
+    wikis = sorted(WIKIPEDIA_CONFIG, key=lambda x: x.get('priority', 0), reverse=True)
     for w in wikis:
         regex = rf"wikipedia_{sys_info.lang}_{w['type']}_[0-9-]*\.zim"
         matches = [f for f in os.listdir(env.know_dir) if re.match(regex, f)]
@@ -433,7 +448,7 @@ def sync_resources(env, sys_info, exec_path):
             break
     
     # 2. Other ZIMs (WikiMed, WikiHow...)
-    for c in KNOWLEDGE_CONFIG:
+    for c in OTHER_WIKIS_CONFIG:
         if not c.get('symlink'): continue
         prefix = "wikipedia" if c['name'] == 'wikimed' else c['name']
         m_name = "_medicine" if c['name'] == 'wikimed' else ""
@@ -468,8 +483,7 @@ Terminal=false
         certify_icon(desktop_file)
 
     # Rest of ZIMs (WikiMed, WikiHow): one icon per resource
-    for c in KNOWLEDGE_CONFIG:
-        if c['name'] == 'wikipedia': continue  # Already treated above
+    for c in OTHER_WIKIS_CONFIG:
         if not c.get('symlink'): continue
         sym_path = os.path.join(env.base, 'Knowledge', c['symlink'])
         if os.path.exists(sym_path):
@@ -640,12 +654,14 @@ def main():
     lite_mode = sys_info.free_space_mb < 25000
     if lite_mode:
         log_info(i18n.T('lite_mode_msg'))
-        def_kb = [0] # Only Wikipedia Top Miniatures
-        def_ai = [0, 1]  # Suggest Minimum and Basic
+        def_wiki = 1
+        def_other_wikis = []
+        def_ai = [0, 1]
     else:
         log_info(i18n.T('rich_mode_msg'))
-        def_kb = [1] # Wikipedia full textual (11 GB)
-        def_ai = [1, 2] # Suggest Basic and Intermediate
+        def_wiki = 2
+        def_other_wikis = [0]
+        def_ai = [1, 2]
 
     # Force download mode
     force_dl = simple_question(d, i18n.T('rewrite_mode_title'), i18n.T('rewrite_mode_prompt'), default_yes=False)
@@ -661,11 +677,27 @@ def main():
     
     env = TargetEnv(base_dir, desktop_dir)
 
-    # Detect ZIMs
-    kb_opts = []
-    for c in KNOWLEDGE_CONFIG:
-        if not c.get('available', True):
-            continue
+    # Detect Wikipedia versions
+    wiki_opts = [{"label": i18n.T('wiki_skip_label'), "skip": True}]
+    for c in WIKIPEDIA_CONFIG:
+        opt = {
+            "label": c['label'],
+            "name": c['name'],
+            "type": c['type'],
+            "id": c['id'],
+            "search_url": c.get('search_url'),
+            "search_urls": c.get('search_urls', []),
+            "priority": c.get('priority', 0)
+        }
+        if os.path.exists(env.know_dir):
+            regex = rf"wikipedia_{sys_info.lang}_{c['type']}_[0-9-]*\.zim"
+            if any(re.match(regex, f) for f in os.listdir(env.know_dir)):
+                opt['installed'] = True
+        wiki_opts.append(opt)
+
+    # Detect other wikis (WikiMed, WikiHow)
+    other_wiki_opts = []
+    for c in OTHER_WIKIS_CONFIG:
         opt = {
             "label": c['label'],
             "name": c['name'],
@@ -676,12 +708,12 @@ def main():
             "symlink": c.get('symlink')
         }
         if os.path.exists(env.know_dir):
-            prefix = "wikipedia" if c['name'] in ['wikipedia', 'wikimed'] else c['name']
+            prefix = "wikipedia" if c['name'] == 'wikimed' else c['name']
             m_name = "_medicine" if c['name'] == 'wikimed' else ""
             pattern = rf"{prefix}_{sys_info.lang}{m_name}_{c['type']}_[0-9-]*\.zim"
             if any(re.match(pattern, f) for f in os.listdir(env.know_dir)):
                 opt['installed'] = True
-        kb_opts.append(opt)
+        other_wiki_opts.append(opt)
 
     # Detect AI Models
     ai_opts = []
@@ -703,7 +735,9 @@ def main():
     # INSTALLER QUESTIONNAIRES
     # ==========================
 
-    kb_selected = multi_select_menu(d, i18n.T('kb_menu_title'), kb_opts, def_kb)
+    wiki_selected = single_select_menu(d, i18n.T('wiki_menu_title'), wiki_opts, def_wiki)
+
+    other_wikis_selected = multi_select_menu(d, i18n.T('other_wikis_menu_title'), other_wiki_opts, def_other_wikis)
 
     install_maps = simple_question(d, i18n.T('maps_menu_title'), i18n.T('maps_menu_prompt'), default_yes=True)
 
@@ -779,8 +813,62 @@ def main():
 
     # Phase 3: Knowledge Bases (ZIM)
     log_info(i18n.T('scanning_zim'))
-    for idx in kb_selected:
-        opt = kb_opts[idx]
+
+    # 3a: Wikipedia (single selected version, or skip)
+    if wiki_selected is not None and wiki_selected > 0:
+        opt = wiki_opts[wiki_selected]
+        if not opt.get('skip'):
+            log_info(i18n.T('tracking_zim').format(opt['name'], opt['type']))
+
+            search_urls = opt.get('search_urls', [])
+            if opt.get('search_url'):
+                search_urls = [opt['search_url']] + search_urls
+            if not search_urls:
+                log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
+            else:
+                zim_name = None
+                zim_url = None
+
+                for base_url in search_urls:
+                    try:
+                        html = fetch_url(base_url)
+                        regex = rf'href="(wikipedia_{sys_info.lang}_{opt["type"]}_[0-9-]*\.zim)"'
+                        matches = re.findall(regex, html)
+                        if not matches and sys_info.lang != 'en':
+                            log_info(i18n.T('zim_fallback').format(sys_info.lang, opt['name']))
+                            regex_en = rf'href="(wikipedia_en_{opt["type"]}_[0-9-]*\.zim)"'
+                            matches = re.findall(regex_en, html)
+                        if matches:
+                            zim_name = sorted(matches)[-1]
+                            zim_url = base_url + zim_name
+                            break
+                    except:
+                        continue
+
+                if zim_name and zim_url:
+                    target_zim = os.path.join(env.know_dir, zim_name)
+                    if os.path.exists(target_zim) and not force_dl:
+                        log_info(i18n.T('zim_exists').format(zim_name))
+                    else:
+                        log_info(i18n.T('downloading_zim').format(zim_name))
+                        ok = False
+                        for base_url in search_urls:
+                            url = base_url + zim_name
+                            log_info(f"Trying direct download from: {url}")
+                            if run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{url}\""):
+                                ok = True
+                                break
+                        if not ok:
+                            log_info(i18n.T('zim_torrent_fallback').format(zim_name))
+                            ok = run_cmd(f"aria2c --seed-time=0 --continue=true --dir=\"{env.know_dir}\" \"{zim_url}.torrent\"")
+                            if not ok:
+                                log_err(i18n.T('zim_all_methods_failed').format(zim_name), fatal=False)
+                else:
+                    log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
+
+    # 3b: Other Wikis (WikiMed, WikiHow - multiple selection)
+    for idx in other_wikis_selected:
+        opt = other_wiki_opts[idx]
         log_info(i18n.T('tracking_zim').format(opt['name'], opt['type']))
 
         search_urls = opt.get('search_urls', [])
@@ -792,10 +880,9 @@ def main():
 
         zim_name = None
         zim_url = None
-        prefix = "wikipedia" if opt['name'] in ['wikipedia', 'wikimed'] else opt['name']
+        prefix = "wikipedia" if opt['name'] == 'wikimed' else opt['name']
         m_name = "_medicine" if opt['name'] == 'wikimed' else ""
 
-        # Discover ZIM filename by trying mirrors in order
         for base_url in search_urls:
             try:
                 html = fetch_url(base_url)
@@ -819,7 +906,6 @@ def main():
             else:
                 log_info(i18n.T('downloading_zim').format(zim_name))
                 ok = False
-                # Try direct download from each mirror in order
                 for base_url in search_urls:
                     url = base_url + zim_name
                     log_info(f"Trying direct download from: {url}")
