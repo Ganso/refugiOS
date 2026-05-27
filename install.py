@@ -176,19 +176,32 @@ def certify_icon(fpath):
     """
     Marks a shortcut as trusted and sets appropriate permissions.
     Only called for icons created by the installer.
+    Uses multiple mechanisms for maximum compatibility across desktop environments.
     """
     try:
         os.chmod(fpath, 0o755)
-        # Mark as trusted (XFCE, GNOME, Wayland)
+        # XFCE / Thunar: set executable checksum metadata
         if shutil.which("gio"):
-            run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
-            # SHA256 checksum for XFCE
             checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
             if checksum:
                 run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
+                run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
+        # POSIX xattr fallback
         run_cmd(f"attr -s trusted -V yes '{fpath}' 2>/dev/null || true", quiet=True)
     except Exception as e:
         log_err(i18n.T('desktop_cert_error').format(os.path.basename(fpath), e), fatal=False)
+
+def certify_all_desktop_icons(desktop_dir):
+    """
+    Recursively certifies all .desktop files in the given directory.
+    Called once at the end of installation to ensure nothing was missed.
+    """
+    if not os.path.isdir(desktop_dir):
+        return
+    for fname in os.listdir(desktop_dir):
+        if fname.endswith('.desktop'):
+            certify_icon(os.path.join(desktop_dir, fname))
+    run_cmd("xfdesktop --reload 2>/dev/null || true", quiet=True)
 
 # ==============================================================================
 # SECTION 2: SYSTEM DETECTION AND DIAGNOSIS
@@ -961,6 +974,9 @@ Terminal=false
     if 'exec_path' not in locals():
          exec_path = "kiwix-desktop"
     sync_resources(env, sys_info, exec_path)
+
+    # Certify all desktop icons one final time and refresh desktop
+    certify_all_desktop_icons(env.desktop)
 
     if FAILED_ITEMS:
         log_err(i18n.T('install_errors_summary'), fatal=False)

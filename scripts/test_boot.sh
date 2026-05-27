@@ -34,7 +34,7 @@ if [ -z "$IMG_SIZE" ]; then
     if [ -n "$EXISTING_IMG" ]; then
         IMG_NAME="$EXISTING_IMG"
     else
-        IMG_NAME="$WORKSPACE_DIR/refugios-base-16G.img"
+        IMG_NAME="$WORKSPACE_DIR/refugios-base-16G-es.img"
     fi
 else
     IMG_NAME="$WORKSPACE_DIR/refugios-base-${IMG_SIZE}.img"

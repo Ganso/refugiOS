@@ -60,7 +60,7 @@ else
 fi
 
 # List of system dependencies needed for the Python installer to work well
-DEPENDENCIES="python3 python3-dialog dialog aria2 pciutils wget curl bash jq rsync apt-utils"
+DEPENDENCIES="python3 python3-dialog dialog aria2 pciutils wget curl bash jq rsync apt-utils flatpak"
 
 MISSING=""
 for pkg in $DEPENDENCIES; do
