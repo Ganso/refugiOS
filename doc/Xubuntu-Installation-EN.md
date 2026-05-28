@@ -98,7 +98,7 @@ This comprehensive guide will teach you how to create an `.img` image, install t
 This is the recommended option for advanced users, as it allows for much faster local work, and then dumping the final result to the USB safely. It is also perfect if you want to prepare a batch of USB devices of similar size.
 
 > [!NOTE]
-> If you prefer to generate the refugiOS image from scratch without depending on a Xubuntu ISO, check the **[System Image Build Guide](System-Image-Build-EN.md)**. This method produces a native system based on Debian Bookworm with XFCE and offers better performance and less device wear.
+> If you prefer to generate the refugiOS image from scratch without depending on a Xubuntu ISO, check the **[System Image Build Guide](System-Image-Build-EN.md)**. This method produces a native system based on Debian Trixie with XFCE and offers better performance and less device wear.
 
 ---
 

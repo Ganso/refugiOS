@@ -1,6 +1,6 @@
 # refugiOS System Image Build Guide
 
-This guide details the automated process for generating a **base refugiOS disk image** from scratch, without depending on a pre-existing Xubuntu ISO. The resulting system is a native Debian Bookworm installation with the XFCE desktop, ready to be flashed directly to a USB drive or external device.
+This guide details the automated process for generating a **base refugiOS disk image** from scratch, without depending on a pre-existing Xubuntu ISO. The resulting system is a native Debian Trixie installation with the XFCE desktop, ready to be flashed directly to a USB drive or external device.
 
 Unlike the traditional method based on a Xubuntu Live ISO with persistence, this image produces a **natively installed system**, which eliminates the indirection layers of Live mode and offers better performance, less device wear, and greater control over the base configuration.
 
@@ -54,7 +54,7 @@ Installing test dependencies:
 
 ### 1.4. Disk Space
 
-The generated image is a **sparse file**: it is created at the requested size but only occupies the actual space of the written data. A freshly created 16G image will occupy approximately **3-4 GB** on disk. Make sure you have at least **5 GB free** before starting.
+The generated image is a **sparse file**: it is created at the requested size but only occupies the actual space of the written data. A freshly created 16G image will occupy approximately **7-8 GB** on disk. Make sure you have at least **10 GB free** before starting.
 
 ---
 
@@ -93,7 +93,7 @@ The script automatically executes the following steps:
 5. **Loop device mapping:** Associates the image to a loop device with `losetup -Pf` to access the partitions.
 6. **Formatting:** Formats EFI as FAT32 and ROOT as ext4. Obtains the UUIDs of both partitions.
 7. **Mounting:** Mounts the root partition at `/mnt/refugios_build` and the EFI partition at `/mnt/refugios_build/boot/efi`.
-8. **Debootstrap:** Installs the Debian Bookworm (amd64) base system from official repositories.
+8. **Debootstrap:** Installs the Debian Trixie (amd64) base system from official repositories.
 9. **fstab generation:** Creates `/etc/fstab` with the real UUIDs of both partitions to ensure correct mounting at boot.
 10. **Configuration inside chroot:** Mounts `/dev`, `/dev/pts`, `/proc`, `/sys`, and `/run` inside the image and executes all configuration steps in a chroot environment (see section 2.3).
 11. **Unmounting and cleanup:** Unmounts everything in reverse order and removes the loop device.
@@ -103,7 +103,7 @@ The script automatically executes the following steps:
 Inside the chroot environment, the script performs the following configuration:
 
 #### Base System
-- Configures Debian Bookworm APT repositories (main, contrib, non-free, non-free-firmware) including security and updates.
+- Configures Debian Trixie APT repositories (main, contrib, non-free, non-free-firmware) including security and updates.
 - Installs essential packages:
   - **Kernel:** `linux-image-amd64`
   - **Bootloader:** `grub-efi-amd64`
@@ -283,10 +283,10 @@ This is the only metadata field that XFCE checks to consider a `.desktop` file a
 
 | Aspect | Native Image (this method) | Live ISO with Persistence |
 | :--- | :--- | :--- |
-| **System base** | Native Debian Bookworm | XUbuntu Live (SquashFS) |
+| **System base** | Native Debian Trixie | XUbuntu Live (SquashFS) |
 | **Performance** | Superior (system installed directly) | Inferior (SquashFS indirection layer) |
 | **USB wear** | Lower (no continuous write overlay) | Higher (constant writing to writable partition) |
-| **Space used (base)** | ~3-4 GB | ~2-3 GB (compressed ISO) |
+| **Space used (base)** | ~7-8 GB | ~2-3 GB (compressed ISO) |
 | **Customization** | Complete (real installed system) | Limited (only persistence layer) |
 | **Creation complexity** | Medium (one automated command) | Low (Rufus/mkusb with existing ISO) |
 | **Host requirements** | Debian-based + root | Any OS with Rufus/mkusb |

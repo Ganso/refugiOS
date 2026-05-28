@@ -3,7 +3,7 @@
 set -e
 
 # Configuración de variables
-IMG_SIZE="8G"
+IMG_SIZE="16G"
 REFUGIOS_LANG="es"
 
 while getopts "s:l:" opt; do
@@ -11,7 +11,7 @@ while getopts "s:l:" opt; do
         s) IMG_SIZE="$OPTARG" ;;
         l) REFUGIOS_LANG="$OPTARG" ;;
         :) echo "ERROR: La opción -$OPTARG requiere un argumento."; exit 1 ;;
-        \?) echo "Uso: $0 [-s TAMAÑO] [-l IDIOMA]"; echo "  -s TAMAÑO   Tamaño de la imagen (ej. 16G, 8G). Por defecto: 8G"; echo "  -l IDIOMA   Idioma: 'es' o 'en'. Por defecto: es"; exit 1 ;;
+        \?) echo "Uso: $0 [-s TAMAÑO] [-l IDIOMA]"; echo "  -s TAMAÑO   Tamaño de la imagen (ej. 16G, 32G). Por defecto: 16G"; echo "  -l IDIOMA   Idioma: 'es' o 'en'. Por defecto: es"; exit 1 ;;
     esac
 done
 
@@ -31,7 +31,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="${SCRIPT_DIR}/build_refugios_$(date +%Y%m%d_%H%M%S).log"
 IMG_NAME="refugios-base-${IMG_SIZE}-${REFUGIOS_LANG}.img"
 MNT_DIR="/mnt/refugios_build"
-DEBIAN_RELEASE="bookworm"
+DEBIAN_RELEASE="trixie"
 USER_NAME="refugios"
 USER_PASS="refugios"
 
@@ -218,16 +218,16 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Configurar repositorios
 cat << 'SOURCES' > /etc/apt/sources.list
-deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
-deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
-deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian/ trixie main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian/ trixie-updates main contrib non-free non-free-firmware
 SOURCES
 
 apt-get update
 apt-get install -y linux-image-amd64 linux-headers-amd64 build-essential \
                    grub-efi-amd64 grub-pc-bin sudo network-manager network-manager-gnome xfce4-goodies \
                    xfce4 xfce4-terminal curl cloud-guest-utils zenity lightdm \
-                   epiphany-browser locales keyboard-configuration flatpak libglib2.0-bin \
+                   epiphany-browser locales keyboard-configuration flatpak libglib2.0-bin libfuse2t64 \
                    firmware-iwlwifi firmware-brcm80211 firmware-atheros \
                    firmware-libertas firmware-misc-nonfree firmware-realtek \
                    firmware-amd-graphics xserver-xorg-video-amdgpu nvidia-driver

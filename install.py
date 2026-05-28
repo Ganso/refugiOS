@@ -857,6 +857,7 @@ def main():
         "wget", "curl", "bash", "jq", "rsync", "apt-utils", "flatpak",
         "cryptsetup", "epiphany-browser", "gedit", "xfce4-terminal",
         "dbus-user-session", "xdg-desktop-portal", "libglib2.0-bin",
+        "libfuse2t64",
         "language-selector-common",
     ]
     if install_extras:

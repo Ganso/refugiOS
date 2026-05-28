@@ -94,7 +94,7 @@ Esta guía exhaustiva te enseñará a crear una imagen `.img`, instalar el siste
 Ésta es la opción recomendada para usuarios avanzados, ya que permite trabajar en local de manera muchísimo más rápida, y luego volcar el resultado final al USB de forma segura. Es perfecta además si quieres preparar una tanda de dispositivos USB de tamaño similar.
 
 > [!NOTE]
-> Si prefieres generar la imagen de refugiOS desde cero sin depender de una ISO de Xubuntu, consulta la **[Guía de Construcción de Imagen de Sistema](Construccion-Imagen-Sistema-ES.md)**. Este método produce un sistema nativo basado en Debian Bookworm con XFCE y ofrece mejor rendimiento y menor desgaste del dispositivo.
+> Si prefieres generar la imagen de refugiOS desde cero sin depender de una ISO de Xubuntu, consulta la **[Guía de Construcción de Imagen de Sistema](Construccion-Imagen-Sistema-ES.md)**. Este método produce un sistema nativo basado en Debian Trixie con XFCE y ofrece mejor rendimiento y menor desgaste del dispositivo.
 
 ---
 

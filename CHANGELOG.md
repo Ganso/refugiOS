@@ -26,6 +26,7 @@ y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Instalación de paquetes base individualizada:** Los paquetes del sistema base se instalan ahora uno a uno en lugar de en un único comando `apt-get install`, para que un paquete inexistente en la distribución actual (ej. `language-selector-common` en Debian) no impida la instalación del resto.
 - **Usuario sin contraseña:** En la imagen base, el usuario `refugios` se crea ahora sin contraseña de login (`passwd -d`), evitando el bloqueo de pantalla por inactividad que requería introducir una clave que el usuario no conoce.
 - **Bloqueo de pantalla deshabilitado:** La imagen base desactiva el salvapantallas y el bloqueo automático de pantalla de XFCE mediante configuración global de `xfce4-screensaver`.
+- **Base Debian Trixie:** La imagen base ha pasado de Debian Bookworm a Debian Trixie (testing), proporcionando paquetes más recientes y mejor soporte de hardware.
 
 ## [0.14] - 2026-05-27
 

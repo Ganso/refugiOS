@@ -1,6 +1,6 @@
 # Guía de Construcción de Imagen de Sistema refugiOS
 
-Esta guía detalla el proceso automatizado para generar una **imagen de disco base de refugiOS** desde cero, sin depender de una ISO de Xubuntu preexistente. El sistema resultante es una instalación nativa de Debian Bookworm con escritorio XFCE, lista para ser volcada directamente a un pendrive USB o dispositivo externo.
+Esta guía detalla el proceso automatizado para generar una **imagen de disco base de refugiOS** desde cero, sin depender de una ISO de Xubuntu preexistente. El sistema resultante es una instalación nativa de Debian Trixie con escritorio XFCE, lista para ser volcada directamente a un pendrive USB o dispositivo externo.
 
 A diferencia del método tradicional basado en una ISO Live de Xubuntu con persistencia, esta imagen produce un **sistema instalado nativamente**, lo que elimina las capas de indirección del modo Live y ofrece mejor rendimiento, menor desgaste del dispositivo y mayor control sobre la configuración base.
 
@@ -54,7 +54,7 @@ Instalación de las dependencias de prueba:
 
 ### 1.4. Espacio en Disco
 
-La imagen generada es un **archivo disperso (sparse)**: se crea al tamaño solicitado pero solo ocupa el espacio real de los datos escritos. Una imagen de 16G recién creada ocupará aproximadamente **3-4 GB** en disco. Asegúrate de tener al menos **5 GB libres** antes de comenzar.
+La imagen generada es un **archivo disperso (sparse)**: se crea al tamaño solicitado pero solo ocupa el espacio real de los datos escritos. Una imagen de 16G recién creada ocupará aproximadamente **7-8 GB** en disco. Asegúrate de tener al menos **10 GB libres** antes de comenzar.
 
 ---
 
@@ -93,7 +93,7 @@ El script ejecuta automáticamente los siguientes pasos:
 5. **Mapeo con loop devices:** Asocia la imagen a un dispositivo loop con `losetup -Pf` para acceder a las particiones.
 6. **Formateo:** Formatea EFI como FAT32 y ROOT como ext4. Obtiene los UUIDs de ambas particiones.
 7. **Montaje:** Monta la partición raíz en `/mnt/refugios_build` y la EFI en `/mnt/refugios_build/boot/efi`.
-8. **Debootstrap:** Instala el sistema base Debian Bookworm (amd64) desde los repositorios oficiales.
+8. **Debootstrap:** Instala el sistema base Debian Trixie (amd64) desde los repositorios oficiales.
 9. **Generación de fstab:** Crea `/etc/fstab` con los UUIDs reales de las particiones para asegurar el montaje correcto en arranque.
 10. **Configuración dentro del chroot:** Monta `/dev`, `/dev/pts`, `/proc`, `/sys` y `/run` dentro de la imagen y ejecuta todos los pasos de configuración en un entorno chroot (ver sección 2.3).
 11. **Desmontaje y limpieza:** Desmonta todo en orden inverso y elimina el dispositivo loop.
@@ -103,7 +103,7 @@ El script ejecuta automáticamente los siguientes pasos:
 Dentro del entorno chroot, el script realiza la siguiente configuración:
 
 #### Sistema Base
-- Configura los repositorios APT de Debian Bookworm (main, contrib, non-free, non-free-firmware) incluyendo security y updates.
+- Configura los repositorios APT de Debian Trixie (main, contrib, non-free, non-free-firmware) incluyendo security y updates.
 - Instala los paquetes esenciales:
   - **Kernel:** `linux-image-amd64`
   - **Bootloader:** `grub-efi-amd64`
@@ -283,10 +283,10 @@ Este es el único campo de metadatos que XFCE verifica para considerar un archiv
 
 | Aspecto | Imagen Nativa (este método) | ISO Live con Persistencia |
 | :--- | :--- | :--- |
-| **Base del sistema** | Debian Bookworm nativo | XUbuntu Live (SquashFS) |
+| **Base del sistema** | Debian Trixie nativo | XUbuntu Live (SquashFS) |
 | **Rendimiento** | Superior (sistema instalado directamente) | Inferior (capa de indirección SquashFS) |
 | **Desgaste del USB** | Menor (sin overlay de escritura continua) | Mayor (escritura constante en partición writable) |
-| **Espacio ocupado (base)** | ~3-4 GB | ~2-3 GB (ISO comprimida) |
+| **Espacio ocupado (base)** | ~7-8 GB | ~2-3 GB (ISO comprimida) |
 | **Personalización** | Completa (sistema real instalado) | Limitada (solo capa de persistencia) |
 | **Complejidad de creación** | Media (un comando automatizado) | Baja (Rufus/mkusb con ISO existente) |
 | **Requisitos del host** | Debian-based + root | Cualquier SO con Rufus/mkusb |
