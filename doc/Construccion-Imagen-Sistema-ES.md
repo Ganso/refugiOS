@@ -4,11 +4,16 @@ Esta guía detalla el proceso automatizado para generar una **imagen de disco ba
 
 A diferencia del método tradicional basado en una ISO Live de Xubuntu con persistencia, esta imagen produce un **sistema instalado nativamente**, lo que elimina las capas de indirección del modo Live y ofrece mejor rendimiento, menor desgaste del dispositivo y mayor control sobre la configuración base.
 
+> [!TIP]
+> **Método más rápido:** Si no necesitas personalizar la imagen base, puedes descargar la imagen pregenerada directamente desde [refugios.ganso.org](https://refugios.ganso.org/refugios-base-16G-es.img) y saltarte todo este proceso. Solo tienes que grabarla en un USB y arrancar. Consulta el **[README](../README.md)** para los pasos de inicio rápido.
+
 > [!IMPORTANT]
-> Este método está pensado para **usuarios avanzados** que deseen construir la imagen desde su origen o preparar múltiples unidades idénticas de forma eficiente. Si solo quieres tener refugiOS funcionando rápidamente, consulta la **[Guía de Instalación en XUbuntu](Instalacion-Xubuntu-ES.md)**.
+> Este método está pensado para **usuarios avanzados** que deseen construir la imagen desde su origen o preparar múltiples unidades idénticas de forma eficiente.
 
 > [!NOTE]
 > La elección del dispositivo físico donde volcarás la imagen (SSD, pendrive, adaptador SATA) condiciona el rendimiento y la vida útil de tu refugiOS. Consulta la **[Guía de Elección del Medio de Instalación](Eleccion-Medio-Instalacion-ES.md)** antes de empezar.
+
+Para probar la imagen generada en una máquina virtual antes de grabarla en un USB, consulta la **[Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES.md)**.
 
 ---
 
@@ -152,11 +157,11 @@ Dentro del entorno chroot, el script realiza la siguiente configuración:
 
 ---
 
-## 3. Prueba de Arranque con QEMU
+## 3. Prueba de Arranque
 
-Una vez generada la imagen, puedes verificar que arranca correctamente usando el script de prueba antes de volcarla a un dispositivo físico.
+Una vez generada la imagen, puedes verificar que arranca correctamente antes de volcarla a un dispositivo físico. Para instrucciones completas con QEMU, VirtualBox y otros métodos, consulta la **[Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES.md)**.
 
-### 3.1. Ejecución del Script de Prueba
+### 3.1. Script Automatizado de Prueba
 
 ```bash
 bash scripts/test_boot.sh [TAMAÑO]
@@ -300,7 +305,7 @@ Este es el único campo de metadatos que XFCE verifica para considerar un archiv
 ### Flujo A: Preparar una única unidad USB
 
 1. Construye la imagen: `sudo bash scripts/build_refugios.sh 64G`
-2. Prueba el arranque: `bash scripts/test_boot.sh 64G`
+2. Prueba el arranque en una máquina virtual: consulta la **[Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES.md)** o usa el script rápido: `bash scripts/test_boot.sh 64G`
 3. Si arranca correctamente, vuelca al USB: `sudo dd if=refugios-base-64G.img of=/dev/sdX bs=4M status=progress conv=fsync`
 4. Arranca desde el USB y completa la instalación.
 

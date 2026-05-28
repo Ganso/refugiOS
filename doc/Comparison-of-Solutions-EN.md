@@ -41,7 +41,7 @@ refugiOS has been designed to overcome these obstacles following a **"boot and g
 ### How is it different?
 
 1.  **Integral System Transformation:**
-It's not just a USB with files. refugiOS is a tool that personalizes systems like Xubuntu or Raspberry Pi OS so that they work independently and optimized from a pendrive.
+It's not just a USB with files. refugiOS is a tool that personalizes systems like Xubuntu, Debian, or Raspberry Pi OS so that they work independently and optimized from a pendrive. It also offers pre-built images ready to flash to a USB and boot instantly.
 
 2.  **"Ready for Disaster" Environment:**
 All tools (map readers, encyclopedias, artificial intelligence) are installed and configured by the script. You don't have to install anything manually on the final system.

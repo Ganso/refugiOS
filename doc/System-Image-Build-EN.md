@@ -4,11 +4,16 @@ This guide details the automated process for generating a **base refugiOS disk i
 
 Unlike the traditional method based on a Xubuntu Live ISO with persistence, this image produces a **natively installed system**, which eliminates the indirection layers of Live mode and offers better performance, less device wear, and greater control over the base configuration.
 
+> [!TIP]
+> **Fastest method:** If you don't need to customize the base image, you can download the pre-built image directly from [refugios.ganso.org](https://refugios.ganso.org/refugios-base-16G-en.img) and skip this entire process. Just flash it to a USB drive and boot. See the **[README](../README.en.md)** for quick start steps.
+
 > [!IMPORTANT]
-> This method is intended for **advanced users** who want to build the image from its source or prepare multiple identical units efficiently. If you just want to get refugiOS running quickly, check the **[XUbuntu Installation Guide](Xubuntu-Installation-EN.md)**.
+> This method is intended for **advanced users** who want to build the image from its source or prepare multiple identical units efficiently.
 
 > [!NOTE]
 > The choice of physical device where you will flash the image (SSD, pendrive, SATA adapter) affects the performance and lifespan of your refugiOS. Check the **[Choosing Installation Media Guide](Choosing-Installation-Media-EN.md)** before starting.
+
+To test the generated image in a virtual machine before flashing it to a USB, see the **[Virtualization Guide](Virtualization-Guide-EN.md)**.
 
 ---
 
@@ -152,11 +157,11 @@ Inside the chroot environment, the script performs the following configuration:
 
 ---
 
-## 3. Boot Testing with QEMU
+## 3. Boot Testing
 
-Once the image is generated, you can verify that it boots correctly using the test script before flashing it to a physical device.
+Once the image is generated, you can verify that it boots correctly before flashing it to a physical device. For complete instructions with QEMU, VirtualBox, and other methods, see the **[Virtualization Guide](Virtualization-Guide-EN.md)**.
 
-### 3.1. Running the Test Script
+### 3.1. Automated Test Script
 
 ```bash
 bash scripts/test_boot.sh [SIZE]
@@ -300,7 +305,7 @@ This is the only metadata field that XFCE checks to consider a `.desktop` file a
 ### Workflow A: Prepare a Single USB Drive
 
 1. Build the image: `sudo bash scripts/build_refugios.sh 64G`
-2. Test booting: `bash scripts/test_boot.sh 64G`
+2. Test booting in a virtual machine: see the **[Virtualization Guide](Virtualization-Guide-EN.md)** or use the quick script: `bash scripts/test_boot.sh 64G`
 3. If it boots correctly, flash to USB: `sudo dd if=refugios-base-64G.img of=/dev/sdX bs=4M status=progress conv=fsync`
 4. Boot from the USB and complete the installation.
 

@@ -41,7 +41,7 @@ refugiOS ha sido diseñado para superar estos obstáculos siguiendo una filosof�
 ### ¿En qué se diferencia?
 
 1.  **Transformación Integral del Sistema:**
-No es solo un USB con archivos. refugiOS es una herramienta que personaliza sistemas como Xubuntu o Raspberry Pi OS para que funcionen de forma independiente y optimizada desde un pendrive.
+No es solo un USB con archivos. refugiOS es una herramienta que personaliza sistemas como Xubuntu, Debian o Raspberry Pi OS para que funcionen de forma independiente y optimizada desde un pendrive. Además, ofrece imágenes pregeneradas listas para grabar en un USB y arrancar al instante.
 
 2.  **Entorno "Listo para el Desastre":**
 Todas las herramientas (lectores de mapas, enciclopedias, inteligencia artificial) quedan instaladas y configuradas por el script. No tienes que instalar nada manualmente en el sistema final.

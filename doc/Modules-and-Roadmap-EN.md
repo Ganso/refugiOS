@@ -82,7 +82,7 @@ We are working to integrate these powerful tools in upcoming versions:
 
 ### 7. ❗ Technical Improvements
 *   **Automatic Updater:** System for updating components and databases incrementally (although currently the installer can be launched as many times as necessary).
-*   **Pregenerated Images:** Distribution of ready-to-use disk images in different languages for instant deployment.
+*   **Pre-generated Images:** ✅ **Now available.** Distribution of ready-to-use disk images in different languages for instant deployment from [refugios.ganso.org](https://refugios.ganso.org/).
 *   **Hardware IA Acceleration:** GPU/NPU optimization for local AI models.
 *   **More Hardware Support:** Expand hardware support to include more devices and architectures, including devices that the user may own and need to use in emergency situations (communication systems, wearables, etc.).
 *   **Internacionalization:** Translation of the installer and documentation to more languages.

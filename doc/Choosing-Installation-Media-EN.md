@@ -1,6 +1,9 @@
 # Choosing Installation Media
 
-Before installing refugiOS —whether via a Xubuntu Live ISO, a native system image, or any other method— you need to choose the **physical device** it will run on. This guide is common to all installation methods and will help you make the best decision based on your budget and needs.
+Before installing refugiOS you need to choose the **physical device** it will run on. This guide will help you make the best decision based on your budget and needs.
+
+> [!TIP]
+> **Fastest method:** The easiest way to get started is to download the **[pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img)** and flash it to a USB drive of at least 16 GB. See the **[README](../README.en.md)** for quick start steps.
 
 > [!NOTE]
 > If you are installing refugiOS on a **Raspberry Pi**, the installation media is different (microSD card or SSD via HAT/USB). See the **[Raspberry Pi Installation Guide](Raspberry-Pi-Installation-EN.md#1-necessary-hardware)** for platform-specific details.
@@ -100,12 +103,13 @@ The type of device you choose also influences which installation method suits yo
 
 | Installation Method | USB 3.x Pendrive | USB SSD | SATA Adapter |
 | :--- | :--- | :--- | :--- |
+| **Pre-built image** (recommended) | ✅ Recommended | ✅ Recommended | ✅ Recommended |
 | **Live ISO with Persistence** | ✅ Recommended for pendrives | ✅ Functional | ✅ Functional |
 | **Native System Image** | ⚠️ Possible but fast wear | ✅ Recommended for SSD | ✅ Recommended for SSD |
 | **Native XUbuntu Installation** | ❌ Not recommended (journaling) | ✅ SSD only | ✅ SSD only |
 
 > [!TIP]
-> If you have a **standard pendrive**, use the Live ISO with Persistence method (Xubuntu). If you have an **SSD**, you can choose any method; the native system image offers the best performance and least wear.
+> For most users, the **pre-built image** is the best option regardless of the device. If you have a **standard pendrive**, the pre-built image with auto-expansion will work well. If you have an **SSD**, any method offers good performance; the pre-built image is the fastest to get started.
 
 ---
 

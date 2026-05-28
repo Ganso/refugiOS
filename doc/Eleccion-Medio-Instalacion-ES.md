@@ -1,6 +1,9 @@
 # Elección del Medio de Instalación
 
-Antes de instalar refugiOS —ya sea mediante una ISO Live de Xubuntu, una imagen de sistema nativa o cualquier otro método— necesitas elegir el **dispositivo físico** donde se ejecutará. Esta guía es común a todos los métodos de instalación y te ayudará a tomar la mejor decisión según tu presupuesto y necesidades.
+Antes de instalar refugiOS necesitas elegir el **dispositivo físico** donde se ejecutará. Esta guía te ayudará a tomar la mejor decisión según tu presupuesto y necesidades.
+
+> [!TIP]
+> **Método más rápido:** La forma más sencilla de empezar es descargar la **[imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img)** y grabarla en un USB de al menos 16 GB. Consulta el **[README](../README.md)** para los pasos de inicio rápido.
 
 > [!NOTE]
 > Si vas a instalar refugiOS en una **Raspberry Pi**, el medio de instalación es distinto (tarjeta microSD o SSD vía HAT/USB). Consulta la **[Guía de Instalación en Raspberry Pi](Instalacion-Raspberry-ES.md#1-hardware-necesario)** para los detalles específicos de esa plataforma.
@@ -100,12 +103,13 @@ El tipo de dispositivo que elijas también influye en qué método de instalaci�
 
 | Método de Instalación | Pendrive USB 3.x | SSD USB | Adaptador SATA |
 | :--- | :--- | :--- | :--- |
+| **Imagen pregenerada** (recomendado) | ✅ Recomendado | ✅ Recomendado | ✅ Recomendado |
 | **ISO Live con Persistencia** | ✅ Recomendado para pendrives | ✅ Funcional | ✅ Funcional |
 | **Imagen Nativa de Sistema** | ⚠️ Posible pero desgaste rápido | ✅ Recomendado para SSD | ✅ Recomendado para SSD |
 | **Instalación Nativa XUbuntu** | ❌ No recomendado (journaling) | ✅ Solo con SSD | ✅ Solo con SSD |
 
 > [!TIP]
-> Si tienes un **pendrive estándar**, usa el método de ISO Live con Persistencia (Xubuntu). Si tienes un **SSD**, puedes elegir cualquier método; la imagen nativa de sistema ofrece el mejor rendimiento y menor desgaste.
+> Para la mayoría de los usuarios, la **imagen pregenerada** es la mejor opción independientemente del dispositivo. Si tienes un **pendrive estándar**, la imagen pregenerada con autoexpansión funcionará bien. Si tienes un **SSD**, cualquier método ofrece buen rendimiento; la imagen pregenerada es la más rápida de empezar.
 
 ---
 

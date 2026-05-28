@@ -22,9 +22,9 @@ En resumen: refugiOS convierte cualquier ordenador (incluso uno viejo o rescatad
 
 El proceso de creación del dispositivo es sencillo y está pensado para que cualquier persona pueda hacerlo en casa con tranquilidad:
 
-1.  **El soporte:** Solo necesitas un pendrive o disco SSD portátil de buena calidad.
-2.  **El arranque:** Grabas una imagen de Linux (Xubuntu) en el USB siguiendo nuestra guía.
-3.  **El instalador:** Arrancas el ordenador desde ese USB y ejecutas un solo comando.
+1.  **La imagen base:** Descargas la imagen pregenerada de refugiOS desde [refugios.ganso.org](https://refugios.ganso.org/) y la grabas en un pendrive o SSD USB con Rufus, balenaEtcher o `dd`.
+2.  **El arranque:** Arrancas cualquier ordenador desde ese USB. El sistema se expande automáticamente para ocupar todo el espacio disponible.
+3.  **El instalador:** En el escritorio encontrarás un icono para completar la instalación. Solo necesitas conexión a Internet esa primera vez.
 4.  **Configuración guiada:** Aparecerá un menú sencillo que te preguntará:
     *   Tu idioma preferido.
     *   Qué contenidos quieres descargar (Wikipedia completa, manuales médicos, etc.) según el espacio de tu USB.

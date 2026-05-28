@@ -4,39 +4,71 @@
   <img src="https://raw.githubusercontent.com/Ganso/refugiOS/main/logo/refugiOS.png" alt="logo de refugiOS" width="300">
 </p>
 
+> **refugiOS no es una distribución Linux al uso.** Es un sistema portátil que arranca desde un USB y funciona de forma completamente autónoma, sin instalar nada en el ordenador anfitrión.
+
 ---
 
 ## 🇪🇸 Documentación en Español
 
-**refugiOS** es un sistema operativo portátil diseñado para situaciones de emergencia, falta de conectividad o necesidad de privacidad. Convierte cualquier ordenador en una estación de información completa que arranca desde un pendrive.
+### Inicio Rápido
 
-### Guías Rápidas:
-*   [**Visión y Experiencia del Usuario**](Vision-y-Experiencia-ES)
+Descarga la imagen pregenerada, grábala en un USB y arranca:
+
+| Idioma | Enlace |
+| :--- | :--- |
+| 🇪🇸 Español | [refugios-base-16G-es.img](https://refugios.ganso.org/refugios-base-16G-es.img) |
+| 🇬🇧 Inglés | [refugios-base-16G-en.img](https://refugios.ganso.org/refugios-base-16G-en.img) |
+
+### Guías de Instalación y Configuración
 *   [**Elección del Medio de Instalación**](Eleccion-Medio-Instalacion-ES)
-*   [**Guía de Instalación en XUbuntu**](Instalacion-Xubuntu-ES)
-*   [**Guía de Instalación en Raspberry Pi**](Instalacion-Raspberry-ES)
+*   [**Guía de Virtualización**](Guia-Virtualizacion-y-Pendrive-ES)
+*   [**Instalación en XUbuntu**](Instalacion-Xubuntu-ES) (método alternativo)
+*   [**Instalación en Raspberry Pi**](Instalacion-Raspberry-ES)
 *   [**Construcción de Imagen de Sistema**](Construccion-Imagen-Sistema-ES)
-*   [**Aplicaciones y Roadmap**](Modulos-y-Roadmap-ES)
 
-[**Ver todo el índice en Español**](_Sidebar#sección-en-español)
+### Fundamentos
+*   [**Visión y Experiencia del Usuario**](Vision-y-Experiencia-ES)
+*   [**Arquitectura del Sistema**](Arquitectura-ES)
+*   [**Comparativa de Soluciones**](Soluciones-Existentes-ES)
+
+### Uso y Mantenimiento
+*   [**Bóvedas de Seguridad**](Bovedas-Criptograficas-ES)
+*   [**Clonado de Unidades**](Clonado-de-Pendrive-ES)
+*   [**Aplicaciones y Roadmap**](Modulos-y-Roadmap-ES)
+*   [**Tabla de Compatibilidad**](Compatibilidad-ES)
 
 ---
 
 ## 🇺🇸 Documentation in English
 
-**refugiOS** is a portable operating system designed for emergency situations, lack of connectivity, or privacy needs. It turns any computer into a complete information station booting from a USB drive.
+### Quick Start
 
-### Quick Guides:
-*   [**Vision and User Experience**](Vision-and-User-Experience-EN)
+Download the pre-built image, flash it to a USB drive, and boot:
+
+| Language | Link |
+| :--- | :--- |
+| 🇬🇧 English | [refugios-base-16G-en.img](https://refugios.ganso.org/refugios-base-16G-en.img) |
+| 🇪🇸 Spanish | [refugios-base-16G-es.img](https://refugios.ganso.org/refugios-base-16G-es.img) |
+
+### Installation and Configuration Guides
 *   [**Choosing Installation Media**](Choosing-Installation-Media-EN)
-*   [**XUbuntu Installation Guide**](Xubuntu-Installation-EN)
-*   [**Raspberry Pi Installation Guide**](Raspberry-Pi-Installation-EN)
-*   [**System Image Build Guide**](System-Image-Build-EN)
-*   [**Modules and Roadmap**](Modules-and-Roadmap-EN)
+*   [**Virtualization Guide**](Virtualization-Guide-EN)
+*   [**XUbuntu Installation**](Xubuntu-Installation-EN) (alternative method)
+*   [**Raspberry Pi Installation**](Raspberry-Pi-Installation-EN)
+*   [**System Image Build**](System-Image-Build-EN)
 
-[**View complete English index**](_Sidebar#english-section)
+### Fundamentals
+*   [**Vision and User Experience**](Vision-and-User-Experience-EN)
+*   [**System Architecture**](System-Architecture-EN)
+*   [**Comparison of Solutions**](Comparison-of-Solutions-EN)
+
+### Usage and Maintenance
+*   [**Security Vaults**](Security-Vaults-EN)
+*   [**Unit Cloning**](Cloning-Units-EN)
+*   [**Modules and Roadmap**](Modules-and-Roadmap-EN)
+*   [**Compatibility Table**](Compatibility-EN)
 
 ---
 
 > [!TIP]
-> **Contribuir:** Esta documentación está sincronizada directamente con el repositorio principal. Si quieres corregir algo o añadir contenido, por favor abre un Pull Request en GitHub.
+> **Contributing:** This documentation is synced directly from the main repository. If you want to fix something or add content, please open a Pull Request on GitHub.

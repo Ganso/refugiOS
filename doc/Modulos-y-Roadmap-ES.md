@@ -83,7 +83,7 @@ Estamos trabajando para integrar estas potentes herramientas en próximas versio
 
 ### 7. ❗ Mejoras técnicas
 *   **Actualizador automático:** Sistema para actualizar componentes y bases de datos de forma incremental (aunque a día de hoy el instalador se puede lanzar todas las veces que sea necesario).
-*   **Imágenes pregeneradas:** Distribución de imágenes de disco listas para usar en distintos idiomas para un despliegue instantáneo.
+*   **Imágenes pregeneradas:** ✅ **Ya disponible.** Distribución de imágenes de disco listas para usar en distintos idiomas para un despliegue instantáneo desde [refugios.ganso.org](https://refugios.ganso.org/).
 *   **Aceleración de IA por Hardware:** Optimización de GPU/NPU para modelos de IA locales.
 *   **Soporte de más Hardware:** Ampliar el soporte de hardware para incluir más dispositivos y arquitecturas, incluyendo dispositivos que pueda poseer el usuario y necesite utilizar en situaciones de emergencia (sistemas de comunicación, wereables, etc.)
 *   **Internacionalización:** Traducción del instalador y la documentación a más idiomas.

@@ -3,6 +3,8 @@
 This guide explains how to install **refugiOS** on a Raspberry Pi, from scratch to having the system fully functional.
 
 > [!NOTE]
+> The pre-built refugiOS image (available at [refugios.ganso.org](https://refugios.ganso.org/)) is for x86 architecture (PC) only. For Raspberry Pi, you need to follow this guide and install on top of Raspberry Pi OS.
+>
 > **Certified Platforms:** This guide has been tested and certified on **Raspberry Pi 3B+** with Raspberry Pi OS (64-bit, Wayland). Testers with other models are wanted. If you try it on a different model, open an issue or contact the project!
 
 ---

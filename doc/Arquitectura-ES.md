@@ -5,10 +5,14 @@ Para garantizar la fiabilidad de refugiOS en situaciones críticas, hemos tomado
 ## 1. Sistema Base
 
 *   **Sistema Operativo:** Linux.
-*   **Distribución:** [**Xubuntu LTS**](https://xubuntu.org/), una versión oficial de Ubuntu que utiliza el escritorio [**XFCE**](https://www.xfce.org/). 
+*   **Distribución base:** La imagen pregenerada de refugiOS utiliza **Debian Trixie** con escritorio **XFCE**, ofreciendo un sistema instalado nativamente con máximo rendimiento. Como alternativa, refugiOS también puede montarse sobre **[Xubuntu LTS](https://xubuntu.org/)** en modo Live con persistencia.
 *   **Rendimiento:** XFCE es ideal para equipos antiguos o con recursos limitados. Un sistema recién arrancado utiliza **menos de 1 GB de RAM**, lo que permite ahorrar batería en portátiles y funcionar con fluidez en casi cualquier hardware.
 
-### Versiones recomendadas:
+### Imagen pregenerada (recomendado):
+*   **Base:** Debian Trixie con XFCE, instalado nativamente, con autoexpansión de disco y autologin.
+*   **Descarga:** [refugios.ganso.org](https://refugios.ganso.org/)
+
+### Versiones de Xubuntu (alternativa):
 *   **Xubuntu 24.04 LTS:** Ofrece estabilidad a largo plazo y soporte técnico garantizado durante años.
 *   **Xubuntu 25.10 Minimal:** Es la versión "limpia" que no incluye programas innecesarios (juegos, reproductores pesados, etc.), lo que nos permite ahorrar unos 2 GB de espacio extra para contenidos útiles.
 

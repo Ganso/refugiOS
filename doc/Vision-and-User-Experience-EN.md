@@ -22,9 +22,9 @@ In summary: refugiOS turns any computer (even an old or salvaged one) into a com
 
 The process of creating the device is simple and designed so that anyone can do it at home with peace of mind:
 
-1.  **The Support:** You only need a good quality USB drive or portable SSD.
-2.  **The Boot:** You burn a Linux image (Xubuntu) onto the USB following our guide.
-3.  **The Installer:** You boot the computer from that USB and run a single command.
+1.  **The base image:** You download the pre-built refugiOS image from [refugios.ganso.org](https://refugios.ganso.org/) and flash it to a USB drive or portable SSD with Rufus, balenaEtcher, or `dd`.
+2.  **The boot:** You boot any computer from that USB drive. The system automatically expands to occupy all available space.
+3.  **The installer:** On the desktop you will find an icon to complete the installation. You only need an Internet connection that first time.
 4.  **Guided Configuration:** A simple menu will appear asking:
     *   Your preferred language.
     *   What content you want to download (full Wikipedia, medical manuals, etc.) according to your USB's capacity.

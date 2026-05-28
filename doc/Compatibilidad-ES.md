@@ -2,11 +2,15 @@
 
 En este documento se detalla el estado de compatibilidad de **refugiOS** con diferentes sistemas operativos y arquitecturas de hardware.
 
+> [!TIP]
+> La **imagen pregenerada** de refugiOS (descargable desde [refugios.ganso.org](https://refugios.ganso.org/)) está basada en Debian Trixie con XFCE y es la forma más sencilla de empezar en PC. No requiere instalación previa del sistema operativo base.
+
 ## Arquitectura x86 (PC / Laptop)
 
-| Sistema Operativo | Estado | Notas |
+| Sistema Operativo / Método | Estado | Notas |
 | :--- | :--- | :--- |
-| **XUbuntu 24.04 LTS** | ✅ Certificado | Plataforma de referencia y recomendada |
+| **Imagen pregenerada (Debian Trixie)** | ✅ Certificado | Método recomendado. Descarga directa desde [refugios.ganso.org](https://refugios.ganso.org/) |
+| **XUbuntu 24.04 LTS** | ✅ Certificado | Método alternativo (Live con persistencia) |
 | **Xubuntu 25.10** | ✅ Certificado | Necesario retestear cada nueva release |
 | **Debian 11 (Bullseye)**| ⚠️ Con problemas | Requiere ajustes. Ver [Detalles Técnicos](#debian-11-bullseye) |
 | **Otras distros (Debian/Ubuntu)** | 🧪 Sin testar | Se buscan testers |

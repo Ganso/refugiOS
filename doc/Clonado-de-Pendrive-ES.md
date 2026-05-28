@@ -1,6 +1,6 @@
 # Guía de Clonado de Unidades refugiOS
 
-Si ya has configurado tu primer pendrive de **refugiOS** y quieres hacer una copia exacta para un familiar, un amigo o simplemente para tener un respaldo de seguridad, esta guía te explica cómo clonarlo paso a paso.
+Si ya has configurado tu primer pendrive de **refugiOS** (ya sea partiendo de la [imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img) o por cualquier otro método) y quieres hacer una copia exacta para un familiar, un amigo o simplemente para tener un respaldo de seguridad, esta guía te explica cómo clonarlo paso a paso.
 
 ## 1. Clonado en Windows
 

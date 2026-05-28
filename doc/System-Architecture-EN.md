@@ -5,10 +5,14 @@ To guarantee the reliability of refugiOS in critical situations, we have made de
 ## 1. Base System
 
 *   **Operating System:** Linux.
-*   **Distribution:** [**Xubuntu LTS**](https://xubuntu.org/), an official Ubuntu version using the [**XFCE**](https://www.xfce.org/) desktop.
+*   **Base Distribution:** The pre-built refugiOS image uses **Debian Trixie** with the **XFCE** desktop, offering a natively installed system with maximum performance. As an alternative, refugiOS can also be mounted on **[Xubuntu LTS](https://xubuntu.org/)** in Live mode with persistence.
 *   **Performance:** XFCE is ideal for old devices or those with limited resources. A freshly booted system uses **less than 1 GB of RAM**, which saves battery on laptops and allows it to run smoothly on almost any hardware.
 
-### Recommended Versions:
+### Pre-built image (recommended):
+*   **Base:** Debian Trixie with XFCE, natively installed, with disk auto-expansion and autologin.
+*   **Download:** [refugios.ganso.org](https://refugios.ganso.org/)
+
+### Xubuntu versions (alternative):
 *   **Xubuntu 24.04 LTS:** Offers long-term stability and guaranteed technical support for years.
 *   **Xubuntu 25.10 Minimal:** This is the "clean" version that does not include unnecessary programs (games, heavy players, etc.), allowing us to save about 2 GB of extra space for useful content.
 

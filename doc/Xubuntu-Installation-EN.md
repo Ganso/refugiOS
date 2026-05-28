@@ -1,6 +1,6 @@
-# XUbuntu Installation Guide
+# XUbuntu Installation Guide (Alternative Method)
 
-This guide explains in detail how to prepare your refugiOS unit on a **XUbuntu** base from any operating system (Windows or Linux).
+This guide explains how to install refugiOS on a **XUbuntu** base as an alternative method. The **[pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img)** is recommended for most cases, as it is faster and simpler. The Xubuntu method may be useful if you need compatibility with older hardware (BIOS/MBR) or if you prefer the Live with persistence scheme.
 
 > [!IMPORTANT]
 > **Before you start:** The choice of physical device (pendrive, SSD, adapter) and its capacity affect performance and the content you can install. Check the **[Choosing Installation Media Guide](Choosing-Installation-Media-EN.md)** to make the best decision based on your budget.
@@ -91,9 +91,9 @@ We do not recommend this method on conventional USBs because Linux "journaling" 
 
 If you want to mount RefugiOS on a local disk image before touching the physical pendrive, or if you prefer to test that everything works correctly in a virtual machine before restarting your PC:
 
-*   👉 **[Virtualization Guide and Pendrive Preparation](Virtualization-Guide-EN.md)**
+*   👉 **[Virtualization Guide](Virtualization-Guide-EN)**
 
-This comprehensive guide will teach you how to create an `.img` image, install the system inside a VM (such as VirtualBox or QEMU), and dump the final result to the USB safely.
+This guide covers how to test refugiOS in QEMU and VirtualBox, including the pre-built image, the Xubuntu image with persistence, and self-built images.
 
 This is the recommended option for advanced users, as it allows for much faster local work, and then dumping the final result to the USB safely. It is also perfect if you want to prepare a batch of USB devices of similar size.
 
