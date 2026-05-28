@@ -27,9 +27,9 @@ El tamaño del dispositivo determina qué contenidos podrás almacenar:
 | Capacidad | Contenido Posible | Perfil de Uso |
 | :--- | :--- | :--- |
 | **16 GB (Mínimo)** | Sistema base + WikiMed + Mapas básicos + IA ligera. Sin espacio para Wikipedia. | Unidad de emergencia básica |
-| **32 GB (Equilibrado)** | Todo lo anterior + Wikipedia "Mini" (solo texto o imágenes reducidas). | Respaldo funcional |
-| **64 GB (Estándar)** | ¡El punto ideal! Wikipedia completa con imágenes, modelo IA Phi-4-mini y mapas detallados. | Uso diario recomendado |
-| **128 GB o más** | Bibliotecas masivas (Survivor Library), mapas de todo el mundo y múltiples modelos de IA. | Estación avanzada |
+| **32 GB (Equilibrado)** | Todo lo anterior + Wikipedia sin imágenes. Sin espacio para Wikipedia completa. | Respaldo funcional |
+| **64 GB (Estándar)** | Wikipedia completa con imágenes + IA Phi-4-mini + WikiMed + Mapas. Espacio limitado para más contenido. | Uso diario recomendado |
+| **128 GB o más** | Todo lo anterior + WikiHow + múltiples modelos de IA + mapas mundiales detallados. | Estación avanzada |
 
 ---
 

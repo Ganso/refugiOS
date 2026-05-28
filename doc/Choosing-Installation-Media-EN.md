@@ -27,9 +27,9 @@ The device size determines what content you can store:
 | Capacity | Possible Content | Use Profile |
 | :--- | :--- | :--- |
 | **16 GB (Minimum)** | Base system + WikiMed + Basic Maps + Light AI. No space for Wikipedia. | Basic emergency unit |
-| **32 GB (Balanced)** | All of the above + "Mini" Wikipedia (only text or reduced images). | Functional backup |
-| **64 GB (Standard)** | The ideal point! Full Wikipedia with images, Phi-4-mini AI model, and detailed maps. | Recommended daily use |
-| **128 GB or more** | Massive libraries (Survivor Library), world maps, and multiple AI models. | Advanced station |
+| **32 GB (Balanced)** | All of the above + Wikipedia without images. No room for full Wikipedia. | Functional backup |
+| **64 GB (Standard)** | Full Wikipedia with images + Phi-4-mini AI + WikiMed + Maps. Limited room for more. | Recommended daily use |
+| **128 GB or more** | All the above + WikiHow + multiple AI models + detailed world maps. | Advanced station |
 
 ---
 

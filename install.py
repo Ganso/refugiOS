@@ -651,17 +651,21 @@ def main():
     d.msgbox(diag_info, title=i18n.T('sys_diag_title'))
 
     # Depending on disk space, offer lightweight or enriched configurations
-    lite_mode = sys_info.free_space_mb < 25000
-    if lite_mode:
+    if sys_info.free_space_mb < 30000:
         log_info(i18n.T('lite_mode_msg'))
         def_wiki = 1
-        def_other_wikis = []
+        def_other_wikis = [0]
+        def_ai = [0, 1]
+    elif sys_info.free_space_mb < 70000:
+        log_info(i18n.T('standard_mode_msg'))
+        def_wiki = 2
+        def_other_wikis = [0]
         def_ai = [0, 1]
     else:
         log_info(i18n.T('rich_mode_msg'))
-        def_wiki = 2
-        def_other_wikis = [0]
-        def_ai = [1, 2]
+        def_wiki = 3
+        def_other_wikis = [0, 1]
+        def_ai = [1, 2, 3]
 
     # Force download mode
     force_dl = simple_question(d, i18n.T('rewrite_mode_title'), i18n.T('rewrite_mode_prompt'), default_yes=False)
