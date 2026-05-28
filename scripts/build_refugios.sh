@@ -452,9 +452,7 @@ trust_file() {
     if command -v gio >/dev/null 2>&1; then
         CHECKSUM=\$(sha256sum "\$1" | awk '{print \$1}')
         gio set "\$1" metadata::xfce-exe-checksum "\$CHECKSUM" 2>/dev/null
-        gio set "\$1" metadata::trusted yes 2>/dev/null
     fi
-    attr -s trusted -V yes "\$1" 2>/dev/null || true
 }
 
 DESK_DIR="\$HOME/Desktop"

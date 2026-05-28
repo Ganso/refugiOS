@@ -211,7 +211,6 @@ Terminal=false
     os.chmod(desktop_file, 0o755)
 
     if shutil.which("gio"):
-        run_cmd(f"gio set '{desktop_file}' metadata::trusted yes", quiet=True)
         checksum = get_cmd_output(f"sha256sum '{desktop_file}' | awk '{{print $1}}'")
         if checksum:
             run_cmd(f"gio set '{desktop_file}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)

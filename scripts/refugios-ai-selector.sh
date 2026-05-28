@@ -32,6 +32,6 @@ cd "$AI_DIR"
 ./llamafile -m "$MODEL" --ctx-size 4096 --server &
 LLAMA_PID=$!
 sleep 5
-epiphany-browser http://localhost:8080 2>/dev/null || xdg-open http://localhost:8080 2>/dev/null
+epiphany-browser --new-window http://localhost:8080 2>/dev/null || xdg-open http://localhost:8080 2>/dev/null
 echo "$(t ai_purge_notice)"
 wait $LLAMA_PID

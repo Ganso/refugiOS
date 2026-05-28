@@ -184,21 +184,12 @@ def get_cmd_output(cmd):
         return ""
 
 def certify_icon(fpath):
-    """
-    Marks a shortcut as trusted and sets appropriate permissions.
-    Only called for icons created by the installer.
-    Uses multiple mechanisms for maximum compatibility across desktop environments.
-    """
     try:
         os.chmod(fpath, 0o755)
-        # XFCE / Thunar: set executable checksum metadata
         if shutil.which("gio"):
             checksum = get_cmd_output(f"sha256sum '{fpath}' | awk '{{print $1}}'")
             if checksum:
                 run_cmd(f"gio set '{fpath}' metadata::xfce-exe-checksum '{checksum}'", quiet=True)
-                run_cmd(f"gio set '{fpath}' metadata::trusted yes", quiet=True)
-        # POSIX xattr fallback
-        run_cmd(f"attr -s trusted -V yes '{fpath}' 2>/dev/null || true", quiet=True)
     except Exception as e:
         log_err(i18n.T('desktop_cert_error').format(os.path.basename(fpath), e), fatal=False)
 
@@ -865,7 +856,7 @@ def main():
         "python3", "python3-dialog", "dialog", "aria2", "pciutils",
         "wget", "curl", "bash", "jq", "rsync", "apt-utils", "flatpak",
         "cryptsetup", "epiphany-browser", "gedit", "xfce4-terminal",
-        "dbus-user-session", "xdg-desktop-portal",
+        "dbus-user-session", "xdg-desktop-portal", "libglib2.0-bin",
         "language-selector-common",
     ]
     if install_extras:
