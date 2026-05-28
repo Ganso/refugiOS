@@ -861,16 +861,25 @@ def main():
 
     log_info(i18n.T('installing_base_deps'))
     
-    base_pkgs = "python3 python3-dialog dialog aria2 pciutils wget curl bash jq rsync apt-utils flatpak cryptsetup epiphany-browser gedit xfce4-terminal dbus-user-session xdg-desktop-portal language-selector-common"
+    base_pkgs = [
+        "python3", "python3-dialog", "dialog", "aria2", "pciutils",
+        "wget", "curl", "bash", "jq", "rsync", "apt-utils", "flatpak",
+        "cryptsetup", "epiphany-browser", "gedit", "xfce4-terminal",
+        "dbus-user-session", "xdg-desktop-portal",
+        "language-selector-common",
+    ]
     if install_extras:
         log_info(i18n.T('adding_extras'))
-        base_pkgs += " syncthing libreoffice vlc evince"
-        
-    run_cmd(f"sudo apt-get install -y {base_pkgs}", quiet=True)
+        base_pkgs += ["syncthing", "libreoffice", "vlc", "evince"]
 
-    # System-wide language support synchronization
+    for pkg in base_pkgs:
+        run_cmd(f"sudo apt-get install -y {pkg}", quiet=True)
+
     log_info(i18n.T('syncing_lang_pkgs').format(sys_info.lang))
-    run_cmd(f"check-language-support -l {sys_info.lang} 2>/dev/null | xargs sudo apt-get install -y", quiet=True)
+    if shutil.which("check-language-support"):
+        run_cmd(f"check-language-support -l {sys_info.lang} 2>/dev/null | xargs sudo apt-get install -y", quiet=True)
+    else:
+        run_cmd(f"sudo apt-get install -y hunspell-{sys_info.lang} hyphen-{sys_info.lang} 2>/dev/null || true", quiet=True)
 
     # System compatibility patches
     fix_flatpak_permissions()
