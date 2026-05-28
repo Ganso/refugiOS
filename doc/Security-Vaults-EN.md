@@ -19,16 +19,14 @@ A container is a special file (for example, `my_data.img`) that works like a saf
 
 ## How Vaults Work in refugiOS
 
-To make the system easy to use, we have created three direct wizards on your desktop:
+To make the system easy to use, refugiOS provides a **Secure Vault Manager** — a single interactive application accessible from the desktop icon labeled "Secure Vault Manager".
 
-1.  **Create Vault:**
-    This wizard will guide you step by step. It will detect if you have USB drives connected and suggest a size based on your data. You can choose a custom name for each vault. When finished, the system can automatically import your files from the USB.
+When you open the Vault Manager, you will see a list of all your existing vaults, each showing its current state (**OPEN** or **CLOSED**) and its size. From this main menu you can:
 
-2.  **Open Vault:**
-    Allows you to select which vault you want to open. After entering the password, an **icon will automatically appear on the desktop** with the name of your vault. This icon gives you direct, secure access to your files.
+1.  **Select an existing vault** — opens a contextual submenu with the actions available for that vault depending on its state:
+    *   If the vault is **closed**: you can **Open** it (enter the password and an icon will automatically appear on the desktop for direct access to your files) or **Delete** it permanently.
+    *   If the vault is **open**: you can **Close** it (the desktop icon will disappear and your files will be protected by professional LUKS encryption again).
 
-3.  **Close Vault:**
-    By clicking this button, you can choose which vaults to close (or close them all at once). The desktop icon will disappear and your files will be protected by professional LUKS encryption again.
-
+2.  **Create a new vault** — a step-by-step wizard that will detect if you have USB drives connected and suggest a size based on your data. You can choose a custom name for each vault. When finished, the system can automatically import your files from the USB.
 
 **Security tip:** Always close your vault as soon as you finish using it. While it is open, anyone with physical access to your computer could see the files.

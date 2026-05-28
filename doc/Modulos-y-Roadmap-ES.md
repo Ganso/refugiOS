@@ -27,17 +27,17 @@ Mapas vectoriales detallados con búsqueda y rutas offline.
 
 ### 3. Asistente de Inteligencia Artificial ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
 Asistente inteligente privado que funciona 100% en tu ordenador local. Disponible en cuatro niveles según la capacidad del dispositivo:
-*   ⚪ **Mínimo:** [Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (0.5B) — ~0.5 GB. Para dispositivos con recursos muy limitados (min. 1 GB RAM).
-*   🟢 **Básico:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.5 GB. Funciona en cualquier PC con 4 GB de RAM.
-*   🟡 **Medio:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~5 GB. Para portátiles modernos con 8 GB de RAM.
-*   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~9 GB. Para PCs potentes con 16 GB de RAM.
+*   ⚪ **Mínimo:** [Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (0.5B) — ~380 MB. Para dispositivos con recursos muy limitados (min. 1 GB RAM).
+*   🟢 **Básico:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.3 GB. Funciona en cualquier PC con 4 GB de RAM.
+*   🟡 **Medio:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~4.7 GB. Para portátiles modernos con 8 GB de RAM.
+*   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~8.4 GB. Para PCs potentes con 16 GB de RAM.
 *   **Selector automático:** Al lanzar el asistente, un script detecta la RAM disponible y recomienda el modelo adecuado.
 *   **Idioma:** 🌐 **Multilingüe.** Todos los modelos entienden y responden en más de 20 idiomas.
 
 ### 4. Bóvedas Criptográficas (LUKS)
 Sistema de almacenamiento seguro y cifrado para datos sensibles.
-*   **Estado:** Sistema unificado en Python con interfaz de usuario intuitiva (Dialog).
-*   **Características:** Soporte para múltiples bóvedas simultáneas, nombres personalizados y tamaños variables.
+*   **Estado:** Gestor interactivo unificado con un único icono de escritorio y menús basados en dialog.
+*   **Características:** Soporte para múltiples bóvedas simultáneas con visualización de estado (abierta/cerrada), nombres personalizados, tamaños variables, creación, apertura, cierre y eliminación permanente.
 *   **Automatización:** Detección inteligente de pendrives USB para sugerencia de tamaños e importación de datos automatizada.
 
 

@@ -19,16 +19,14 @@ Un contenedor es un archivo especial (por ejemplo, `mis_datos.img`) que funciona
 
 ## Cómo funcionan las Bóvedas en refugiOS
 
-Para que el sistema sea fácil de usar, hemos creado tres asistentes directos en tu escritorio:
+Para que el sistema sea fácil de usar, refugiOS proporciona un **Gestor de Bóvedas Seguras** — una única aplicación interactiva accesible desde el icono de escritorio etiquetado como "Gestor de Bóvedas Seguras".
 
-1.  **Crear Bóveda:** 
-    Este asistente te guiará paso a paso. Detectará si tienes pendrives conectados y te sugerirá un tamaño basado en tus datos. Podrás elegir un nombre personalizado para cada bóveda. Al terminar, el sistema puede importar automáticamente tus archivos desde el USB.
+Al abrir el Gestor de Bóvedas, verás una lista con todas tus bóvedas existentes, cada una mostrando su estado actual (**ABIERTA** o **CERRADA**) y su tamaño. Desde este menú principal puedes:
 
-2.  **Abrir Bóveda:** 
-    Te permite seleccionar qué bóveda quieres abrir. Tras introducir la contraseña, aparecerá automáticamente un **icono en el escritorio** con el nombre de tu bóveda. Este icono te da acceso directo a tus archivos de forma segura.
+1.  **Seleccionar una bóveda existente** — abre un submenú contextual con las acciones disponibles para esa bóveda según su estado:
+    *   Si la bóveda está **cerrada**: puedes **Abrirla** (introducir la contraseña y aparecerá automáticamente un icono en el escritorio para acceso directo a tus archivos) o **Eliminarla** permanentemente.
+    *   Si la bóveda está **abierta**: puedes **Cerrarla** (el icono del escritorio desaparecerá y tus archivos volverán a estar protegidos por cifrado profesional LUKS).
 
-3.  **Cerrar Bóveda:** 
-    Al pulsar este botón, podrás elegir qué bóvedas cerrar (o cerrarlas todas a la vez). El icono del escritorio desaparecerá y tus archivos volverán a estar protegidos por cifrado profesional LUKS.
-
+2.  **Crear una nueva bóveda** — un asistente paso a paso que detectará si tienes pendrives conectados y te sugerirá un tamaño basado en tus datos. Podrás elegir un nombre personalizado para cada bóveda. Al terminar, el sistema puede importar automáticamente tus archivos desde el USB.
 
 **Consejo de seguridad:** Cierra siempre tu bóveda en cuanto termines de usarla. Mientras esté abierta, cualquier persona con acceso físico a tu ordenador podría ver los archivos.

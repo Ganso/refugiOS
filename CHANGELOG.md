@@ -5,6 +5,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15] - 2026-05-28
+
+### Añadido
+- **Gestor unificado de Bóvedas:** Los tres iconos de escritorio separados (Crear, Abrir, Cerrar bóveda) han sido reemplazados por una única aplicación interactiva con menús `dialog`. El nuevo gestor muestra todas las bóvedas existentes con su estado (Abierta/Cerrada) y tamaño, y permite crear, abrir, cerrar o eliminar bóvedas desde un solo punto de acceso. Al seleccionar una bóveda se ofrece un submenú contextual con las acciones disponibles según su estado.
+- **Eliminación de bóvedas:** Nueva funcionalidad para eliminar permanentemente una bóveda cerrada, con confirmación de seguridad. No se permite eliminar bóvedas abiertas.
+- **Icono de instalación persistente:** El instalador crea ahora el lanzador de escritorio "Completar instalación de refugiOS" y su script wrapper (`/usr/local/bin/refugios-install-wrapper.sh`) si no existen, permitiendo al usuario añadir nuevos componentes en cualquier momento sin depender de la imagen base.
+- **Limpieza de iconos obsoletos:** El instalador detecta y elimina automáticamente los iconos de escritorio pertenecientes a versiones anteriores del sistema (actualmente los tres antiguos iconos de gestión de bóvedas), evitando accesos directos huérfanos tras una actualización.
+- **Tres niveles de pre-configuración:** El instalador ahora distingue tres umbrales de almacenamiento en lugar de dos: modo ligero (< 30 GB), modo estándar (30-70 GB) y modo enriquecido (≥ 70 GB), con selecciones automáticas consecuentes para cada nivel.
+
+### Cambiado
+- **Tamaños reales de componentes:** Las estimaciones de tamaño en el instalador y la documentación han sido actualizadas con los valores reales medidos sobre los ficheros instalados: Qwen2.5-0.5B (~380 MB), Phi-4-mini (~2.3 GB), Qwen3-8B (~4.7 GB), Qwen3-14B (~8.4 GB), WikiMed (~620 MB), WikiHow (~20 GB).
+- **Umbral de modo ligero:** Elevado de 25 GB a 30 GB para reflejar mejor los requisitos reales de los componentes.
+- **Tabla de capacidades en documentación:** La tabla de capacidad/contenido en las guías de elección de medio de instalación ha sido actualizada para reflejar con mayor precisión qué contenido cabe en cada tamaño de dispositivo (16/32/64/128 GB).
+
 ## [0.14] - 2026-05-27
 
 ### Añadido

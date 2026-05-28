@@ -68,6 +68,18 @@ t_es_vault_close="CERRANDO BÓVEDA SEGURA"
 t_en_vault_password="Enter password for the vault:"
 t_es_vault_password="Introduce la contraseña para la bóveda:"
 
+# refugios-install-wrapper
+t_en_wrapper_pinging="Checking Internet connection with github.com..."
+t_es_wrapper_pinging="Comprobando conexión a Internet con github.com..."
+t_en_wrapper_connected="Connection successful. Starting installer..."
+t_es_wrapper_connected="Conexión exitosa. Iniciando instalador..."
+t_en_no_connection_title="No Internet connection - refugiOS"
+t_es_no_connection_title="Sin conexión a Internet - refugiOS"
+t_en_no_connection_text="Could not connect to github.com.\n\nPlease connect to a WiFi or wired network before attempting the installation."
+t_es_no_connection_text="No se pudo conectar con github.com.\n\nPor favor, conéctate a una red WiFi o cableada antes de intentar la instalación."
+t_en_press_enter="Press ENTER to close..."
+t_es_press_enter="Presiona ENTER para cerrar..."
+
 # ==============================================================================
 # FUNCTIONS
 # ==============================================================================

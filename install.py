@@ -214,6 +214,91 @@ def certify_all_desktop_icons(desktop_dir):
             certify_icon(os.path.join(desktop_dir, fname))
     run_cmd("xfdesktop --reload 2>/dev/null || true", quiet=True)
 
+OBSOLETE_EXEC_PATTERNS = [
+    'refugios-vault-create.sh',
+    'refugios-vault-open.sh',
+    'refugios-vault-close.sh',
+]
+
+def cleanup_obsolete_icons(desktop_dir):
+    """
+    Removes obsolete desktop icons from previous refugiOS versions.
+    Detects icons by checking if their Exec line references known
+    obsolete script names.
+    """
+    if not os.path.isdir(desktop_dir):
+        return
+    for fname in os.listdir(desktop_dir):
+        if not fname.endswith('.desktop'):
+            continue
+        fpath = os.path.join(desktop_dir, fname)
+        try:
+            with open(fpath, 'r') as f:
+                content = f.read()
+            for pattern in OBSOLETE_EXEC_PATTERNS:
+                if pattern in content:
+                    os.remove(fpath)
+                    log_info(i18n.T('obsolete_icon').format(fname))
+                    break
+        except Exception:
+            pass
+
+def ensure_install_icon(env, sys_info):
+    """
+    Creates the 'Complete refugiOS installation' wrapper script and
+    desktop icon if they don't already exist.
+    Allows users to re-run the installer to add more components.
+    """
+    wrapper_path = "/usr/local/bin/refugios-install-wrapper.sh"
+    if not os.path.exists(wrapper_path):
+        wrapper_content = '''#!/bin/bash
+LOG="/tmp/refugios-install.log"
+SCRIPTS_DIR="$HOME/refugiOS/Scripts"
+t() { echo "$1"; }
+[ -s "$SCRIPTS_DIR/i18n.sh" ] && source "$SCRIPTS_DIR/i18n.sh"
+REPO_URL="https://raw.githubusercontent.com/Ganso/refugiOS/main"
+echo "$(t wrapper_pinging)"
+if ping -c 1 -W 3 github.com >/dev/null 2>&1; then
+    echo "$(t wrapper_connected)"
+    curl -fsSL "$REPO_URL/install.sh" 2>>"$LOG" | bash
+else
+    if [ -n "$DISPLAY" ] && command -v zenity >/dev/null 2>&1; then
+        zenity --error --title="$(t no_connection_title)" --text="$(t no_connection_text)" --width=450
+    else
+        echo "$(t no_connection_text)"
+        echo ""
+        read -p "$(t press_enter)"
+    fi
+fi
+'''
+        try:
+            with open('/tmp/refugios-install-wrapper.sh', 'w') as f:
+                f.write(wrapper_content)
+            os.chmod('/tmp/refugios-install-wrapper.sh', 0o755)
+            run_cmd("sudo cp /tmp/refugios-install-wrapper.sh /usr/local/bin/refugios-install-wrapper.sh", quiet=True)
+            run_cmd("sudo chmod 755 /usr/local/bin/refugios-install-wrapper.sh", quiet=True)
+            try:
+                os.remove('/tmp/refugios-install-wrapper.sh')
+            except OSError:
+                pass
+        except Exception:
+            pass
+
+    desktop_file = os.path.join(env.desktop, "Instalar_refugiOS.desktop")
+    if not os.path.exists(desktop_file):
+        with open(desktop_file, "w") as f:
+            f.write(f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name={i18n.T('install_icon_name')}
+Comment={i18n.T('install_icon_comment')}
+Exec=xfce4-terminal -e "/usr/local/bin/refugios-install-wrapper.sh"
+Icon=system-software-install
+Terminal=false
+Categories=System;
+""")
+        certify_icon(desktop_file)
+
 # ==============================================================================
 # SECTION 2: SYSTEM DETECTION AND DIAGNOSIS
 # ==============================================================================
@@ -765,6 +850,7 @@ def main():
     d.msgbox(i18n.T('install_starting_msg'), title=i18n.T('install_starting_title'))
 
     ensure_dirs(env)
+    cleanup_obsolete_icons(env.desktop)
 
     # Phase 1: OS Utilities Deployment
     log_info(i18n.T('fixing_perms'))
@@ -1010,39 +1096,27 @@ Terminal=false
     # Phase 6: Privacy Cryptographic Foundations
     log_info("Assembling security vaults and privacy policies...")
     
-    v_create = fetch_script("refugios-vault-create.sh")
-    v_open = fetch_script("refugios-vault-open.sh")
-    v_close = fetch_script("refugios-vault-close.sh")
-    fetch_script("refugios-vault.py")
+    vault_script = fetch_script("refugios-vault.py")
 
-    # Ensure i18n.py is available in Scripts dir for vault manager
     i18n_src = os.path.join(os.path.dirname(os.path.realpath(__file__)), "i18n.py")
     i18n_dst = os.path.join(env.scripts_dir, "i18n.py")
     if os.path.exists(i18n_src):
         shutil.copy(i18n_src, i18n_dst)
 
-    # Vault shortcuts names in the current language
-    vault_names = {
-        'en': ["1. Create new Secure Vault (First time only)", "2. Open Secure Vault", "3. Close and Seal Active Vault"],
-        'es': ["1. Crear nueva Bóveda Segura (Sólo la primera vez)", "2. Abrir Bóveda Segura", "3. Cerrar y Sellar Bóveda Activa"]
-    }
-    current_vault_names = vault_names.get(sys_info.lang, vault_names['en'])
-
-    for i, name, script, icon in [
-        (1, current_vault_names[0], v_create, "dialog-password"),
-        (2, current_vault_names[1], v_open, "folder-open"),
-        (3, current_vault_names[2], v_close, "system-lock-screen")
-    ]:
-        dfile = os.path.join(env.desktop, f"{i}_{name.replace(' ', '_')}.desktop")
-        with open(dfile, "w") as f:
-            f.write(f"""[Desktop Entry]
+    vault_desktop = os.path.join(env.desktop, "Vault_Manager.desktop")
+    with open(vault_desktop, "w") as f:
+        f.write(f"""[Desktop Entry]
+Version=1.0
 Type=Application
-Name={name}
-Exec=xfce4-terminal -e "{script}"
-Icon={icon}
+Name={i18n.T('vault_title')}
+Comment={i18n.T('vault_manager_comment')}
+Exec=xfce4-terminal -e "python3 {vault_script}"
+Icon=dialog-password
 Terminal=false
 """)
-        certify_icon(dfile)
+    certify_icon(vault_desktop)
+
+    ensure_install_icon(env, sys_info)
 
 
     # PCManFM Quick execution hack (typical for Raspberry Pi OS)

@@ -27,17 +27,17 @@ Detailed vector maps with offline search and routing.
 
 ### 3. Artificial Intelligence Assistant ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
 Private smart assistant that works 100% on your local computer. Available in four levels according to device capacity:
-*   ⚪ **Minimal:** [Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (0.5B) — ~0.5 GB. For devices with very limited resources (min. 1 GB RAM).
-*   🟢 **Basic:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.5 GB. Works on any PC with 4 GB of RAM.
-*   🟡 **Medium:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~5 GB. For modern laptops with 8 GB of RAM.
-*   🔴 **Advanced:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~9 GB. For powerful PCs with 16 GB of RAM.
+*   ⚪ **Minimal:** [Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (0.5B) — ~380 MB. For devices with very limited resources (min. 1 GB RAM).
+*   🟢 **Basic:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.3 GB. Works on any PC with 4 GB of RAM.
+*   🟡 **Medium:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~4.7 GB. For modern laptops with 8 GB of RAM.
+*   🔴 **Advanced:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~8.4 GB. For powerful PCs with 16 GB of RAM.
 *   **Automatic Selector:** When launching the assistant, a script detects the available RAM and recommends the appropriate model.
 *   **Language:** 🌐 **Multilingual.** All models understand and respond in more than 20 languages.
 
 ### 4. Cryptographic Vaults (LUKS)
 Secure and encrypted storage system for sensitive data.
-*   **Status:** Unified Python system with an intuitive user interface (Dialog).
-*   **Features:** Support for multiple simultaneous vaults, custom names, and variable sizes.
+*   **Status:** Unified interactive manager with a single desktop icon and dialog-based menus.
+*   **Features:** Support for multiple simultaneous vaults with status display (open/closed), custom names, variable sizes, creation, opening, closing, and permanent deletion.
 *   **Automation:** Intelligent USB drive detection for size suggestions and automated data import.
 
 
