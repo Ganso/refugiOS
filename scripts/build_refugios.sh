@@ -3,7 +3,7 @@
 set -e
 
 # Configuración de variables
-IMG_SIZE="16G"
+IMG_SIZE="8G"
 REFUGIOS_LANG="es"
 
 while getopts "s:l:" opt; do
@@ -11,7 +11,7 @@ while getopts "s:l:" opt; do
         s) IMG_SIZE="$OPTARG" ;;
         l) REFUGIOS_LANG="$OPTARG" ;;
         :) echo "ERROR: La opción -$OPTARG requiere un argumento."; exit 1 ;;
-        \?) echo "Uso: $0 [-s TAMAÑO] [-l IDIOMA]"; echo "  -s TAMAÑO   Tamaño de la imagen (ej. 16G, 8G). Por defecto: 16G"; echo "  -l IDIOMA   Idioma: 'es' o 'en'. Por defecto: es"; exit 1 ;;
+        \?) echo "Uso: $0 [-s TAMAÑO] [-l IDIOMA]"; echo "  -s TAMAÑO   Tamaño de la imagen (ej. 16G, 8G). Por defecto: 8G"; echo "  -l IDIOMA   Idioma: 'es' o 'en'. Por defecto: es"; exit 1 ;;
     esac
 done
 
@@ -227,7 +227,7 @@ apt-get update
 apt-get install -y linux-image-amd64 linux-headers-amd64 build-essential \
                    grub-efi-amd64 grub-pc-bin sudo network-manager network-manager-gnome xfce4-goodies \
                    xfce4 xfce4-terminal curl cloud-guest-utils zenity lightdm \
-                   epiphany-browser locales keyboard-configuration flatpak \
+                   epiphany-browser locales keyboard-configuration flatpak libglib2.0-bin \
                    firmware-iwlwifi firmware-brcm80211 firmware-atheros \
                    firmware-libertas firmware-misc-nonfree firmware-realtek \
                    firmware-amd-graphics xserver-xorg-video-amdgpu nvidia-driver
@@ -296,9 +296,9 @@ echo 'configfile /boot/grub/grub.cfg' >> /boot/efi/EFI/BOOT/grub.cfg
 # Eliminar el device.map para que no quede en la imagen final
 rm -f /boot/grub/device.map
 
-# Configurar usuario por defecto
+# Configurar usuario por defecto (sin contraseña de login)
 useradd -m -s /bin/bash $USER_NAME
-echo "$USER_NAME:$USER_PASS" | chpasswd
+passwd -d $USER_NAME
 usermod -aG sudo $USER_NAME
 
 # Configurar sudo sin contraseña para el usuario por defecto
@@ -327,6 +327,24 @@ autologin-user-timeout=0
 LIGHTDM_CONF
 groupadd -r autologin || true
 usermod -aG autologin $USER_NAME
+
+# Deshabilitar bloqueo de pantalla por inactividad en XFCE
+mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
+cat << 'XFCE_SCREENLOCK' > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-screensaver" version="1.0">
+  <property name="saver" type="empty">
+    <property name="mode" type="int" value="0"/>
+    <property name="enabled" type="bool" value="false"/>
+  </property>
+  <property name="lock" type="empty">
+    <property name="enabled" type="bool" value="false"/>
+    <property name="with-screensaver" type="bool" value="false"/>
+    <property name="fullscreen" type="bool" value="false"/>
+  </property>
+</channel>
+XFCE_SCREENLOCK
+chmod 644 /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml
 
 # Inyectar Script de Autoexpansión Universal (NVMe/eMMC/SATA/loop)
 cat << 'EXPAND_SCRIPT' > /usr/local/bin/refugios-expand.sh
