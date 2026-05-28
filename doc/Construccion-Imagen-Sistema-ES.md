@@ -253,7 +253,7 @@ El script de construcción inyecta los siguientes componentes en la imagen final
 | `/etc/systemd/system/refugios-expand.service` | Servicio systemd | Ejecuta la autoexpansión y se deshabilita automáticamente |
 | `/usr/local/bin/refugios-install-wrapper.sh` | Script | Wrapper del instalador con comprobación de conectividad |
 | `/etc/skel/Desktop/Instalar_refugiOS.desktop` | Lanzador .desktop | Icono del instalador en el escritorio |
-| `/usr/local/bin/refugios-trust-launcher.sh` | Script | Intenta marcar el lanzador como confiable |
+| `/usr/local/bin/refugios-trust-launcher.sh` | Script | Marca los lanzadores como fiables vía GIO |
 | `/etc/xdg/autostart/refugios-desktop-trust.desktop` | Autostart | Ejecuta el script de confianza al iniciar sesión |
 | `/usr/local/bin/refugios-welcome.sh` | Script | Popup de bienvenida en el primer arranque |
 | `/etc/xdg/autostart/refugios-welcome.desktop` | Autostart | Ejecuta el popup de bienvenida al iniciar sesión |
@@ -263,32 +263,19 @@ El script de construcción inyecta los siguientes componentes en la imagen final
 
 ---
 
-## 7. Bug Conocido: Iconos del Escritorio No Marcados como Fiables
+## 7. Certificación de Iconos de Escritorio
 
-> [!WARNING]
-> **Bug en la distribución actual:** En la imagen generada, los iconos del escritorio (lanzadores `.desktop`) **no se marcan correctamente como fiables** por XFCE. Esto significa que al hacer doble clic sobre ellos, el sistema mostrará un diálogo de advertencia preguntando si se desea lanzar la aplicación como ejecutable, en lugar de ejecutarla directamente.
+> [!NOTE]
+> Los iconos del escritorio (lanzadores `.desktop`) se marcan ahora **automáticamente como fiables** por XFCE en el primer inicio de sesión. No se requiere intervención manual.
 
-### Causa
+### Cómo Funciona
 
-El script de construcción inyecta un mecanismo de confianza (`refugios-trust-launcher.sh`) que se ejecuta como autostart en el primer login y que:
-1. Otorga permisos de ejecución al lanzador (`chmod +x`).
-2. Intenta calcular el checksum SHA-256 del archivo y almacenarlo en los metadatos GIO (`metadata::xfce-exe-checksum`).
+El script de construcción incluye `libglib2.0-bin` en el sistema base, que proporciona el comando `gio`. Al iniciar sesión, el script de autostart `refugios-trust-launcher.sh`:
 
-Sin embargo, en las versiones actuales de XFCE, este mecanismo **no funciona de forma fiable**: el escritorio no reconoce el checksum inyectado por GIO y requiere que el usuario marque manualmente el archivo como fiable a través de la interfaz gráfica (clic derecho → "Permitir lanzamiento" / "Allow launching").
+1. Otorga permisos de ejecución a cada lanzador (`chmod +x`).
+2. Calcula el checksum SHA-256 del archivo y lo almacena en los metadatos GIO (`metadata::xfce-exe-checksum`).
 
-### Solución Temporal
-
-Hasta que este bug sea corregido, puedes resolverlo manualmente de dos formas:
-
-1. **Desde la interfaz gráfica:** Haz clic derecho sobre el icono del escritorio "Completar instalación de refugiOS" y selecciona **"Permitir lanzamiento"** (o "Allow launching" en inglés). XFCE marcará el archivo como fiable y actualizará su icono visual.
-
-2. **Desde la terminal:**
-   ```bash
-   # Marcar como ejecutable y confiable
-   chmod +x ~/Desktop/Instalar_refugiOS.desktop
-   # XFCE requiere interacción manual para confiar; el comando anterior
-   # es necesario pero no suficiente. Usa la opción 1 para completar el proceso.
-   ```
+Este es el único campo de metadatos que XFCE verifica para considerar un archivo `.desktop` como fiable. El instalador (`install.py`) aplica el mismo mecanismo a cualquier icono nuevo que cree.
 
 ---
 
@@ -315,7 +302,7 @@ Hasta que este bug sea corregido, puedes resolverlo manualmente de dos formas:
 1. Construye la imagen: `sudo bash scripts/build_refugios.sh 64G`
 2. Prueba el arranque: `bash scripts/test_boot.sh 64G`
 3. Si arranca correctamente, vuelca al USB: `sudo dd if=refugios-base-64G.img of=/dev/sdX bs=4M status=progress conv=fsync`
-4. Arranca desde el USB, marca el icono como fiable y completa la instalación.
+4. Arranca desde el USB y completa la instalación.
 
 ### Flujo B: Preparar múltiples unidades idénticas
 

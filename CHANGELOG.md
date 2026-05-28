@@ -19,6 +19,14 @@ y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Umbral de modo ligero:** Elevado de 25 GB a 30 GB para reflejar mejor los requisitos reales de los componentes.
 - **Tabla de capacidades en documentación:** La tabla de capacidad/contenido en las guías de elección de medio de instalación ha sido actualizada para reflejar con mayor precisión qué contenido cabe en cada tamaño de dispositivo (16/32/64/128 GB).
 
+### Corregido
+- **Certificación de iconos de escritorio:** Resuelto el bug por el que los iconos `.desktop` no se marcaban como fiables en XFCE. La causa era doble: (1) la imagen base no incluía `libglib2.0-bin` (que proporciona el comando `gio`, indispensable para establecer `metadata::xfce-exe-checksum`), y (2) el mecanismo de certificación establecía metadatos innecesarios (`metadata::trusted`, xattr) que XFCE no reconocía. Ahora la imagen base incluye `libglib2.0-bin` y `certify_icon` solo establece `metadata::xfce-exe-checksum`, que es el único campo que XFCE verifica.
+
+### Cambiado
+- **Instalación de paquetes base individualizada:** Los paquetes del sistema base se instalan ahora uno a uno en lugar de en un único comando `apt-get install`, para que un paquete inexistente en la distribución actual (ej. `language-selector-common` en Debian) no impida la instalación del resto.
+- **Usuario sin contraseña:** En la imagen base, el usuario `refugios` se crea ahora sin contraseña de login (`passwd -d`), evitando el bloqueo de pantalla por inactividad que requería introducir una clave que el usuario no conoce.
+- **Bloqueo de pantalla deshabilitado:** La imagen base desactiva el salvapantallas y el bloqueo automático de pantalla de XFCE mediante configuración global de `xfce4-screensaver`.
+
 ## [0.14] - 2026-05-27
 
 ### Añadido
@@ -34,9 +42,6 @@ y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Cambiado
 - **Reestructuración de la documentación de instalación:** La sección "Elección del hardware" ha sido extraída de las guías de instalación en XUbuntu (ES/EN) y migrada a la nueva guía dedicada de elección del medio de instalación, ya que aplica igualmente a las imágenes de sistema nativas. Las guías de XUbuntu ahora referencian la nueva guía y tienen la numeración de secciones actualizada.
-
-### Errores conocidos
-- **Iconos del escritorio no marcados como fiables:** En la imagen generada por `build_refugios.sh`, los lanzadores `.desktop` del escritorio no se marcan correctamente como fiables por XFCE. El mecanismo de confianza inyectado (checksum SHA-256 vía GIO `metadata::xfce-exe-checksum`) no es reconocido por XFCE, que muestra un diálogo de advertencia antes de permitir la ejecución. Se requiere intervención manual del usuario (clic derecho → "Permitir lanzamiento") hasta que este bug sea corregido.
 
 ## [0.12] - 2026-05-07
 

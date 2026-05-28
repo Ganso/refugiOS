@@ -32,9 +32,7 @@ Se ha probado la instalación en Debian 11, pero se han identificado varios prob
 
 ### Imagen Nativa de Sistema (build_refugios.sh)
 
-La imagen base generada por `scripts/build_refugios.sh` tiene un problema conocido:
-
-*   **Iconos del escritorio no marcados como fiables:** Los lanzadores `.desktop` del escritorio no se marcan correctamente como fiables por XFCE. Al hacer doble clic, XFCE muestra un diálogo de advertencia pidiendo confirmación antes de ejecutar la aplicación. El mecanismo de confianza inyectado (checksum SHA-256 vía GIO `metadata::xfce-exe-checksum`) no es reconocido por XFCE. Solución temporal: clic derecho sobre el icono → "Permitir lanzamiento". Ver detalles en la **[Guía de Construcción de Imagen de Sistema](Construccion-Imagen-Sistema-ES#7-bug-conocido-iconos-del-escritorio-no-marcados-como-fiables)**.
+La imagen base generada por `scripts/build_refugios.sh` no requiere pasos manuales posteriores para los iconos del escritorio. Los lanzadores se marcan automáticamente como fiables por XFCE en el primer inicio de sesión mediante el mecanismo de metadatos GIO `metadata::xfce-exe-checksum` (requiere `libglib2.0-bin`, incluido en la imagen).
 
 ---
 [Volver al README](../README.md)

@@ -263,32 +263,19 @@ The build script injects the following components into the final image:
 
 ---
 
-## 7. Known Bug: Desktop Icons Not Marked as Trusted
+## 7. Desktop Icon Trust Certification
 
-> [!WARNING]
-> **Bug in current distribution:** In the generated image, desktop icons (`.desktop` launchers) are **not correctly marked as trusted** by XFCE. This means that when double-clicking them, the system will show a warning dialog asking whether to launch the application as an executable, instead of executing it directly.
+> [!NOTE]
+> Desktop icons (`.desktop` launchers) are now **automatically marked as trusted** by XFCE on first login. No manual intervention is required.
 
-### Cause
+### How It Works
 
-The build script injects a trust mechanism (`refugios-trust-launcher.sh`) that runs as an autostart on the first login and:
-1. Grants execution permissions to the launcher (`chmod +x`).
-2. Attempts to calculate the SHA-256 checksum of the file and store it in GIO metadata (`metadata::xfce-exe-checksum`).
+The build script includes `libglib2.0-bin` in the base system, which provides the `gio` command. On first login, the autostart script `refugios-trust-launcher.sh`:
 
-However, in current versions of XFCE, this mechanism **does not work reliably**: the desktop does not recognize the checksum injected via GIO and requires the user to manually mark the file as trusted through the graphical interface (right-click → "Allow launching").
+1. Grants execution permissions to each launcher (`chmod +x`).
+2. Calculates the SHA-256 checksum of the file and stores it in GIO metadata (`metadata::xfce-exe-checksum`).
 
-### Workaround
-
-Until this bug is fixed, you can resolve it manually in two ways:
-
-1. **From the graphical interface:** Right-click on the "Completar instalación de refugiOS" desktop icon and select **"Allow launching"**. XFCE will mark the file as trusted and update its visual icon.
-
-2. **From the terminal:**
-   ```bash
-   # Mark as executable and trusted
-   chmod +x ~/Desktop/Instalar_refugiOS.desktop
-   # XFCE requires manual interaction to trust; the command above
-   # is necessary but not sufficient. Use option 1 to complete the process.
-   ```
+This is the only metadata field that XFCE checks to consider a `.desktop` file as trusted. The installer (`install.py`) applies the same mechanism to any new icons it creates.
 
 ---
 
@@ -315,7 +302,7 @@ Until this bug is fixed, you can resolve it manually in two ways:
 1. Build the image: `sudo bash scripts/build_refugios.sh 64G`
 2. Test booting: `bash scripts/test_boot.sh 64G`
 3. If it boots correctly, flash to USB: `sudo dd if=refugios-base-64G.img of=/dev/sdX bs=4M status=progress conv=fsync`
-4. Boot from the USB, mark the icon as trusted, and complete the installation.
+4. Boot from the USB and complete the installation.
 
 ### Workflow B: Prepare Multiple Identical Drives
 
