@@ -295,12 +295,6 @@ def set_wallpaper(sys_info):
     Sets the desktop wallpaper to logo/fondo.png scaled without deformation.
     Supports XFCE and Raspberry OS (PCManFM).
     """
-    installer_dir = os.path.dirname(os.path.realpath(__file__))
-    wallpaper_path = os.path.join(installer_dir, "logo", "fondo.png")
-    
-    if not os.path.exists(wallpaper_path):
-        return
-
     try:
         msg = i18n.T('setting_wallpaper')
     except:
@@ -312,10 +306,22 @@ def set_wallpaper(sys_info):
     os.makedirs(perm_wallpaper_dir, exist_ok=True)
     perm_wallpaper_path = os.path.join(perm_wallpaper_dir, "fondo.png")
     
-    try:
-        shutil.copy(wallpaper_path, perm_wallpaper_path)
-    except Exception:
-        perm_wallpaper_path = wallpaper_path
+    installer_dir = os.path.dirname(os.path.realpath(__file__))
+    local_wallpaper_path = os.path.join(installer_dir, "logo", "fondo.png")
+
+    if os.path.exists(local_wallpaper_path):
+        try:
+            shutil.copy(local_wallpaper_path, perm_wallpaper_path)
+        except Exception:
+            pass
+    else:
+        repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
+        remote_url = f"{repo_url}/logo/fondo.png"
+        run_cmd(f"wget -q \"{remote_url}\" -O \"{perm_wallpaper_path}\"", quiet=True)
+
+    if not os.path.exists(perm_wallpaper_path) or os.path.getsize(perm_wallpaper_path) == 0:
+        return
+        
         
     # XFCE
     if shutil.which("xfconf-query"):
