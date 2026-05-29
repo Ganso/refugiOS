@@ -325,16 +325,51 @@ def set_wallpaper(sys_info):
         
     # XFCE
     if shutil.which("xfconf-query"):
-        script = f"""
-        for base in $(xfconf-query -c xfce4-desktop -p /backdrop -l 2>/dev/null | grep -E 'screen.*/monitor' | sed -E 's/\/[^\/]+$//' | sort -u); do
-            xfconf-query -c xfce4-desktop -p "$base/last-image" --create -t string -s '{perm_wallpaper_path}'
-            xfconf-query -c xfce4-desktop -p "$base/image-path" --create -t string -s '{perm_wallpaper_path}'
-            xfconf-query -c xfce4-desktop -p "$base/image-style" --create -t int -s 5
-            xfconf-query -c xfce4-desktop -p "$base/image-show" --create -t bool -s true
-        done
-        xfdesktop --reload 2>/dev/null || true
-        """
-        run_cmd(script, quiet=True)
+        monitors = []
+        try:
+            xrandr_out = subprocess.check_output("xrandr 2>/dev/null", shell=True, text=True)
+            for line in xrandr_out.splitlines():
+                if " connected" in line:
+                    monitors.append(line.split()[0])
+        except Exception:
+            pass
+
+        try:
+            xfconf_out = subprocess.check_output("xfconf-query -c xfce4-desktop -p /backdrop -l 2>/dev/null", shell=True, text=True)
+            for line in xfconf_out.splitlines():
+                parts = line.strip().split('/')
+                if len(parts) >= 4 and parts[3].startswith('monitor'):
+                    monitor_name = parts[3][7:]
+                    if monitor_name:
+                        monitors.append(monitor_name)
+        except Exception:
+            pass
+
+        monitors.extend(["0", "1", "default"])
+        monitors = sorted(list(set(monitors)))
+
+        def set_xfconf_prop(prop, prop_type, value):
+            check_cmd = f"xfconf-query -c xfce4-desktop -p {prop} >/dev/null 2>&1"
+            exists = subprocess.call(check_cmd, shell=True) == 0
+            if exists:
+                set_cmd = f"xfconf-query -c xfce4-desktop -p {prop} -s '{value}'"
+            else:
+                set_cmd = f"xfconf-query -c xfce4-desktop -p {prop} --create -t {prop_type} -s '{value}'"
+            subprocess.call(set_cmd, shell=True)
+
+        for monitor in monitors:
+            for workspace in [None, 0, 1, 2, 3, 4]:
+                if workspace is None:
+                    base = f"/backdrop/screen0/monitor{monitor}"
+                else:
+                    base = f"/backdrop/screen0/monitor{monitor}/workspace{workspace}"
+                
+                set_xfconf_prop(f"{base}/last-image", "string", perm_wallpaper_path)
+                set_xfconf_prop(f"{base}/image-path", "string", perm_wallpaper_path)
+                set_xfconf_prop(f"{base}/image-style", "int", "5")
+                set_xfconf_prop(f"{base}/image-show", "bool", "true")
+
+        subprocess.call("xfdesktop --reload 2>/dev/null || true", shell=True)
     
     # PCManFM (Raspberry Pi OS)
     if shutil.which("pcmanfm"):
