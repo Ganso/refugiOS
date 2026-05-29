@@ -62,6 +62,9 @@ sudo dd if=refugios-base-16G-es.img of=/dev/diskN bs=4M
 
 ### 4. Completa la instalación
 
+> [!IMPORTANT]
+> **Toda la instalación inicial (incluyendo ejecutar este asistente) debe realizarse en un entorno controlado y con conexión a Internet ANTES de que ocurra una emergencia.** Una vez finalizados todos los pasos y comprobado que el sistema funciona correctamente, tu dispositivo estará listo para operar de forma 100% offline.
+
 En el escritorio encontrarás el icono **"Completar instalación de refugiOS"**. Haz doble clic sobre él, conéctate a Internet cuando te lo pida, y el asistente se encargará de descargar e instalar todo el contenido según la capacidad de tu USB.
 
 También puedes ejecutarlo desde la terminal:

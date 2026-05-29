@@ -62,6 +62,9 @@ sudo dd if=refugios-base-16G-en.img of=/dev/diskN bs=4M
 
 ### 4. Complete the installation
 
+> [!IMPORTANT]
+> **The entire initial setup (including running this wizard) must be done in a controlled environment with an Internet connection BEFORE an emergency occurs.** Once all steps are completed and you have verified the system works correctly, your device will be ready to operate 100% offline.
+
 On the desktop you will find the **"Complete refugiOS installation"** icon. Double-click it, connect to the Internet when prompted, and the wizard will download and install all content according to your USB drive's capacity.
 
 You can also run it from the terminal:
