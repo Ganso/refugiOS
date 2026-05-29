@@ -325,10 +325,16 @@ def set_wallpaper(sys_info):
         
     # XFCE
     if shutil.which("xfconf-query"):
-        cmd_path = f"for prop in $(xfconf-query -c xfce4-desktop -p /backdrop -l | grep -E -e 'screen.*/monitor.*image-path$' -e 'screen.*/monitor.*/last-image$'); do xfconf-query -c xfce4-desktop -p $prop -s '{perm_wallpaper_path}'; done"
-        run_cmd(cmd_path, quiet=True)
-        cmd_style = "for prop in $(xfconf-query -c xfce4-desktop -p /backdrop -l | grep -E -e 'screen.*/monitor.*/image-style$'); do xfconf-query -c xfce4-desktop -p $prop -t int -s 5; done"
-        run_cmd(cmd_style, quiet=True)
+        script = f"""
+        for base in $(xfconf-query -c xfce4-desktop -p /backdrop -l 2>/dev/null | grep -E 'screen.*/monitor' | sed -E 's/\/[^\/]+$//' | sort -u); do
+            xfconf-query -c xfce4-desktop -p "$base/last-image" --create -t string -s '{perm_wallpaper_path}'
+            xfconf-query -c xfce4-desktop -p "$base/image-path" --create -t string -s '{perm_wallpaper_path}'
+            xfconf-query -c xfce4-desktop -p "$base/image-style" --create -t int -s 5
+            xfconf-query -c xfce4-desktop -p "$base/image-show" --create -t bool -s true
+        done
+        xfdesktop --reload 2>/dev/null || true
+        """
+        run_cmd(script, quiet=True)
     
     # PCManFM (Raspberry Pi OS)
     if shutil.which("pcmanfm"):
