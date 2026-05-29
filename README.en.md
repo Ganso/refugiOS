@@ -31,8 +31,8 @@ The easiest way to get refugiOS is to download the ready-made image, flash it to
 
 | Language | Link | Approx. Size |
 | :--- | :--- | :--- |
-| 🇬🇧🇺🇸 **English** | [refugios-base-16G-en.img](https://refugios.ganso.org/refugios-base-16G-en.img) | ~7-8 GB |
-| 🇪🇸 **Spanish** | [refugios-base-16G-es.img](https://refugios.ganso.org/refugios-base-16G-es.img) | ~7-8 GB |
+| 🇬🇧🇺🇸 **English** | [refugios-base-16G-en.img](https://refugios.ganso.org/refugios-base-16G-en.img) | ~16 GB |
+| 🇪🇸 **Spanish** | [refugios-base-16G-es.img](https://refugios.ganso.org/refugios-base-16G-es.img) | ~16 GB |
 
 You need a USB drive of **at least 16 GB**. The system partition will automatically expand to the full size of the USB drive on first boot.
 
