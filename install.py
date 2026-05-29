@@ -290,6 +290,44 @@ Categories=System;
 """)
         certify_icon(desktop_file)
 
+def set_wallpaper(sys_info):
+    """
+    Sets the desktop wallpaper to logo/fondo.png scaled without deformation.
+    Supports XFCE and Raspberry OS (PCManFM).
+    """
+    installer_dir = os.path.dirname(os.path.realpath(__file__))
+    wallpaper_path = os.path.join(installer_dir, "logo", "fondo.png")
+    
+    if not os.path.exists(wallpaper_path):
+        return
+
+    try:
+        msg = i18n.T('setting_wallpaper')
+    except:
+        msg = "Configurando fondo de pantalla..."
+    log_info(msg)
+
+    home_dir = os.environ.get('HOME', '')
+    perm_wallpaper_dir = os.path.join(home_dir, "refugiOS", "System")
+    os.makedirs(perm_wallpaper_dir, exist_ok=True)
+    perm_wallpaper_path = os.path.join(perm_wallpaper_dir, "fondo.png")
+    
+    try:
+        shutil.copy(wallpaper_path, perm_wallpaper_path)
+    except Exception:
+        perm_wallpaper_path = wallpaper_path
+        
+    # XFCE
+    if shutil.which("xfconf-query"):
+        cmd_path = f"for prop in $(xfconf-query -c xfce4-desktop -p /backdrop -l | grep -E -e 'screen.*/monitor.*image-path$' -e 'screen.*/monitor.*/last-image$'); do xfconf-query -c xfce4-desktop -p $prop -s '{perm_wallpaper_path}'; done"
+        run_cmd(cmd_path, quiet=True)
+        cmd_style = "for prop in $(xfconf-query -c xfce4-desktop -p /backdrop -l | grep -E -e 'screen.*/monitor.*/image-style$'); do xfconf-query -c xfce4-desktop -p $prop -t int -s 5; done"
+        run_cmd(cmd_style, quiet=True)
+    
+    # PCManFM (Raspberry Pi OS)
+    if shutil.which("pcmanfm"):
+        run_cmd(f"pcmanfm --set-wallpaper='{perm_wallpaper_path}' --wallpaper-mode=crop", quiet=True)
+
 # ==============================================================================
 # SECTION 2: SYSTEM DETECTION AND DIAGNOSIS
 # ==============================================================================
@@ -1139,6 +1177,9 @@ Terminal=false
     if 'exec_path' not in locals():
          exec_path = "kiwix-desktop"
     sync_resources(env, sys_info, exec_path)
+
+    # Set desktop background
+    set_wallpaper(sys_info)
 
     # Certify all desktop icons one final time and refresh desktop
     certify_all_desktop_icons(env.desktop)
