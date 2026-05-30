@@ -137,13 +137,26 @@ AI_MODEL_CONFIG = [
 
 FAILED_ITEMS = []
 
+def _write_log(msg):
+    # Remove ANSI color codes
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    clean_msg = ansi_escape.sub('', msg)
+    try:
+        with open("/tmp/refugios-install.log", 'a') as f:
+            f.write(clean_msg + "\n")
+    except:
+        pass
+
 def log_info(msg):
     """Displays an informative message in blue."""
     print(f"\033[1;34m[*]\033[0m {msg}")
+    _write_log(f"[*] {msg}")
 
 def log_err(msg, fatal=True):
     """Displays a critical error message in red and optionally terminates execution."""
-    print(f"\033[1;31m[X] {i18n.T('error')}:\033[0m {msg}")
+    prefix = f"[X] {i18n.T('error')}:"
+    print(f"\033[1;31m{prefix}\033[0m {msg}")
+    _write_log(f"{prefix} {msg}")
     if fatal:
         sys.exit(1)
     else:
@@ -151,7 +164,37 @@ def log_err(msg, fatal=True):
 
 def log_success(msg):
     """Displays a success message in green."""
-    print(f"\033[1;32m[v] {i18n.T('success')}:\033[0m {msg}")
+    prefix = f"[v] {i18n.T('success')}:"
+    print(f"\033[1;32m{prefix}\033[0m {msg}")
+    _write_log(f"{prefix} {msg}")
+
+class SizeLogger:
+    """Tracks disk space usage across installation phases."""
+    def __init__(self):
+        self.initial_space = self._get_free_space()
+        self.last_space = self.initial_space
+        _write_log("=== refugiOS Installation Size Log ===")
+            
+    def _get_free_space(self):
+        try:
+            os.sync()
+            stat = shutil.disk_usage('/')
+            return stat.free // (1024 * 1024)
+        except:
+            return 0
+            
+    def log_section(self, section_name):
+        current_space = self._get_free_space()
+        used_mb = self.last_space - current_space
+        self.last_space = current_space
+        log_info(f"[Size Log] [{section_name}] Espacio ocupado: {used_mb} MB")
+
+    def log_total(self):
+        current_space = self._get_free_space()
+        total_used = self.initial_space - current_space
+        log_info(f"[Size Log] [TOTAL] Espacio total ocupado: {total_used} MB")
+        return total_used
+
 
 def run_cmd(cmd, shell=True, check=True, quiet=False):
     """
@@ -925,6 +968,8 @@ def main():
 
     d.msgbox(i18n.T('install_starting_msg'), title=i18n.T('install_starting_title'))
 
+    size_logger = SizeLogger()
+
     ensure_dirs(env)
     cleanup_obsolete_icons(env.desktop)
 
@@ -963,6 +1008,8 @@ def main():
     if sys_info.is_rpi:
         fix_rpi_pcmanfm_warnings()
 
+    size_logger.log_section("Fase 1: OS Utilities & Ofimática")
+
     # Phase 2: Install Kiwix Visual Interface
     kiwix_appimage_url = None
     kiwix_appimage_name = None
@@ -986,6 +1033,8 @@ def main():
         exec_path = os.path.join(env.base, "Apps", "kiwix-desktop.appimage")
     else:
         exec_path = "/usr/bin/kiwix-desktop" if sys_info.is_rpi else "kiwix-desktop"
+
+    size_logger.log_section("Fase 2: Kiwix Desktop")
 
     # Phase 3: Knowledge Bases (ZIM)
     log_info(i18n.T('scanning_zim'))
@@ -1096,6 +1145,8 @@ def main():
         else:
             log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
 
+    size_logger.log_section("Fase 3: Bases de Conocimiento (ZIM)")
+
     # Phase 4: Optional Cartographic Deployment (Organic Maps)
     repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
     
@@ -1134,6 +1185,8 @@ Terminal=false
         certify_icon(maps_desktop)
     else:
         log_info("Skipping Cartographic module (Organic Maps).")
+
+    size_logger.log_section("Fase 4: Mapas Offline (Organic Maps)")
 
     # Phase 5: AI Motor (Llamafile)
     if ai_selected:
@@ -1179,6 +1232,8 @@ Terminal=false
 """)
         certify_icon(ai_assist_desktop)
 
+    size_logger.log_section("Fase 5: Motor AI y Modelos")
+
     # Phase 6: Privacy Cryptographic Foundations
     log_info("Assembling security vaults and privacy policies...")
     
@@ -1203,6 +1258,8 @@ Terminal=false
     certify_icon(vault_desktop)
 
     ensure_install_icon(env, sys_info)
+
+    size_logger.log_section("Fase 6: Bóveda de Seguridad")
 
 
     # PCManFM Quick execution hack (typical for Raspberry Pi OS)
@@ -1231,6 +1288,8 @@ Terminal=false
     # Certify all desktop icons one final time and refresh desktop
     certify_all_desktop_icons(env.desktop)
 
+    total_mb = size_logger.log_total()
+
     if FAILED_ITEMS:
         log_err(i18n.T('install_errors_summary'), fatal=False)
         report = f"{i18n.T('install_errors_found')}\n\n"
@@ -1239,7 +1298,8 @@ Terminal=false
         d.msgbox(report, title=i18n.T('warning'))
     else:
         log_success("GLOBAL DEPLOYMENT OPERATION FINISHED. Please check desktop icon integrity and accessibility.")
-        d.msgbox(i18n.T('install_finished_msg'), title=i18n.T('install_finished_title'))
+        final_msg = f"{i18n.T('install_finished_msg')}\n\n{i18n.T('install_space_used').format(total_mb)}"
+        d.msgbox(final_msg, title=i18n.T('install_finished_title'))
 
 
 if __name__ == "__main__":
