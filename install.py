@@ -66,7 +66,7 @@ WIKIPEDIA_CONFIG = [
         "type": "all_nopic",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
         "priority": 2,
-        "size_mb": 9728
+        "size_mb": 11500
     },
     {
         "id": "wiki_total",

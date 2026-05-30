@@ -5,6 +5,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17] - 2026-05-30
+
+### Añadido
+- **Log de instalación unificado:** Las funciones de log del instalador (`log_info`, `log_err`, `log_success`) escriben ahora simultáneamente en consola y en el archivo `/tmp/refugios-install.log`, permitiendo revisar el historial completo de la instalación a posteriori.
+- **Medición de espacio por fases:** El instalador mide y registra en el log el espacio ocupado en disco al finalizar cada fase de instalación (utilidades base, Kiwix Desktop, bases de conocimiento ZIM, mapas offline, modelos de IA y bóveda de seguridad), así como el total acumulado al concluir.
+- **Espacio total en mensaje de fin:** El mensaje de finalización de la instalación muestra ahora el espacio total ocupado en MB durante el proceso.
+- **Estimación de espacio antes de instalar:** El instalador calcula el espacio estimado que ocupará la selección del usuario (sin contar componentes ya instalados) y lo muestra en el diálogo de confirmación previo a la instalación.
+- **Aviso de espacio insuficiente:** Si el espacio libre disponible es inferior al 120% del tamaño estimado de la instalación, el diálogo de confirmación muestra una **ALERTA CRÍTICA** destacada, advirtiendo al usuario de que la instalación puede fallar.
+
+### Cambiado
+- **Tamaño real de Wikipedia NoPics:** La estimación interna y la etiqueta visible al usuario de Wikipedia sin imágenes (`all_nopic`) han sido actualizadas de ~9.5 GB a **~11.5 GB**, reflejando el tamaño real medido en instalaciones reales.
+- **Script wrapper de instalación mejorado:** El script `/usr/local/bin/refugios-install-wrapper.sh` generado por el instalador es ahora idéntico al inyectado por `build_refugios.sh`: incluye registro de inicio/fin en el log, mensajes de estado al comprobar la conexión, y diálogo de error gráfico (`zenity`) o bloque de texto en consola si no hay conectividad, con textos internacionalizados según el idioma del sistema.
+- **Corrección gramatical en bienvenida:** El mensaje de bienvenida al primer arranque ahora dice correctamente «en un dispositivo de X GB» en lugar de «en un X GB» (tanto en español como en inglés).
+
 ## [0.16] - 2026-05-29
 
 ### Añadido
