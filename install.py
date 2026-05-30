@@ -56,7 +56,8 @@ WIKIPEDIA_CONFIG = [
         "label": i18n.T('wiki_lite_label'),
         "type": "top_mini",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "priority": 1
+        "priority": 1,
+        "size_mb": 200
     },
     {
         "id": "wiki_nopics",
@@ -64,7 +65,8 @@ WIKIPEDIA_CONFIG = [
         "label": i18n.T('wiki_nopics_label'),
         "type": "all_nopic",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "priority": 2
+        "priority": 2,
+        "size_mb": 9728
     },
     {
         "id": "wiki_total",
@@ -72,7 +74,8 @@ WIKIPEDIA_CONFIG = [
         "label": i18n.T('wiki_total_label'),
         "type": "all_maxi",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "priority": 3
+        "priority": 3,
+        "size_mb": 38912
     }
 ]
 
@@ -83,7 +86,8 @@ OTHER_WIKIS_CONFIG = [
         "label": i18n.T('wikimed_label'),
         "type": "maxi",
         "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "symlink": "wikimed.zim"
+        "symlink": "wikimed.zim",
+        "size_mb": 620
     },
     {
         "id": "wikihow",
@@ -95,7 +99,8 @@ OTHER_WIKIS_CONFIG = [
             "https://mirror.netcologne.de/kiwix/zim/wikihow/",
             "https://mirror-sites-ca.mblibrary.info/mirror-sites/download.kiwix.org/archive/zim/wikihow/"
         ],
-        "symlink": "wikihow.zim"
+        "symlink": "wikihow.zim",
+        "size_mb": 20480
     }
 ]
 
@@ -106,28 +111,32 @@ AI_MODEL_CONFIG = [
         "label": i18n.T('ia_min_label'),
         "filename": "Qwen2.5-0.5B-Instruct-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/",
-        "symlink": "minimal-model.gguf"
+        "symlink": "minimal-model.gguf",
+        "size_mb": 380
     },
     {
         "id": "ia_base",
         "label": i18n.T('ia_base_label'),
         "filename": "microsoft_Phi-4-mini-instruct-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF/resolve/main/",
-        "symlink": "basic-model.gguf"
+        "symlink": "basic-model.gguf",
+        "size_mb": 2355
     },
     {
         "id": "ia_med",
         "label": i18n.T('ia_med_label'),
         "filename": "Qwen_Qwen3-8B-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/main/",
-        "symlink": "intermediate-model.gguf"
+        "symlink": "intermediate-model.gguf",
+        "size_mb": 4812
     },
     {
         "id": "ia_max",
         "label": i18n.T('ia_max_label'),
         "filename": "Qwen_Qwen3-14B-Q4_K_M.gguf",
         "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/",
-        "symlink": "advanced-model.gguf"
+        "symlink": "advanced-model.gguf",
+        "size_mb": 8601
     }
 ]
 
@@ -895,7 +904,8 @@ def main():
             "id": c['id'],
             "search_url": c.get('search_url'),
             "search_urls": c.get('search_urls', []),
-            "priority": c.get('priority', 0)
+            "priority": c.get('priority', 0),
+            "size_mb": c.get('size_mb', 0)
         }
         if os.path.exists(env.know_dir):
             regex = rf"wikipedia_{sys_info.lang}_{c['type']}_[0-9-]*\.zim"
@@ -913,7 +923,8 @@ def main():
             "id": c['id'],
             "search_url": c.get('search_url'),
             "search_urls": c.get('search_urls', []),
-            "symlink": c.get('symlink')
+            "symlink": c.get('symlink'),
+            "size_mb": c.get('size_mb', 0)
         }
         if os.path.exists(env.know_dir):
             prefix = "wikipedia" if c['name'] == 'wikimed' else c['name']
@@ -931,7 +942,8 @@ def main():
             "filename": m['filename'],
             "url_base": m['url_base'],
             "symlink": m['symlink'],
-            "id": m['id']
+            "id": m['id'],
+            "size_mb": m.get('size_mb', 0)
         }
         if os.path.exists(env.ai_dir):
             pattern = m['filename'].replace('.', r'\.')
@@ -955,7 +967,42 @@ def main():
 
     use_torrent = simple_question(d, i18n.T('p2p_menu_title'), i18n.T('p2p_menu_prompt'), default_yes=False)
     
-    if not simple_question(d, i18n.T('confirm_install_title'), i18n.T('confirm_install_prompt'), default_yes=True):
+    estimated_mb = 300
+    if install_extras:
+        estimated_mb += 1300
+    estimated_mb += 160
+
+    if wiki_selected is not None and wiki_selected > 0:
+        opt = wiki_opts[wiki_selected]
+        if not opt.get('installed'):
+            estimated_mb += opt.get('size_mb', 0)
+
+    for idx in other_wikis_selected:
+        opt = other_wiki_opts[idx]
+        if not opt.get('installed'):
+            estimated_mb += opt.get('size_mb', 0)
+
+    if install_maps:
+        if not shutil.which("flatpak") or subprocess.call("flatpak info app.organicmaps.desktop >/dev/null 2>&1", shell=True) != 0:
+            estimated_mb += 2100
+
+    if ai_selected:
+        if not os.path.exists(os.path.join(env.ai_dir, 'llamafile')):
+            estimated_mb += 300
+        for idx in ai_selected:
+            opt = ai_opts[idx]
+            if not opt.get('installed'):
+                estimated_mb += opt.get('size_mb', 0)
+
+    estimated_gb = round(estimated_mb / 1024, 2)
+    warning_msg = ""
+    if sys_info.free_space_mb < estimated_mb * 1.2:
+        free_gb = round(sys_info.free_space_mb / 1024, 2)
+        warning_msg = i18n.T('space_warning_msg').format(free_gb, estimated_gb)
+
+    confirm_text = f"{i18n.T('confirm_install_prompt')}\n\n{i18n.T('estimated_space_msg').format(estimated_gb)}{warning_msg}"
+    
+    if not simple_question(d, i18n.T('confirm_install_title'), confirm_text, default_yes=True):
         log_err(i18n.T('install_aborted'))
 
     if os.environ.get("DEBUG") == "1":
