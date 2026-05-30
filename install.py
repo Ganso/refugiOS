@@ -291,28 +291,51 @@ def ensure_install_icon(env, sys_info):
     Creates the 'Complete refugiOS installation' wrapper script and
     desktop icon if they don't already exist.
     Allows users to re-run the installer to add more components.
+    Matches the wrapper injected by build_refugios.sh exactly.
     """
     wrapper_path = "/usr/local/bin/refugios-install-wrapper.sh"
     if not os.path.exists(wrapper_path):
-        wrapper_content = '''#!/bin/bash
+        # Localised strings for the wrapper (resolved at install time)
+        err_title  = i18n.T('wrapper_err_title')
+        err_text   = i18n.T('wrapper_err_text')
+        ping_msg   = i18n.T('wrapper_ping')
+        ok_msg     = i18n.T('wrapper_ok')
+        console_err   = i18n.T('wrapper_console_err')
+        console_text1 = i18n.T('wrapper_console_text1')
+        console_text2 = i18n.T('wrapper_console_text2')
+        console_text3 = i18n.T('wrapper_console_text3')
+        console_prompt = i18n.T('wrapper_console_prompt')
+
+        wrapper_content = f'''#!/bin/bash
 LOG="/tmp/refugios-install.log"
-SCRIPTS_DIR="$HOME/refugiOS/Scripts"
-t() { echo "$1"; }
-[ -s "$SCRIPTS_DIR/i18n.sh" ] && source "$SCRIPTS_DIR/i18n.sh"
-REPO_URL="https://raw.githubusercontent.com/Ganso/refugiOS/main"
-echo "$(t wrapper_pinging)"
-if ping -c 1 -W 3 github.com >/dev/null 2>&1; then
-    echo "$(t wrapper_connected)"
-    curl -fsSL "$REPO_URL/install.sh" 2>>"$LOG" | bash
+echo "=== refugios-install-wrapper.sh iniciado: $(date) ===" >> "$LOG"
+echo "=> {ping_msg}"
+if ping -c 1 -W 3 github.com > /dev/null 2>&1; then
+    echo "=> {ok_msg}"
+    echo "Conexión OK, lanzando instalador..." >> "$LOG"
+    curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh 2>>"$LOG" | bash
+    echo "Instalador finalizado con código: $?" >> "$LOG"
 else
-    if [ -n "$DISPLAY" ] && command -v zenity >/dev/null 2>&1; then
-        zenity --error --title="$(t no_connection_title)" --text="$(t no_connection_text)" --width=450
+    if [ -n "$DISPLAY" ] && command -v zenity > /dev/null 2>&1; then
+        zenity --error \\
+               --title="{err_title}" \\
+               --text="{err_text}" \\
+               --width=450
     else
-        echo "$(t no_connection_text)"
         echo ""
-        read -p "$(t press_enter)"
+        echo "=========================================================="
+        echo " {console_err}"
+        echo "=========================================================="
+        echo " {console_text1}"
+        echo " {console_text2}"
+        echo " {console_text3}"
+        echo "=========================================================="
+        echo ""
+        echo "{console_prompt}"
+        read
     fi
 fi
+echo "=== refugios-install-wrapper.sh finalizado ===" >> "$LOG"
 '''
         try:
             with open('/tmp/refugios-install-wrapper.sh', 'w') as f:
@@ -341,6 +364,7 @@ Terminal=false
 Categories=System;
 """)
         certify_icon(desktop_file)
+
 
 def set_wallpaper(sys_info):
     """
