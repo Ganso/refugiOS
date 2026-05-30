@@ -58,3 +58,5 @@ Desktop.ini
 *.appimage
 *.torrent
 refugios_vars.fd
+*.log
+scripts/*.log
