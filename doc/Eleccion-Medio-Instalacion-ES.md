@@ -32,7 +32,7 @@ El tamaño del dispositivo determina qué contenidos podrás almacenar:
 | **16 GB (Mínimo)** | Sistema base + WikiMed + Mapas básicos + IA ligera. Sin espacio para Wikipedia. | Unidad de emergencia básica |
 | **32 GB (Equilibrado)** | Todo lo anterior + Wikipedia sin imágenes. Sin espacio para Wikipedia completa. | Respaldo funcional |
 | **64 GB (Estándar)** | Wikipedia completa con imágenes + IA Phi-4-mini + WikiMed + Mapas. Espacio limitado para más contenido. | Uso diario recomendado |
-| **128 GB o más** | Todo lo anterior + WikiHow + múltiples modelos de IA + mapas mundiales detallados. | Estación avanzada |
+| **128 GB o más** | Todo lo anterior + WikiHow + múltiples modelos de IA. Es suficiente para instalar todas las opciones existentes a día de hoy en el configurador, junto con todos los mapas de un área extensa en Organic Maps (prácticamente, un continente entero). La descarga de todos los mapas mundiales podría ocupar ella sola aproximadamente 80 GB. | Estación avanzada |
 
 ---
 

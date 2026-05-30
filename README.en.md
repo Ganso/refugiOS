@@ -36,6 +36,10 @@ The easiest way to get refugiOS is to download the ready-made image, flash it to
 
 You need a USB drive of **at least 16 GB**. The system partition will automatically expand to the full size of the USB drive on first boot.
 
+> [!NOTE]
+> **Why isn't a fully pre-configured image offered?**
+> Offering a ready-to-use image with all possible contents (full Wikipedia with images, multiple local AI models, world maps, etc.) would require a massive download file of over 150 GB. That is why a **lightweight base image** is distributed instead. It must be configured in a controlled, non-emergency environment with a good internet connection. This ensures that when a real emergency strikes, your device will contain exactly the specific information and resources you need.
+
 ### 2. Flash the image to your USB
 
 **From Windows** — Use [Rufus](https://rufus.ie/) or [balenaEtcher](https://etcher.balena.io/):

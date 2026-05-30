@@ -36,6 +36,10 @@ La forma más fácil de tener refugiOS es descargar la imagen ya preparada, grab
 
 Necesitas un USB de **al menos 16 GB**. La partición del sistema se expandirá automáticamente al tamaño completo del USB en el primer arranque.
 
+> [!NOTE]
+> **¿Por qué no se ofrece una imagen completamente configurada de antemano?**
+> Ofrecer una imagen lista con todos los contenidos posibles (Wikipedia completa con imágenes, múltiples modelos de IA local, cartografía de todo el mundo, etc.) exigiría un archivo de descarga descomunal de más de 150 GB. Por eso se distribuye una **imagen base ligera** que el usuario debe configurar en un entorno controlado (no de emergencia) con una buena conexión a Internet. De este modo, en el momento de una emergencia real, el dispositivo tendrá exactamente la información y recursos específicos que necesites.
+
 ### 2. Graba la imagen en tu USB
 
 **Desde Windows** — Usa [Rufus](https://rufus.ie/) o [balenaEtcher](https://etcher.balena.io/):
