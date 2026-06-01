@@ -21,6 +21,14 @@
 > [!IMPORTANT]
 > **refugiOS no es una distribución Linux al uso.** No se instala en tu disco duro ni reemplaza tu sistema operativo. Es un sistema portátil que arranca desde un USB y funciona de forma completamente autónoma, sin instalar nada en el ordenador anfitrión. Solo necesitas un USB de 16 GB o más.
 
+## ¿Qué es refugiOS?
+
+**refugiOS** es un sistema operativo portátil pensado para funcionar sin conexión a Internet en situaciones de emergencia o de resiliencia personal. Se instala en un USB y arranca en cualquier PC o Raspberry Pi, llevando contigo Wikipedia completa, mapas offline de todo el mundo, una IA privada local, cifrado de archivos personales y guías de supervivencia, todo funcionando sin depender de ningún servidor ni nube.
+
+La idea es sencilla: **prepáralo hoy en casa, úsalo cuando no haya Internet.**
+
+→ Consulta la [Visión y Experiencia del Usuario](doc/Vision-y-Experiencia-ES.md) para una descripción completa del proyecto y qué esperar al usarlo.
+
 ---
 
 ## Inicio Rápido: Descarga la Imagen Pregenerada

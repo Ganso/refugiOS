@@ -21,6 +21,14 @@
 > [!IMPORTANT]
 > **refugiOS is not a typical Linux distribution.** It does not install on your hard drive or replace your operating system. It is a portable system that boots from a USB drive and works completely autonomously, without installing anything on the host computer. You only need a 16 GB or larger USB drive.
 
+## What is refugiOS?
+
+**refugiOS** is a portable operating system designed to work without an Internet connection in emergency situations or for personal resilience. It lives on a USB drive and boots on any PC or Raspberry Pi, carrying with it a full copy of Wikipedia, offline maps of the entire world, a private local AI, encrypted personal file storage, and survival guides — all running without depending on any server or cloud service.
+
+The idea is simple: **prepare it today at home, use it when there's no Internet.**
+
+→ See the [Vision and User Experience](doc/Vision-and-User-Experience-EN.md) for a full description of the project and what to expect when using it.
+
 ---
 
 ## Quick Start: Download the Pre-built Image
