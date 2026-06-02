@@ -28,8 +28,14 @@ else
 fi
 
 cd "$AI_DIR"
+
+NGL_FLAG=""
+if ! grep -q avx2 /proc/cpuinfo; then
+    NGL_FLAG="-ngl 0"
+fi
+
 # Generate an internal loop server on port 8080 interacting with Llamafile
-./llamafile -m "$MODEL" --ctx-size 4096 --server &
+./llamafile -m "$MODEL" --ctx-size 4096 $NGL_FLAG --server &
 LLAMA_PID=$!
 sleep 5
 epiphany-browser --new-window http://localhost:8080 2>/dev/null || xdg-open http://localhost:8080 2>/dev/null

@@ -5,6 +5,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18] - 2026-06-02
+
+### Corregido
+- **Detección de AVX2 en el motor de IA:** El script `refugios-ai-selector.sh` comprueba ahora `/proc/cpuinfo` para detectar si el procesador soporta AVX2. En procesadores sin esta instrucción (como algunas CPUs antiguas o ARM), se pasa el parámetro `-ngl 0` a llamafile para desactivar la descarga GPU, evitando así errores fatales en tiempo de ejecución.
+- **Actualización del selector de IA sin modelos nuevos:** La llamada a `fetch_script("refugios-ai-selector.sh")` se ha movido fuera del bloque `if ai_selected:` en `install.py`, de modo que el script del selector se actualiza siempre al ejecutar la instalación, incluso si el usuario no selecciona modelos de IA.
+
+### Cambiado
+- **Información de tamaño en menús de selección:** Los diálogos de Ofimática y Cartografía muestran ahora el tamaño estimado de cada componente (~1.3 GB para LibreOffice/VLC/Syncthing/Evince, ~2.1 GB para Organic Maps), permitiendo al usuario tomar una decisión informada antes de instalar.
+
 ## [0.17] - 2026-05-30
 
 ### Añadido

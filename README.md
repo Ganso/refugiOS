@@ -9,7 +9,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.17-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.18-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">

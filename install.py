@@ -1260,6 +1260,7 @@ Terminal=false
     size_logger.log_section("Fase 4: Mapas Offline (Organic Maps)")
 
     # Phase 5: AI Motor (Llamafile)
+    script_path = fetch_script("refugios-ai-selector.sh")
     if ai_selected:
         log_info("Establishing cognitive engine core foundations, Llamafile...")
         try:
@@ -1290,7 +1291,6 @@ Terminal=false
                  run_cmd(f"wget -c \"{full_url}\" -O \"{m_path}\"")
             run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'AI', opt['symlink'])}'")
 
-        script_path = fetch_script("refugios-ai-selector.sh")
         ai_assist_desktop = os.path.join(env.desktop, "AI_Assistant.desktop")
         with open(ai_assist_desktop, "w") as f:
              f.write(f"""[Desktop Entry]
