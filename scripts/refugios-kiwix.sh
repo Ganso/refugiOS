@@ -16,6 +16,16 @@ if [ -z "$ZIM_FILE" ]; then
     exit 1
 fi
 
+# Resolve symlinks to real paths (Flatpak sandbox can't follow symlinks properly)
+if [ -L "$ZIM_FILE" ]; then
+    ZIM_FILE=$(readlink -f "$ZIM_FILE")
+fi
+
+if [ ! -f "$ZIM_FILE" ]; then
+    echo "$(t error): ZIM file not found: $ZIM_FILE"
+    exit 1
+fi
+
 # Detect available Kiwix executable
 if command -v kiwix-desktop &>/dev/null; then
     KIWIX_BIN="kiwix-desktop"
