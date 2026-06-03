@@ -658,7 +658,7 @@ def multi_select_menu(d, title, options, default_indices=[]):
         is_installed = opt.get('installed', False)
         
         if is_installed:
-            item += rf" \Z1{i18n.T('installed_tag')}\Zn"
+            item = rf"\Z1{i18n.T('installed_tag')}\Zn {item}"
             status = True
         else:
             status = (i in default_indices)
@@ -680,7 +680,7 @@ def single_select_menu(d, title, options, default_index):
     for i, opt in enumerate(options):
         item = opt['label']
         if opt.get('installed'):
-            item += rf" \Z1{i18n.T('installed_tag')}\Zn"
+            item = rf"\Z1{i18n.T('installed_tag')}\Zn {item}"
         choices.append((str(i + 1), item))
 
     code, tag = d.menu(title, choices=choices, title="refugiOS Installer", default_item=str(default_index + 1))
