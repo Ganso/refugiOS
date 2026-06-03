@@ -31,4 +31,6 @@ if [ -z "$KIWIX_BIN" ]; then
     exit 1
 fi
 
+# AppImages sometimes fail with FUSE; use extract-and-run for compatibility
+export APPIMAGE_EXTRACT_AND_RUN=1
 exec "$KIWIX_BIN" "$ZIM_FILE"

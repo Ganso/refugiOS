@@ -239,9 +239,12 @@ def download_with_aria2(url, dest_path, timeout=120, max_tries=3):
     -x 8 -s 8: 8 conexiones paralelas + 8 splits
     --timeout: segundos sin actividad por conexion antes de reintentar
     --max-tries: reintentos por conexion
+    Limpia archivos .aria2 siempre (exito o fallo).
     """
     dest_dir = os.path.dirname(dest_path)
     filename = os.path.basename(dest_path)
+    aria2_control = dest_path + ".aria2"
+    
     cmd = (
         f"timeout {timeout} aria2c -x 8 -s 8 "
         f"--timeout=15 "
@@ -253,7 +256,20 @@ def download_with_aria2(url, dest_path, timeout=120, max_tries=3):
         f"-o \"{filename}\" "
         f"\"{url}\""
     )
-    return run_cmd(cmd, quiet=True)
+    
+    success = run_cmd(cmd, quiet=True)
+    
+    # Limpieza: siempre eliminar .aria2 (aria2c a veces no lo hace)
+    # En caso de fallo, tambien eliminar archivo parcial
+    try:
+        if os.path.exists(aria2_control):
+            os.remove(aria2_control)
+        if not success and os.path.exists(dest_path):
+            os.remove(dest_path)
+    except OSError:
+        pass
+    
+    return success
 
 
 def get_cmd_output(cmd):
