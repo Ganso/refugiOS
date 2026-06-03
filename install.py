@@ -827,12 +827,12 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
         if not os.path.exists(dest_path):
             log_info(f"Testing AppImage via direct link: {appimage_name}")
             if download_with_aria2(appimage_url, dest_path, timeout=120):
-                os.chmod(dest_path, 0o755)
+                run_cmd(f"chmod +x '{dest_path}'", quiet=True)
                 log_success(i18n.T('installed_appimage').format(name))
                 return dest_path
             log_info(f"AppImage download failed for {name}. Trying next method...")
         else:
-            os.chmod(dest_path, 0o755)
+            run_cmd(f"chmod +x '{dest_path}'", quiet=True)
             log_success(i18n.T('installed_appimage').format(name))
             return dest_path
 
