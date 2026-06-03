@@ -21,6 +21,9 @@ if command -v kiwix-desktop &>/dev/null; then
     KIWIX_BIN="kiwix-desktop"
 elif [ -f "$HOME/refugiOS/Apps/kiwix-desktop.appimage" ]; then
     KIWIX_BIN="$HOME/refugiOS/Apps/kiwix-desktop.appimage"
+    export APPIMAGE_EXTRACT_AND_RUN=1
+elif flatpak list --app | grep -q "org.kiwix.desktop"; then
+    KIWIX_BIN="flatpak run org.kiwix.desktop"
 else
     # Fallback: search for any kiwix AppImage in Apps folder
     KIWIX_BIN=$(find "$HOME/refugiOS/Apps" -name "kiwix-desktop*.appimage" 2>/dev/null | sort | tail -1)
@@ -31,6 +34,10 @@ if [ -z "$KIWIX_BIN" ]; then
     exit 1
 fi
 
-# AppImages sometimes fail with FUSE; use extract-and-run for compatibility
-export APPIMAGE_EXTRACT_AND_RUN=1
-exec "$KIWIX_BIN" "$ZIM_FILE"
+# Handle different executable types
+if [[ "$KIWIX_BIN" == flatpak* ]]; then
+    exec $KIWIX_BIN "$ZIM_FILE"
+else
+    export APPIMAGE_EXTRACT_AND_RUN=1
+    exec "$KIWIX_BIN" "$ZIM_FILE"
+fi
