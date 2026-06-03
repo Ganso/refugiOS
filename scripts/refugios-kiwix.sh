@@ -46,7 +46,9 @@ fi
 
 # Handle different executable types
 if [[ "$KIWIX_BIN" == flatpak* ]]; then
-    exec $KIWIX_BIN "$ZIM_FILE"
+    # Flatpak sandbox needs explicit filesystem access to the ZIM directory
+    ZIM_DIR=$(dirname "$ZIM_FILE")
+    exec flatpak run --filesystem="${ZIM_DIR}:ro" org.kiwix.desktop "$ZIM_FILE"
 else
     export APPIMAGE_EXTRACT_AND_RUN=1
     exec "$KIWIX_BIN" "$ZIM_FILE"
