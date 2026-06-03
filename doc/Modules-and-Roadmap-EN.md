@@ -26,12 +26,13 @@ Detailed vector maps with offline search and routing.
 *   **Language:** 🌐 **Multilingual.** The interface and map names adapt to your region.
 
 ### 3. Artificial Intelligence Assistant ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
-Private smart assistant that works 100% on your local computer. Available in four levels according to device capacity:
-*   ⚪ **Minimal:** [Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (0.5B) — ~380 MB. For devices with very limited resources (min. 1 GB RAM).
-*   🟢 **Basic:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.3 GB. Works on any PC with 4 GB of RAM.
-*   🟡 **Medium:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~4.7 GB. For modern laptops with 8 GB of RAM.
-*   🔴 **Advanced:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~8.4 GB. For powerful PCs with 16 GB of RAM.
-*   **Automatic Selector:** When launching the assistant, a script detects the available RAM and recommends the appropriate model.
+Private smart assistant that works 100% on your local computer. Available in five levels according to device capacity:
+*   ⚪ **Minimal:** [Qwen3-0.6B](https://huggingface.co/unsloth/Qwen3-0.6B-GGUF) (0.6B, Q4_K_M) — ~380 MB. For devices with limited resources (min. 4 GB RAM).
+*   🟢 **Basic:** [Gemma-4-E4B-it](https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF) (4B, Q4_K_M) — ~4.7 GB. For PCs with 8 GB of RAM.
+*   🟡 **Intermediate:** [Qwen3-8B](https://huggingface.co/unsloth/Qwen3-8B-GGUF) (8B, Q4_K_M) — ~4.8 GB. For modern laptops with 8 GB of RAM.
+*   🔴 **Advanced:** [Qwen3-14B](https://huggingface.co/unsloth/Qwen3-14B-GGUF) (14B, Q4_K_M) — ~8.6 GB. For powerful PCs with 16 GB of RAM.
+*   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. For workstations with 32 GB of RAM.
+*   **Smart Selector:** When launching the assistant, a script detects total RAM and GPU VRAM (NVIDIA/AMD), reserves a strict 2 GB safety margin for the OS (prevents USB swap), and shows an interactive menu with only installed models, automatically preselecting the most powerful one the hardware can run.
 *   **Language:** 🌐 **Multilingual.** All models understand and respond in more than 20 languages.
 
 ### 4. Cryptographic Vaults (LUKS)

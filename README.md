@@ -9,7 +9,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.18-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.19-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -210,8 +210,8 @@ refugiOS es posible gracias al increíble trabajo de proyectos de código abiert
 *   [Raspberry Pi Foundation](https://www.raspberrypi.com/) por el hardware y el ecosistema de software ARM.
 *   [Kiwix](https://www.kiwix.org/) y la [Fundación Wikimedia](https://wikimediafoundation.org/) por el acceso offline al conocimiento universal.
 *   [Mozilla Ocho](https://github.com/Mozilla-Ocho/llamafile) por el motor de inferencia Llamafile.
-*   [HuggingFace](https://huggingface.co/) y [bartowski](https://huggingface.co/bartowski) por las cuantizaciones de los modelos de IA.
-*   Modelos de lenguaje **Phi-4-mini** (Microsoft) y **Qwen3** (Alibaba-Qwen).
+*   [HuggingFace](https://huggingface.co/) y [unsloth](https://huggingface.co/unsloth) por las cuantizaciones optimizadas de los modelos de IA.
+*   Modelos de lenguaje **Qwen3** (Alibaba-Qwen: 0.6B, 8B, 14B) y **Gemma-4** (Google: E4B, 26B-A4B).
 *   [Organic Maps](https://organicmaps.app/) y los colaboradores de [OpenStreetMap](https://www.openstreetmap.org/) por la cartografía offline.
 *   [Aria2](https://aria2.github.io/) para las descargas de alta eficiencia.
 *   [Flatpak](https://flatpak.org/) y [Flathub](https://flathub.org/) por la distribución de aplicaciones modernas.

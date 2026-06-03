@@ -109,34 +109,42 @@ AI_MODEL_CONFIG = [
     {
         "id": "ia_min",
         "label": i18n.T('ia_min_label'),
-        "filename": "Qwen2.5-0.5B-Instruct-Q4_K_M.gguf",
-        "url_base": "https://huggingface.co/bartowski/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/",
+        "filename": "Qwen3-0.6B-Q4_K_M.gguf",
+        "url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf",
         "symlink": "minimal-model.gguf",
         "size_mb": 380
     },
     {
         "id": "ia_base",
         "label": i18n.T('ia_base_label'),
-        "filename": "microsoft_Phi-4-mini-instruct-Q4_K_M.gguf",
-        "url_base": "https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF/resolve/main/",
+        "filename": "gemma-4-E4B-it-Q4_K_M.gguf",
+        "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/main/gemma-4-E4B-it-Q4_K_M.gguf",
         "symlink": "basic-model.gguf",
-        "size_mb": 2355
+        "size_mb": 4750
     },
     {
         "id": "ia_med",
         "label": i18n.T('ia_med_label'),
-        "filename": "Qwen_Qwen3-8B-Q4_K_M.gguf",
-        "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF/resolve/main/",
+        "filename": "Qwen3-8B-Q4_K_M.gguf",
+        "url": "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf",
         "symlink": "intermediate-model.gguf",
-        "size_mb": 4812
+        "size_mb": 4800
     },
     {
         "id": "ia_max",
         "label": i18n.T('ia_max_label'),
-        "filename": "Qwen_Qwen3-14B-Q4_K_M.gguf",
-        "url_base": "https://huggingface.co/bartowski/Qwen_Qwen3-14B-GGUF/resolve/main/",
+        "filename": "Qwen3-14B-Q4_K_M.gguf",
+        "url": "https://huggingface.co/unsloth/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q4_K_M.gguf",
         "symlink": "advanced-model.gguf",
-        "size_mb": 8601
+        "size_mb": 8600
+    },
+    {
+        "id": "ia_ultra",
+        "label": i18n.T('ia_ultra_label'),
+        "filename": "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
+        "url": "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
+        "symlink": "ultra-model.gguf",
+        "size_mb": 16200
     }
 ]
 
@@ -223,6 +231,30 @@ def run_cmd(cmd, shell=True, check=True, quiet=False):
             print(f"\033[1;33m[!] {i18n.T('warning')}:\033[0m Command failed attempting to execute: {cmd}")
         return False
     return True
+
+def download_with_aria2(url, dest_path, timeout=120, max_tries=3):
+    """
+    Descarga con aria2c: multi-conexion, timeout estricto, reintentos.
+    Usa 'timeout' de Linux para limite maximo absoluto (evita congelacion).
+    -x 8 -s 8: 8 conexiones paralelas + 8 splits
+    --timeout: segundos sin actividad por conexion antes de reintentar
+    --max-tries: reintentos por conexion
+    """
+    dest_dir = os.path.dirname(dest_path)
+    filename = os.path.basename(dest_path)
+    cmd = (
+        f"timeout {timeout} aria2c -x 8 -s 8 "
+        f"--timeout=15 "
+        f"--max-tries={max_tries} "
+        f"--connect-timeout=10 "
+        f"--continue=true "
+        f"--auto-file-renaming=false "
+        f"--dir=\"{dest_dir}\" "
+        f"-o \"{filename}\" "
+        f"\"{url}\""
+    )
+    return run_cmd(cmd, quiet=True)
+
 
 def get_cmd_output(cmd):
     """
@@ -393,7 +425,7 @@ def set_wallpaper(sys_info):
     else:
         repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
         remote_url = f"{repo_url}/logo/fondo.png"
-        run_cmd(f"wget -q \"{remote_url}\" -O \"{perm_wallpaper_path}\"", quiet=True)
+        download_with_aria2(remote_url, perm_wallpaper_path, timeout=30)
 
     if not os.path.exists(perm_wallpaper_path) or os.path.getsize(perm_wallpaper_path) == 0:
         return
@@ -794,7 +826,7 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
         dest_path = os.path.join(env.apps_dir, appimage_name)
         if not os.path.exists(dest_path):
             log_info(f"Testing AppImage via direct link: {appimage_name}")
-            if run_cmd(f"wget -c \"{appimage_url}\" -O \"{dest_path}\""):
+            if download_with_aria2(appimage_url, dest_path, timeout=120):
                 os.chmod(dest_path, 0o755)
                 log_success(i18n.T('installed_appimage').format(name))
                 return dest_path
@@ -964,7 +996,7 @@ def main():
         opt = {
             "label": m['label'],
             "filename": m['filename'],
-            "url_base": m['url_base'],
+            "url": m['url'],
             "symlink": m['symlink'],
             "id": m['id'],
             "size_mb": m.get('size_mb', 0)
@@ -1055,7 +1087,7 @@ def main():
     
     base_pkgs = [
         "python3", "python3-dialog", "dialog", "aria2", "pciutils",
-        "wget", "curl", "bash", "jq", "rsync", "apt-utils", "flatpak",
+        "curl", "bash", "jq", "rsync", "apt-utils", "flatpak",
         "cryptsetup", "epiphany-browser", "gedit", "xfce4-terminal",
         "dbus-user-session", "xdg-desktop-portal", "libglib2.0-bin",
         "libfuse2t64",
@@ -1225,7 +1257,7 @@ def main():
         d_path = os.path.join(env.scripts_dir, s_name)
         # Force download latest version with cache busting
         nocache = random.randint(1000, 9999)
-        ok = run_cmd(f"wget -q \"{repo_url}/scripts/{s_name}?nocache={nocache}\" -O \"{d_path}\"", quiet=True)
+        ok = download_with_aria2(f"{repo_url}/scripts/{s_name}", d_path, timeout=30)
         if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
             local_dir = os.path.dirname(os.path.realpath(__file__))
             local_s = os.path.join(local_dir, "scripts", s_name)
@@ -1276,7 +1308,7 @@ Terminal=false
              if llama_url:
                   l_path = os.path.join(env.ai_dir, llama_name)
                   if not os.path.exists(l_path) or force_dl:
-                       run_cmd(f"wget -c \"{llama_url}\" -O \"{l_path}\"")
+                       download_with_aria2(llama_url, l_path, timeout=120)
                   os.chmod(l_path, 0o755)
                   run_cmd(f"ln -sf '{l_path}' '{os.path.join(env.base, 'AI', 'llamafile')}'")
         except:
@@ -1284,11 +1316,11 @@ Terminal=false
 
         for idx in ai_selected:
             opt = ai_opts[idx]
-            full_url = opt['url_base'] + opt['filename']
+            full_url = opt['url']
             m_path = os.path.join(env.ai_dir, opt['filename'])
             if not os.path.exists(m_path) or force_dl:
-                 log_info(f"Downloading file: {opt['filename']}...")
-                 run_cmd(f"wget -c \"{full_url}\" -O \"{m_path}\"")
+                log_info(f"Downloading file: {opt['filename']}...")
+                download_with_aria2(full_url, m_path, timeout=300)
             run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'AI', opt['symlink'])}'")
 
         ai_assist_desktop = os.path.join(env.desktop, "AI_Assistant.desktop")

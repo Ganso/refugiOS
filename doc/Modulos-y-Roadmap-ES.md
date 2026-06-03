@@ -26,12 +26,13 @@ Mapas vectoriales detallados con búsqueda y rutas offline.
 *   **Idioma:** 🌐 **Multilingüe.** La interfaz y los nombres de los mapas se adaptan a tu región.
 
 ### 3. Asistente de Inteligencia Artificial ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
-Asistente inteligente privado que funciona 100% en tu ordenador local. Disponible en cuatro niveles según la capacidad del dispositivo:
-*   ⚪ **Mínimo:** [Qwen2.5-0.5B](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) (0.5B) — ~380 MB. Para dispositivos con recursos muy limitados (min. 1 GB RAM).
-*   🟢 **Básico:** [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) (3.8B) — ~2.3 GB. Funciona en cualquier PC con 4 GB de RAM.
-*   🟡 **Medio:** [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8B) — ~4.7 GB. Para portátiles modernos con 8 GB de RAM.
-*   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) (14B) — ~8.4 GB. Para PCs potentes con 16 GB de RAM.
-*   **Selector automático:** Al lanzar el asistente, un script detecta la RAM disponible y recomienda el modelo adecuado.
+Asistente inteligente privado que funciona 100% en tu ordenador local. Disponible en cinco niveles según la capacidad del dispositivo:
+*   ⚪ **Mínimo:** [Qwen3-0.6B](https://huggingface.co/unsloth/Qwen3-0.6B-GGUF) (0.6B, Q4_K_M) — ~380 MB. Para dispositivos con recursos limitados (min. 4 GB RAM).
+*   🟢 **Básico:** [Gemma-4-E4B-it](https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF) (4B, Q4_K_M) — ~4.7 GB. Para PCs con 8 GB de RAM.
+*   🟡 **Intermedio:** [Qwen3-8B](https://huggingface.co/unsloth/Qwen3-8B-GGUF) (8B, Q4_K_M) — ~4.8 GB. Para portátiles modernos con 8 GB de RAM.
+*   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/unsloth/Qwen3-14B-GGUF) (14B, Q4_K_M) — ~8.6 GB. Para PCs potentes con 16 GB de RAM.
+*   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. Para estaciones de trabajo con 32 GB de RAM.
+*   **Selector inteligente:** Al lanzar el asistente, un script detecta la RAM total y la VRAM de la GPU (NVIDIA/AMD), reserva un margen de seguridad estricto de 2 GB para el sistema operativo (evita swap a USB), y muestra un menú interactivo con solo los modelos instalados, preseleccionando automáticamente el más potente que el hardware puede ejecutar.
 *   **Idioma:** 🌐 **Multilingüe.** Todos los modelos entienden y responden en más de 20 idiomas.
 
 ### 4. Bóvedas Criptográficas (LUKS)

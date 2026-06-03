@@ -5,6 +5,32 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19] - 2026-06-03
+
+### Añadido
+- **Modelo de IA ultra (5º modelo):** Nuevo modelo `ia_ultra` — Gemma-4-26B-A4B-it-UD-Q4_K_M (~16.2 GB). Ahora refugiOS soporta 5 niveles de modelo de IA: mínimo (0.6B), base (E4B), intermedio (8B), máximo (14B) y ultra (26B).
+- **Sistema de descarga con aria2c:** Todas las descargas del instalador (Kiwix AppImage, Llamafile, modelos de IA, scripts internos, fondo de escritorio) usan ahora `aria2c` en lugar de `wget`. La nueva función `download_with_aria2()` ofrece 8 conexiones paralelas, timeout estricto por descarga (evita congelaciones), y reintentos automáticos.
+- **Timeout absoluto en descargas:** La función `download_with_aria2()` envuelve cada descarga con el comando `timeout` de Linux, garantizando que ninguna descarga puede bloquear la instalación indefinidamente. Si se supera el límite, el instalador salta al siguiente método de la cascada (Flatpak → APT).
+- **Módulo de IA dinámico:** El instalador lee el diccionario `AI_MODEL_CONFIG` de forma completamente dinámica, sin límite fijo de modelos. Cualquier número de modelos puede añadirse al diccionario y el sistema los detectará, comprobará cuáles están descargados y permitirá seleccionar e instalar cualquiera de ellos.
+
+### Cambiado
+- **Nuevos modelos de IA (5 modelos actualizados):**
+  | ID | Modelo | Tamaño real | RAM mínima |
+  |---|---|---|---|
+  | `ia_min` | Qwen3-0.6B-Q4_K_M | ~380 MB | 4 GB |
+  | `ia_base` | gemma-4-E4B-it-Q4_K_M | ~4.7 GB | 8 GB |
+  | `ia_med` | Qwen3-8B-Q4_K_M | ~4.8 GB | 8 GB |
+  | `ia_max` | Qwen3-14B-Q4_K_M | ~8.6 GB | 16 GB |
+  | `ia_ultra` | gemma-4-26B-A4B-it-UD-Q4_K_M | ~16.2 GB | 32 GB |
+- **URLs de modelos actualizadas:** Todos los modelos ahora se descargan directamente desde el repositorio de **unsloth** en HuggingFace (CDN más rápido y fiable que bartowski).
+- **Selector de IA reescrito:** `refugios-ai-selector.sh` ahora detecta RAM total y VRAM (NVIDIA/AMD), resta un margen de seguridad estricto de 2 GB para el SO (evita swap a USB), muestra un menú `dialog` con solo los modelos instalados, y preselecciona automáticamente el modelo más potente que el hardware puede ejecutar.
+- **Eliminada dependencia de `wget`:** Ya no se instala ni se usa `wget` en el sistema. `aria2c` cubre todas las necesidades de descarga.
+- **Tamaños de modelos corregidos:** Los valores `size_mb` en `AI_MODEL_CONFIG` han sido ajustados a los tamaños reales medidos desde la API de HuggingFace (cambios significativos: gemma-4-E4B de 2.5→4.7 GB, Qwen3-14B de 8.2→8.6 GB, gemma-4-26B de 14.8→16.2 GB).
+
+### Corregido
+- **Congelación de instalación por descargas lentas:** El problema por el que la descarga del AppImage de Kiwix (u otros archivos grandes) podía bloquear la instalación indefinidamente ha sido resuelto mediante timeouts estrictos y la cascada de fallback a Flatpak/APT.
+- **Symlinks de modelos incompletos:** Los archivos `.aria2` residuales de descargas interrumpidas ya no se enlazan como modelos válidos.
+
 ## [0.18] - 2026-06-02
 
 ### Corregido
