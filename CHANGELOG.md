@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20] - 2026-06-03
+
+### Corregido
+- **Archivos `.aria2` residuales:** La función `download_with_aria2()` ahora elimina siempre el archivo de control `.aria2` tras completar la descarga (éxito o fallo), y también borra archivos parciales si la descarga falla. Esto evita que queden archivos huérfanos que puedan confundir al sistema.
+- **Etiqueta `[Instalado]` en menús:** El tag rojo que indica componentes ya instalados ahora aparece **antes** del nombre del elemento en los menús de multiselección (`d.checklist`) y selección individual (`d.menu`), mejorando la legibilidad visual.
+- **Kiwix Flatpak no encuentra ejecutable:** El script `refugios-kiwix.sh` ahora detecta y soporta Kiwix instalado por Flatpak como fallback cuando no hay AppImage disponible. Usa `flatpak list --app` para verificar la instalación y `flatpak run org.kiwix.desktop` para ejecutarlo.
+- **Kiwix Flatpak no puede abrir ZIM por línea de comandos:** Añadido `--filesystem="${ZIM_DIR}:ro"` al comando `flatpak run` para otorgar acceso explícito de solo lectura al directorio del archivo ZIM, resolviendo el problema del sandbox de Flatpak que bloqueaba el acceso a archivos pasados como argumento.
+- **Kiwix no sigue enlaces simbólicos:** El script ahora resuelve los symlinks a rutas reales con `readlink -f` antes de pasar el archivo a Kiwix, ya que Flatpak sandbox no puede seguir enlaces simbólicos correctamente.
+- **AppImage de Kiwix falla con "open dir error":** Añadida la variable de entorno `APPIMAGE_EXTRACT_AND_RUN=1` para ejecutar AppImages extrayéndolos primero, evitando problemas con FUSE en sistemas donde no está disponible o configurado correctamente.
+
 ## [0.19] - 2026-06-03
 
 ### Añadido
