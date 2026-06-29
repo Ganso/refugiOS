@@ -112,7 +112,7 @@ echo "=> Lanzando QEMU con la imagen de refugiOS..."
 QEMU_CMD=(
     qemu-system-x86_64
     $KVM_ARGS
-    -m 2G
+    -m 8G
     -smp 2
     -drive file="$IMG_NAME",format=raw,index=0,media=disk
     -vga virtio

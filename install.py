@@ -1273,7 +1273,7 @@ def main():
         d_path = os.path.join(env.scripts_dir, s_name)
         # Force download latest version with cache busting
         nocache = random.randint(1000, 9999)
-        ok = download_with_aria2(f"{repo_url}/scripts/{s_name}", d_path, timeout=30)
+        ok = download_with_aria2(f"{repo_url}/scripts/{s_name}?{nocache}", d_path, timeout=30)
         if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
             local_dir = os.path.dirname(os.path.realpath(__file__))
             local_s = os.path.join(local_dir, "scripts", s_name)
@@ -1281,8 +1281,10 @@ def main():
                 shutil.copy(local_s, d_path)
             else:
                 log_err(i18n.T('script_not_found').format(s_name), fatal=False)
-        os.chmod(d_path, 0o755)
-        return d_path
+                return None
+        if os.path.exists(d_path):
+            os.chmod(d_path, 0o755)
+        return d_path if os.path.exists(d_path) else None
 
     if install_maps:
         install_package(env, "Offline GPS Maps (Organic Maps)", sys_info.is_rpi, flatpak_id="app.organicmaps.desktop")
@@ -1291,9 +1293,12 @@ def main():
             run_cmd("sudo flatpak override --device=dri app.organicmaps.desktop", quiet=True)
         
         maps_script = fetch_script("refugios-maps.sh")
-        maps_desktop = os.path.join(env.desktop, "Offline_Maps.desktop")
-        with open(maps_desktop, "w") as f:
-            f.write(f"""[Desktop Entry]
+        if maps_script is None:
+            log_err(i18n.T('script_not_found').format("refugios-maps.sh"), fatal=False)
+        else:
+            maps_desktop = os.path.join(env.desktop, "Offline_Maps.desktop")
+            with open(maps_desktop, "w") as f:
+                f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
 Name={i18n.T('maps_gps_name')}
@@ -1301,7 +1306,7 @@ Exec=bash "{maps_script}"
 Icon=app.organicmaps.desktop
 Terminal=false
 """)
-        certify_icon(maps_desktop)
+            certify_icon(maps_desktop)
     else:
         log_info("Skipping Cartographic module (Organic Maps).")
 
@@ -1340,8 +1345,11 @@ Terminal=false
             run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'AI', opt['symlink'])}'")
 
         ai_assist_desktop = os.path.join(env.desktop, "AI_Assistant.desktop")
-        with open(ai_assist_desktop, "w") as f:
-             f.write(f"""[Desktop Entry]
+        if script_path is None:
+            log_err(i18n.T('script_not_found').format("refugios-ai-selector.sh"), fatal=False)
+        else:
+            with open(ai_assist_desktop, "w") as f:
+                 f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
 Name=Local AI Assistant
@@ -1349,7 +1357,7 @@ Exec=xfce4-terminal -e "{script_path}"
 Icon=utilities-terminal
 Terminal=false
 """)
-        certify_icon(ai_assist_desktop)
+            certify_icon(ai_assist_desktop)
 
     size_logger.log_section("Fase 5: Motor AI y Modelos")
 
@@ -1363,9 +1371,12 @@ Terminal=false
     if os.path.exists(i18n_src):
         shutil.copy(i18n_src, i18n_dst)
 
-    vault_desktop = os.path.join(env.desktop, "Vault_Manager.desktop")
-    with open(vault_desktop, "w") as f:
-        f.write(f"""[Desktop Entry]
+    if vault_script is None:
+        log_err(i18n.T('script_not_found').format("refugios-vault.py"), fatal=False)
+    else:
+        vault_desktop = os.path.join(env.desktop, "Vault_Manager.desktop")
+        with open(vault_desktop, "w") as f:
+            f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
 Name={i18n.T('vault_title')}
@@ -1374,7 +1385,7 @@ Exec=xfce4-terminal -e "python3 {vault_script}"
 Icon=dialog-password
 Terminal=false
 """)
-    certify_icon(vault_desktop)
+        certify_icon(vault_desktop)
 
     ensure_install_icon(env, sys_info)
 
