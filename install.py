@@ -1110,6 +1110,7 @@ def main():
     # =========================================================
 
     d.msgbox(i18n.T('install_starting_msg'), title=i18n.T('install_starting_title'))
+    os.system('clear')
 
     size_logger = SizeLogger()
 
@@ -1374,6 +1375,7 @@ Terminal=false
             log_err(err_msg, fatal=False)
             try:
                 d.msgbox(sanitize_for_dialog(err_msg), title=i18n.T('warning'))
+                os.system('clear')
             except Exception:
                 pass
         else:
@@ -1405,6 +1407,7 @@ Terminal=false
         log_err(err_msg, fatal=False)
         try:
             d.msgbox(sanitize_for_dialog(err_msg), title=i18n.T('warning'))
+            os.system('clear')
         except Exception:
             pass
 
@@ -1451,6 +1454,7 @@ Terminal=false
         log_err(err_msg, fatal=False)
         try:
             d.msgbox(sanitize_for_dialog(err_msg), title=i18n.T('warning'))
+            os.system('clear')
         except Exception:
             pass
     

@@ -9,7 +9,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="refugiOS logo" width="200"><br />
   <img src="https://img.shields.io/badge/Status-Development-green.svg" alt="Project Status">
-  <img src="https://img.shields.io/badge/Version-0.20-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.21-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/Paradigm-Offline_First-orange.svg" alt="Offline First">
   <img src="https://img.shields.io/badge/AI-Llamafile_(Local)-purple.svg" alt="Offline AI">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certified-red.svg" alt="Raspberry Pi">
@@ -198,6 +198,29 @@ See the **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md)** for the current
 *   **[Security Vaults](doc/Security-Vaults-EN.md):** How personal file encryption works.
 *   **[Unit Cloning](doc/Cloning-Units-EN.md):** How to make exact copies of your USB.
 *   **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md):** Available and planned modules.
+
+---
+
+## Version History
+
+### [0.21] - 2026-06-30
+
+#### Fixed
+- **`FileNotFoundError` of the vault manager:** The installer could not find `refugios-vault.py` either locally or remotely and crashed during deployment. A pre-validation step now checks the file exists on disk before referencing or executing it; if unavailable, it logs a descriptive message, shows a warning to the user via `d.msgbox`, skips the Vault desktop icon, and lets the rest of the installation continue without a traceback.
+- **`UnicodeEncodeError` (latin-1) in the installation summary:** When showing the error summary via `d.msgbox`, the script crashed on characters not representable in latin-1 (specifically `•` U+2022), since the `dialog` library encodes strings as latin-1. The bullet was replaced with `-` and messages are now sanitized.
+- **Missing Kiwix script with no warning:** The `fetch_script("refugios-kiwix.sh")` call ignored the return value, so if the script was missing the user was never notified and knowledge base shortcuts were left broken silently. Its existence is now checked and a descriptive warning is shown.
+- **Missing AI script only logged:** When `refugios-ai-selector.sh` was missing, the warning was only written to the log with no user notification. A descriptive dialog is now shown as well.
+
+#### Added
+- **`sanitize_for_dialog()` function:** New utility in `install.py` that replaces Unicode typographic characters (`•`, `–`, `—`, smart quotes, `…`) with ASCII equivalents and encodes the rest to latin-1 in `replace` mode, ensuring compatibility with the `dialog` library.
+- **Pre-validation of critical scripts:** The installer now verifies on disk the existence of `refugios-vault.py`, `refugios-kiwix.sh` and `refugios-ai-selector.sh` after attempting to fetch them. If any is missing, the user is warned (log + `d.msgbox`), its desktop icon is skipped, and the installation continues without stopping.
+- **New i18n keys:** `vault_script_missing`, `kiwix_script_missing` and `ai_script_missing` (EN + ES) with descriptive messages indicating the cause and suggesting to re-run the installer later.
+- **Screen clear after dialogs:** `clear` is now executed at every transition from dialog to command execution/installation, in `install.py`, `scripts/refugios-vault.py` and `scripts/refugios-ai-selector.sh`, for a cleaner terminal output between phases.
+
+#### Changed
+- **Error summary with dashes instead of bullets:** The list of failed components in the final message now uses `-` instead of `•` to avoid the `UnicodeEncodeError` with `dialog`.
+
+→ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 ---
 

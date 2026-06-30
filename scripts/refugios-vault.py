@@ -226,6 +226,7 @@ def _import_usb_to_vault(d, vault_name, vault_file, usb_info):
     mapper = get_mapper_name(vault_name)
     mount_point = get_mount_point(vault_name)
 
+    os.system('clear')
     log_info(i18n.T('vault_importing'))
 
     print(f"\n\033[1;33m{i18n.T('vault_enter_password')}\033[0m\n")
@@ -348,6 +349,7 @@ def op_create(d):
                yes_label=i18n.T('yes'), no_label=i18n.T('no')) != d.OK:
         return
 
+    os.system('clear')
     vault_file = os.path.join(VAULT_DIR, f"{name}.img")
     mapper = get_mapper_name(name)
 
@@ -396,6 +398,7 @@ def op_open(d, vault_name):
     ) != d.OK:
         return
 
+    os.system('clear')
     log_info(i18n.T('vault_open').format(vault_name))
 
     print(f"\n\033[1;33m{i18n.T('vault_enter_password')}\033[0m\n")
@@ -451,6 +454,7 @@ def op_close(d, vault_name):
     ) != d.OK:
         return
 
+    os.system('clear')
     _close_vault(vault_name)
     d.msgbox(i18n.T('vault_closed_ok').format(vault_name), title=i18n.T('success'))
 
@@ -472,6 +476,7 @@ def op_delete(d, vault_name):
     ) != d.OK:
         return
 
+    os.system('clear')
     vault_file = os.path.join(VAULT_DIR, f"{vault_name}.img")
     try:
         if os.path.exists(vault_file):
