@@ -636,6 +636,30 @@ pcmanfm --reconfigure
 # SECTION 3: MULTIPLE INTERACTION MENUS (TUI with pythondialog)
 # ==============================================================================
 
+def sanitize_for_dialog(text):
+    """
+    Sanitizes text for dialog (latin-1) compatibility.
+    The dialog library encodes strings using latin-1, which cannot represent
+    certain Unicode characters (e.g. U+2022 bullet). This function replaces
+    common Unicode typographic characters with ASCII equivalents and encodes
+    any remaining non-latin-1 characters safely.
+    """
+    if not text:
+        return text
+    replacements = {
+        '\u2022': '-',     # Bullet
+        '\u2013': '-',     # En dash
+        '\u2014': '--',    # Em dash
+        '\u2018': "'",     # Left single quote
+        '\u2019': "'",     # Right single quote
+        '\u201c': '"',     # Left double quote
+        '\u201d': '"',     # Right double quote
+        '\u2026': '...',   # Ellipsis
+    }
+    for unicode_char, ascii_replacement in replacements.items():
+        text = text.replace(unicode_char, ascii_replacement)
+    return text.encode('latin-1', 'replace').decode('latin-1')
+
 def init_dialog():
     d = dialog.Dialog(autowidgetsize=True)
     # Enable interpretation of escape sequences for colors (\Z)
@@ -1345,8 +1369,13 @@ Terminal=false
             run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'AI', opt['symlink'])}'")
 
         ai_assist_desktop = os.path.join(env.desktop, "AI_Assistant.desktop")
-        if script_path is None:
-            log_err(i18n.T('script_not_found').format("refugios-ai-selector.sh"), fatal=False)
+        if script_path is None or not os.path.isfile(script_path):
+            err_msg = i18n.T('ai_script_missing')
+            log_err(err_msg, fatal=False)
+            try:
+                d.msgbox(sanitize_for_dialog(err_msg), title=i18n.T('warning'))
+            except Exception:
+                pass
         else:
             with open(ai_assist_desktop, "w") as f:
                  f.write(f"""[Desktop Entry]
@@ -1366,14 +1395,25 @@ Terminal=false
     
     vault_script = fetch_script("refugios-vault.py")
 
+    # Pre-validation: verify the vault script actually exists on disk before
+    # attempting to reference or execute it. Warns the user (descriptive log +
+    # dialog notice) and skips the vault desktop icon, but does NOT halt the
+    # overall installation so the rest of the modules can still be deployed.
+    vault_script_ok = bool(vault_script) and os.path.isfile(vault_script)
+    if not vault_script_ok:
+        err_msg = i18n.T('vault_script_missing')
+        log_err(err_msg, fatal=False)
+        try:
+            d.msgbox(sanitize_for_dialog(err_msg), title=i18n.T('warning'))
+        except Exception:
+            pass
+
     i18n_src = os.path.join(os.path.dirname(os.path.realpath(__file__)), "i18n.py")
     i18n_dst = os.path.join(env.scripts_dir, "i18n.py")
     if os.path.exists(i18n_src):
         shutil.copy(i18n_src, i18n_dst)
 
-    if vault_script is None:
-        log_err(i18n.T('script_not_found').format("refugios-vault.py"), fatal=False)
-    else:
+    if vault_script_ok:
         vault_desktop = os.path.join(env.desktop, "Vault_Manager.desktop")
         with open(vault_desktop, "w") as f:
             f.write(f"""[Desktop Entry]
@@ -1405,7 +1445,14 @@ Terminal=false
             f.write('[General]\nquick_exec=1\n')
 
     # Ensure intermediate scripts exist
-    fetch_script("refugios-kiwix.sh")
+    kiwix_script_path = fetch_script("refugios-kiwix.sh")
+    if not kiwix_script_path or not os.path.isfile(kiwix_script_path):
+        err_msg = i18n.T('kiwix_script_missing')
+        log_err(err_msg, fatal=False)
+        try:
+            d.msgbox(sanitize_for_dialog(err_msg), title=i18n.T('warning'))
+        except Exception:
+            pass
     
     # Final resource synchronization
     if 'exec_path' not in locals():
@@ -1424,12 +1471,12 @@ Terminal=false
         log_err(i18n.T('install_errors_summary'), fatal=False)
         report = f"{i18n.T('install_errors_found')}\n\n"
         for item in FAILED_ITEMS:
-            report += f" • {item}\n"
-        d.msgbox(report, title=i18n.T('warning'))
+            report += f" - {item}\n"
+        d.msgbox(sanitize_for_dialog(report), title=i18n.T('warning'))
     else:
         log_success("GLOBAL DEPLOYMENT OPERATION FINISHED. Please check desktop icon integrity and accessibility.")
         final_msg = f"{i18n.T('install_finished_msg')}\n\n{i18n.T('install_space_used').format(total_mb)}"
-        d.msgbox(final_msg, title=i18n.T('install_finished_title'))
+        d.msgbox(sanitize_for_dialog(final_msg), title=i18n.T('install_finished_title'))
 
 
 if __name__ == "__main__":
