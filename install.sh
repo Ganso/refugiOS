@@ -25,24 +25,25 @@ t() { echo "$1"; }
 t_info="INFO"
 t_error="ERROR"
 
-# Developer Mode: Check for local files to avoid downloading from GitHub
+# Developer Mode: when the installer is run from a checkout of the repository, the local
+# files take precedence and nothing is fetched from GitHub. Otherwise local changes would
+# be silently replaced by the published version and could never be tested.
 LOCAL_SCRIPTS="$(dirname "$0")"
-if [ -f "$LOCAL_SCRIPTS/scripts/i18n.sh" ] && [ ! -s "$I18N_SH" ]; then
-    log_info "Developer Mode: Copying local i18n.sh..."
-    cp "$LOCAL_SCRIPTS/scripts/i18n.sh" "$I18N_SH"
-fi
-if [ -f "$LOCAL_SCRIPTS/i18n.py" ] && [ ! -s "$I18N_PY" ]; then
-    log_info "Developer Mode: Copying local i18n.py..."
-    cp "$LOCAL_SCRIPTS/i18n.py" "$I18N_PY"
-fi
-if [ -f "$LOCAL_SCRIPTS/install.py" ] && [ ! -s "$PYTHON_SCRIPT" ]; then
-    log_info "Developer Mode: Copying local install.py..."
-    cp "$LOCAL_SCRIPTS/install.py" "$PYTHON_SCRIPT"
+DEV_MODE=0
+if [ -f "$LOCAL_SCRIPTS/install.py" ] && [ -f "$LOCAL_SCRIPTS/i18n.py" ]; then
+    DEV_MODE=1
 fi
 
-# Download localization system
-log_info "Fetching latest localization system..."
-wget -q "$REPO_URL/scripts/i18n.sh?nocache=$RANDOM" -O "$I18N_SH" || true
+if [ "$DEV_MODE" == "1" ]; then
+    log_info "Developer Mode: using local files, skipping GitHub downloads."
+    [ -f "$LOCAL_SCRIPTS/scripts/i18n.sh" ] && cp "$LOCAL_SCRIPTS/scripts/i18n.sh" "$I18N_SH"
+    cp "$LOCAL_SCRIPTS/i18n.py" "$I18N_PY"
+    cp "$LOCAL_SCRIPTS/install.py" "$PYTHON_SCRIPT"
+else
+    # Download localization system
+    log_info "Fetching latest localization system..."
+    wget -q "$REPO_URL/scripts/i18n.sh?nocache=$RANDOM" -O "$I18N_SH" || true
+fi
 
 # Try to source i18n if it exists and is not empty
 if [ -s "$I18N_SH" ]; then
@@ -84,18 +85,25 @@ if [ -n "$MISSING" ]; then
 fi
 
 # Download Python installer components
-log_info "$(t downloading_installer)"
+if [ "$DEV_MODE" != "1" ]; then
+    log_info "$(t downloading_installer)"
 
-wget -q "$REPO_URL/i18n.py?nocache=$RANDOM" -O "$I18N_PY" || true
+    wget -q "$REPO_URL/i18n.py?nocache=$RANDOM" -O "$I18N_PY" || true
 
-if wget -q "$REPO_URL/install.py?nocache=$RANDOM" -O "$PYTHON_SCRIPT"; then
-    log_info "$(t download_success)"
-else
-    log_info "$(t download_fallback)"
+    if wget -q "$REPO_URL/install.py?nocache=$RANDOM" -O "$PYTHON_SCRIPT"; then
+        log_info "$(t download_success)"
+    else
+        log_info "$(t download_fallback)"
+    fi
 fi
 
 if [ ! -s "$PYTHON_SCRIPT" ]; then
     log_err "$(t fail_critical)"
+fi
+
+# The Python installer cannot start without its localization module
+if [ ! -s "$I18N_PY" ]; then
+    log_err "$(t fail_i18n)"
 fi
 
 log_info "$(t launching_python)"
@@ -104,4 +112,11 @@ export REPO_URL="$REPO_URL"
 
 # Force interactive reading from virtual terminal (tty)
 # to solve 'EOFError' if the master script was launched through a pipe (like: curl ... | bash)
-python3 "$PYTHON_SCRIPT" < /dev/tty
+# No basta con comprobar que /dev/tty exista: sin terminal de control el fichero
+# está ahí pero abrirlo falla, y la redirección tumbaría el instalador.
+if (exec < /dev/tty) 2>/dev/null; then
+    python3 "$PYTHON_SCRIPT" < /dev/tty
+else
+    echo -e "\e[1;33m[!] $(t warning):\e[0m $(t no_tty)"
+    python3 "$PYTHON_SCRIPT"
+fi
