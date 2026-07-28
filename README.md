@@ -37,10 +37,14 @@ La forma más fácil de tener refugiOS es descargar la imagen ya preparada, grab
 
 ### 1. Descarga la imagen
 
-| Idioma | Enlace | Tamaño aprox. |
+| Idioma | Descarga | Tamaño |
 | :--- | :--- | :--- |
-| 🇪🇸 **Español** | [refugios-base-16G-es.img](https://refugios.ganso.org/refugios-base-16G-es.img) | ~16 GB |
-| 🇬🇧🇺🇸 **Inglés** | [refugios-base-16G-en.img](https://refugios.ganso.org/refugios-base-16G-en.img) | ~16 GB |
+| 🇪🇸 **Español** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 3,7 GB comprimido (16 GB al descomprimir) |
+| 🇬🇧🇺🇸 **Inglés** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 4,0 GB comprimido (16 GB al descomprimir) |
+
+> **Última actualización de las imágenes: 28 de julio de 2026** (versión 0.23).
+
+Descomprime el `.zip` antes de grabarlo: en Windows, clic derecho → *Extraer todo*; en Linux o macOS, `unzip refugios-base-16G-es.img.zip`. Obtendrás el fichero `.img` que se graba en el USB.
 
 Necesitas un USB de **al menos 16 GB**. La partición del sistema se expandirá automáticamente al tamaño completo del USB en el primer arranque.
 

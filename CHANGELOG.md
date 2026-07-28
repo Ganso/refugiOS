@@ -13,6 +13,7 @@ y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Resolución configurable en las pruebas de arranque:** `tests/qemu_boot_check.py` acepta `--size` y arranca la máquina virtual a 1920×1080 por defecto, en lugar del tamaño heredado del adaptador.
 
 ### Cambiado
+- **Imágenes base regeneradas y publicadas comprimidas:** `refugios-base-16G-es.img` y `refugios-base-16G-en.img` se han reconstruido desde cero con el código de esta versión (incluye por tanto todas las correcciones de la 0.22) y se distribuyen ahora en **`.zip`**, más amigable para usuarios de Windows: 3,7 GB en español y 4,0 GB en inglés, frente a los 16 GB del fichero sin comprimir. Se descomprimen a un `.img` idéntico al anterior, que se graba igual. Todos los enlaces de descarga del README, de `doc/Home.md` y de las guías se han actualizado, y junto a ellos figura ahora la fecha de última actualización de las imágenes.
 - **`logo/` pasa a ser `media/logo/`:** El instalador busca el fondo de escritorio en la ruta nueva y sigue aceptando la antigua en copias locales del repositorio anteriores a esta versión. Los sistemas ya instalados con una versión previa del instalador no encontrarán el fondo remoto y simplemente lo omitirán, sin afectar a ninguna otra parte de la instalación.
 
 ## [0.22] - 2026-07-28

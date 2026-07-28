@@ -1,6 +1,6 @@
 # refugiOS Unit Cloning Guide
 
-If you have already configured your first **refugiOS** pendrive (whether starting from the [pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img) or any other method) and want to make an exact copy for a relative, a friend, or simply to have a backup, this guide explains how to clone it step by step.
+If you have already configured your first **refugiOS** pendrive (whether starting from the [pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img.zip) or any other method) and want to make an exact copy for a relative, a friend, or simply to have a backup, this guide explains how to clone it step by step.
 
 ## 1. Cloning in Windows
 

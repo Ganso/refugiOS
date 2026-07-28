@@ -3,7 +3,7 @@
 Antes de instalar refugiOS necesitas elegir el **dispositivo físico** donde se ejecutará. Esta guía te ayudará a tomar la mejor decisión según tu presupuesto y necesidades.
 
 > [!TIP]
-> **Método más rápido:** La forma más sencilla de empezar es descargar la **[imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img)** y grabarla en un USB de al menos 16 GB. Consulta el **[README](../README.md)** para los pasos de inicio rápido.
+> **Método más rápido:** La forma más sencilla de empezar es descargar la **[imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img.zip)** y grabarla en un USB de al menos 16 GB. Consulta el **[README](../README.md)** para los pasos de inicio rápido.
 
 > [!NOTE]
 > Si vas a instalar refugiOS en una **Raspberry Pi**, el medio de instalación es distinto (tarjeta microSD o SSD vía HAT/USB). Consulta la **[Guía de Instalación en Raspberry Pi](Instalacion-Raspberry-ES.md#1-hardware-necesario)** para los detalles específicos de esa plataforma.

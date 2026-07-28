@@ -14,10 +14,12 @@
 
 Descarga la imagen pregenerada, grábala en un USB y arranca:
 
-| Idioma | Enlace |
-| :--- | :--- |
-| 🇪🇸 Español | [refugios-base-16G-es.img](https://refugios.ganso.org/refugios-base-16G-es.img) |
-| 🇬🇧 Inglés | [refugios-base-16G-en.img](https://refugios.ganso.org/refugios-base-16G-en.img) |
+| Idioma | Enlace | Tamaño |
+| :--- | :--- | :--- |
+| 🇪🇸 Español | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 3,7 GB |
+| 🇬🇧 Inglés | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 4,0 GB |
+
+> **Última actualización de las imágenes: 28 de julio de 2026** (versión 0.23).
 
 ### Guías de Instalación y Configuración
 *   [**Elección del Medio de Instalación**](Eleccion-Medio-Instalacion-ES)
@@ -45,10 +47,12 @@ Descarga la imagen pregenerada, grábala en un USB y arranca:
 
 Download the pre-built image, flash it to a USB drive, and boot:
 
-| Language | Link |
-| :--- | :--- |
-| 🇬🇧 English | [refugios-base-16G-en.img](https://refugios.ganso.org/refugios-base-16G-en.img) |
-| 🇪🇸 Spanish | [refugios-base-16G-es.img](https://refugios.ganso.org/refugios-base-16G-es.img) |
+| Language | Link | Size |
+| :--- | :--- | :--- |
+| 🇬🇧 English | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 4.0 GB |
+| 🇪🇸 Spanish | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 3.7 GB |
+
+> **Images last updated: 28 July 2026** (version 0.23).
 
 ### Installation and Configuration Guides
 *   [**Choosing Installation Media**](Choosing-Installation-Media-EN)

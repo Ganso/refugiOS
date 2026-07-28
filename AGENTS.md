@@ -514,6 +514,82 @@ The project follows **Keep a Changelog** + **Semantic Versioning**. On a release
 2. Bump the version badge in **both** `README.md`
    (`Versi%C3%B3n-X.Y`) and `README.en.md` (`Version-X.Y`).
 3. Update the "Historial de Versiones" / "Version History" section in both READMEs.
+4. Bump `- **Current version:**` at the top of this file.
+5. Commit on a branch, merge into `main` with `--no-ff`, tag `vX.Y`, push both.
+
+### Publishing the base images
+
+Triggered by a request such as **"actualiza en GitHub las imágenes"** / "update the
+images". It rebuilds both base images from the current `main`, verifies them, publishes
+them to the download server and updates every place that links to them. It takes roughly
+two hours end to end, mostly unattended.
+
+**Credentials.** `.sftp` in the repository root holds two lines: `user@host` and the
+password. It is gitignored and **must never be committed, printed, or pasted into a
+command line**. Read it from inside a script (see step 5). If it is missing, stop and ask
+the user for it — do not guess or look elsewhere.
+
+1. **Delete previous builds.** Any `.img` left from earlier work; they are several GB
+   each and only cause confusion.
+
+2. **Build both images** with the current code, sequentially (parallel builds race for
+   loop devices):
+   ```bash
+   for L in es en; do
+     docker run --rm --privileged -v "$PWD:/repo" -v ~/refugios-images:/out -v /dev:/dev \
+       -w /out refugios-test:trixie /repo/scripts/build_refugios.sh -s 16G -l $L \
+       > ~/refugios-images/build-$L.log 2>&1
+   done
+   docker run --rm -v ~/refugios-images:/out refugios-test:trixie chown -R 1000:1000 /out
+   ```
+   Check both logs end with a zero exit. About 30-40 minutes each. The `chown` is needed
+   or QEMU cannot read the images afterwards.
+
+3. **Verify each image boots** and read the screenshots — a green exit code is not proof
+   the image is usable:
+   ```bash
+   python3 tests/qemu_boot_check.py ~/refugios-images/refugios-base-16G-es.img \
+     --shots 30,70,110 --out tests/out --prefix v_es
+   ```
+   The last capture must show the XFCE desktop with the welcome popup reporting **16 GB**.
+
+4. **Compress and decide the format.** Use `7z` (multithreaded; Info-ZIP `zip` is single
+   threaded and takes far longer):
+   ```bash
+   7z a -tzip -mmt=10 -mx=5 refugios-base-16G-es.img.zip refugios-base-16G-es.img
+   ```
+   **Rule:** if the `.zip` is at most **60%** of the `.img`, publish the compressed
+   version; otherwise publish the raw `.img`. In practice it lands around 22%, so the
+   published files are `.img.zip`. Generate `SHA256SUMS.txt` for whatever gets published.
+
+5. **Upload by SFTP to `/refugios`.** List the directory first and confirm the previous
+   files are there — publishing into the wrong path is worse than not publishing. Upload
+   to a temporary name and rename at the end, so an interrupted transfer never leaves a
+   half-written file under the public name. Verify the remote size matches the local one.
+   Roughly 9 MB/s, so about 15 minutes for the pair.
+
+6. **Update every link** if the published filenames changed. They live in:
+   `README.md` and `README.en.md` (download table, sizes, extraction instructions),
+   `doc/Home.md` (both tables), `doc/_Sidebar.md` (both quick-start entries), and inline
+   mentions in `doc/Eleccion-Medio-Instalacion-ES.md`, `doc/Choosing-Installation-Media-EN.md`,
+   `doc/Clonado-de-Pendrive-ES.md`, `doc/Cloning-Units-EN.md`,
+   `doc/Instalacion-Xubuntu-ES.md`, `doc/Xubuntu-Installation-EN.md`,
+   `doc/Construccion-Imagen-Sistema-ES.md` and `doc/System-Image-Build-EN.md`.
+   Verify none is left behind:
+   ```bash
+   grep -rn "refugios.ganso.org/refugios-base" --include="*.md" .
+   ```
+
+7. **Record the date.** Next to the download table in `README.md`, `README.en.md` and
+   `doc/Home.md` there is a line stating when the images were last updated and with which
+   version. Update it; it is the only way a user can tell whether the download is current.
+
+8. **Commit, tag and push**, and add a `### Cambiado` entry to `CHANGELOG.md` describing
+   what the new images contain.
+
+9. **Stale files on the server.** If the published names changed, the previous files stay
+   behind and nothing links to them. **Ask the user before deleting anything remote** —
+   the deletion is irreversible and is theirs to authorize.
 
 ---
 

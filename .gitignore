@@ -63,3 +63,7 @@ scripts/*.log
 
 # Salida de los tests (capturas de QEMU, variables UEFI)
 tests/out/
+
+# Credenciales de subida de imágenes (NUNCA subir al repositorio)
+.sftp
+.ftp

@@ -1,6 +1,6 @@
 # XUbuntu Installation Guide (Alternative Method)
 
-This guide explains how to install refugiOS on a **XUbuntu** base as an alternative method. The **[pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img)** is recommended for most cases, as it is faster and simpler. The Xubuntu method may be useful if you need compatibility with older hardware (BIOS/MBR) or if you prefer the Live with persistence scheme.
+This guide explains how to install refugiOS on a **XUbuntu** base as an alternative method. The **[pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img.zip)** is recommended for most cases, as it is faster and simpler. The Xubuntu method may be useful if you need compatibility with older hardware (BIOS/MBR) or if you prefer the Live with persistence scheme.
 
 > [!IMPORTANT]
 > **Before you start:** The choice of physical device (pendrive, SSD, adapter) and its capacity affect performance and the content you can install. Check the **[Choosing Installation Media Guide](Choosing-Installation-Media-EN.md)** to make the best decision based on your budget.

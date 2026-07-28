@@ -3,7 +3,7 @@
 Before installing refugiOS you need to choose the **physical device** it will run on. This guide will help you make the best decision based on your budget and needs.
 
 > [!TIP]
-> **Fastest method:** The easiest way to get started is to download the **[pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img)** and flash it to a USB drive of at least 16 GB. See the **[README](../README.en.md)** for quick start steps.
+> **Fastest method:** The easiest way to get started is to download the **[pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img.zip)** and flash it to a USB drive of at least 16 GB. See the **[README](../README.en.md)** for quick start steps.
 
 > [!NOTE]
 > If you are installing refugiOS on a **Raspberry Pi**, the installation media is different (microSD card or SSD via HAT/USB). See the **[Raspberry Pi Installation Guide](Raspberry-Pi-Installation-EN.md#1-necessary-hardware)** for platform-specific details.

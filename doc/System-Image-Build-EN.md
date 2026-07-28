@@ -5,7 +5,7 @@ This guide details the automated process for generating a **base refugiOS disk i
 Unlike the traditional method based on a Xubuntu Live ISO with persistence, this image produces a **natively installed system**, which eliminates the indirection layers of Live mode and offers better performance, less device wear, and greater control over the base configuration.
 
 > [!TIP]
-> **Fastest method:** If you don't need to customize the base image, you can download the pre-built image directly from [refugios.ganso.org](https://refugios.ganso.org/refugios-base-16G-en.img) and skip this entire process. Just flash it to a USB drive and boot. See the **[README](../README.en.md)** for quick start steps.
+> **Fastest method:** If you don't need to customize the base image, you can download the pre-built image directly from [refugios.ganso.org](https://refugios.ganso.org/refugios-base-16G-en.img.zip) and skip this entire process. Just flash it to a USB drive and boot. See the **[README](../README.en.md)** for quick start steps.
 
 > [!IMPORTANT]
 > This method is intended for **advanced users** who want to build the image from its source or prepare multiple identical units efficiently.

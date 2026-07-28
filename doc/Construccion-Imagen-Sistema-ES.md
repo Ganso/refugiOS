@@ -5,7 +5,7 @@ Esta guía detalla el proceso automatizado para generar una **imagen de disco ba
 A diferencia del método tradicional basado en una ISO Live de Xubuntu con persistencia, esta imagen produce un **sistema instalado nativamente**, lo que elimina las capas de indirección del modo Live y ofrece mejor rendimiento, menor desgaste del dispositivo y mayor control sobre la configuración base.
 
 > [!TIP]
-> **Método más rápido:** Si no necesitas personalizar la imagen base, puedes descargar la imagen pregenerada directamente desde [refugios.ganso.org](https://refugios.ganso.org/refugios-base-16G-es.img) y saltarte todo este proceso. Solo tienes que grabarla en un USB y arrancar. Consulta el **[README](../README.md)** para los pasos de inicio rápido.
+> **Método más rápido:** Si no necesitas personalizar la imagen base, puedes descargar la imagen pregenerada directamente desde [refugios.ganso.org](https://refugios.ganso.org/refugios-base-16G-es.img.zip) y saltarte todo este proceso. Solo tienes que grabarla en un USB y arrancar. Consulta el **[README](../README.md)** para los pasos de inicio rápido.
 
 > [!IMPORTANT]
 > Este método está pensado para **usuarios avanzados** que deseen construir la imagen desde su origen o preparar múltiples unidades idénticas de forma eficiente.

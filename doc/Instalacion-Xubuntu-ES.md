@@ -1,6 +1,6 @@
 # Guía de Instalación en XUbuntu (Método Alternativo)
 
-Esta guía explica cómo instalar refugiOS sobre una base de **XUbuntu** como método alternativo. Se recomienda usar la **[imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img)** para la mayoría de los casos, ya que es más rápida y sencilla. El método de Xubuntu puede ser útil si necesitas compatibilidad con hardware antiguo (BIOS/MBR) o si prefieres el esquema Live con persistencia.
+Esta guía explica cómo instalar refugiOS sobre una base de **XUbuntu** como método alternativo. Se recomienda usar la **[imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img.zip)** para la mayoría de los casos, ya que es más rápida y sencilla. El método de Xubuntu puede ser útil si necesitas compatibilidad con hardware antiguo (BIOS/MBR) o si prefieres el esquema Live con persistencia.
 
 > [!IMPORTANT]
 > **Antes de empezar:** La elección del dispositivo físico (pendrive, SSD, adaptador) y su capacidad condicionan el rendimiento y los contenidos que podrás instalar. Consulta la **[Guía de Elección del Medio de Instalación](Eleccion-Medio-Instalacion-ES.md)** para tomar la mejor decisión según tu presupuesto.

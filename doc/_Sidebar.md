@@ -5,7 +5,7 @@
 ### 🇪🇸 SECCIÓN EN ESPAÑOL
 
 *   **Inicio Rápido**
-    *   [Descargar imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img)
+    *   [Descargar imagen pregenerada](https://refugios.ganso.org/refugios-base-16G-es.img.zip)
 *   **Instalación y Configuración**
     *   [Elección del Medio de Instalación](Eleccion-Medio-Instalacion-ES)
     *   [Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES)
@@ -28,7 +28,7 @@
 ### 🇺🇸 ENGLISH SECTION
 
 *   **Quick Start**
-    *   [Download pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img)
+    *   [Download pre-built image](https://refugios.ganso.org/refugios-base-16G-en.img.zip)
 *   **Installation and Configuration**
     *   [Choosing Installation Media](Choosing-Installation-Media-EN)
     *   [Virtualization Guide](Virtualization-Guide-EN)
