@@ -232,21 +232,29 @@ def run_cmd(cmd, shell=True, check=True, quiet=False):
         return False
     return True
 
-def download_with_aria2(url, dest_path, timeout=120, max_tries=3):
+def download_with_aria2(url, dest_path, timeout=120, max_tries=3, keep_partial=True):
     """
-    Descarga con aria2c: multi-conexion, timeout estricto, reintentos.
-    Usa 'timeout' de Linux para limite maximo absoluto (evita congelacion).
+    Descarga con aria2c: multi-conexion, deteccion de estancamiento, reintentos.
     -x 8 -s 8: 8 conexiones paralelas + 8 splits
-    --timeout: segundos sin actividad por conexion antes de reintentar
+    --timeout / --connect-timeout: detectan la conexion muerta (limite real)
     --max-tries: reintentos por conexion
-    Limpia archivos .aria2 siempre (exito o fallo).
+    El parametro 'timeout' es solo una red de seguridad muy holgada frente a una
+    congelacion del proceso, NO un limite de duracion de la descarga: en conexiones
+    lentas un modelo de varios GB tarda horas legitimamente.
+    En caso de fallo se conserva el fichero parcial y su control .aria2, que es lo
+    que permite a --continue=true reanudar en la siguiente ejecucion. Con
+    keep_partial=False el parcial se descarta: solo para ficheros pequenos, donde
+    reanudar no aporta nada y un resto truncado podria confundirse con uno valido.
     """
     dest_dir = os.path.dirname(dest_path)
     filename = os.path.basename(dest_path)
     aria2_control = dest_path + ".aria2"
-    
+
+    # Red de seguridad: como minimo 6 horas, o lo que pida el llamante si es mayor
+    hard_limit = max(timeout, 21600)
+
     cmd = (
-        f"timeout {timeout} aria2c -x 8 -s 8 "
+        f"timeout {hard_limit} aria2c -x 8 -s 8 "
         f"--timeout=15 "
         f"--max-tries={max_tries} "
         f"--connect-timeout=10 "
@@ -256,21 +264,28 @@ def download_with_aria2(url, dest_path, timeout=120, max_tries=3):
         f"-o \"{filename}\" "
         f"\"{url}\""
     )
-    
+
     success = run_cmd(cmd, quiet=True)
-    
-    # Limpieza: siempre eliminar .aria2 (aria2c a veces no lo hace)
-    # En caso de fallo, tambien eliminar archivo parcial
+
     try:
-        if os.path.exists(aria2_control):
-            os.remove(aria2_control)
-        if not success and os.path.exists(dest_path):
+        if success or not keep_partial:
+            if os.path.exists(aria2_control):
+                os.remove(aria2_control)
+        if not success and not keep_partial and os.path.exists(dest_path):
             os.remove(dest_path)
     except OSError:
         pass
-    
+
     return success
 
+
+def version_key(name):
+    """
+    Sort key that compares embedded version numbers numerically.
+    Plain lexicographic order picks 2.9 over 2.10, which would install an
+    outdated AppImage.
+    """
+    return [int(part) for part in re.findall(r'\d+', name)]
 
 def get_cmd_output(cmd):
     """
@@ -441,7 +456,7 @@ def set_wallpaper(sys_info):
     else:
         repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
         remote_url = f"{repo_url}/logo/fondo.png"
-        download_with_aria2(remote_url, perm_wallpaper_path, timeout=30)
+        download_with_aria2(remote_url, perm_wallpaper_path, timeout=30, keep_partial=False)
 
     if not os.path.exists(perm_wallpaper_path) or os.path.getsize(perm_wallpaper_path) == 0:
         return
@@ -686,10 +701,10 @@ def multi_select_menu(d, title, options, default_indices=[]):
             status = True
         else:
             status = (i in default_indices)
-            
-        choices.append((tag, item, status))
-    
-    code, selected_tags = d.checklist(title, choices=choices, title="refugiOS Installer")
+
+        choices.append((tag, sanitize_for_dialog(item), status))
+
+    code, selected_tags = d.checklist(sanitize_for_dialog(title), choices=choices, title="refugiOS Installer")
     
     if code == d.OK:
         return [int(tag) - 1 for tag in selected_tags]
@@ -705,9 +720,9 @@ def single_select_menu(d, title, options, default_index):
         item = opt['label']
         if opt.get('installed'):
             item = rf"\Z1{i18n.T('installed_tag')}\Zn {item}"
-        choices.append((str(i + 1), item))
+        choices.append((str(i + 1), sanitize_for_dialog(item)))
 
-    code, tag = d.menu(title, choices=choices, title="refugiOS Installer", default_item=str(default_index + 1))
+    code, tag = d.menu(sanitize_for_dialog(title), choices=choices, title="refugiOS Installer", default_item=str(default_index + 1))
 
     if code == d.OK:
         return int(tag) - 1
@@ -717,7 +732,7 @@ def simple_question(d, title, prompt_text, default_yes=False):
     """
     Shows an interactive Yes/No question using d.yesno.
     """
-    code = d.yesno(f"{title}\n\n{prompt_text}", title="refugiOS Installer", 
+    code = d.yesno(sanitize_for_dialog(f"{title}\n\n{prompt_text}"), title="refugiOS Installer",
                    yes_label=i18n.T('yes'), no_label=i18n.T('no'), defaultno=(not default_yes))
     return code == d.OK
 
@@ -900,13 +915,17 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
 # SECTION 5: ADDITIONAL TOOLS (Basic Web Scraping)
 # ==============================================================================
 
+FETCH_TIMEOUT = 20
+
 def fetch_url(url):
     """
     Performs a simple HTTP request and returns HTML/Text response.
     Simulates a traditional web browser User-Agent.
+    The timeout prevents a mirror that accepts the connection but never answers
+    from hanging the whole installer.
     """
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req) as resp:
+    with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
         return resp.read().decode('utf-8')
 
 # ==============================================================================
@@ -957,7 +976,7 @@ def main():
     if sys_info.is_rpi:
         diag_info += f"\n{i18n.T('rpi_arch_detected')}"
 
-    d.msgbox(diag_info, title=i18n.T('sys_diag_title'))
+    d.msgbox(sanitize_for_dialog(diag_info), title=i18n.T('sys_diag_title'))
 
     # Depending on disk space, offer lightweight or enriched configurations
     if sys_info.free_space_mb < 30000:
@@ -1109,7 +1128,7 @@ def main():
     # PHYSICAL EXECUTION AND INSTALLATION
     # =========================================================
 
-    d.msgbox(i18n.T('install_starting_msg'), title=i18n.T('install_starting_title'))
+    d.msgbox(sanitize_for_dialog(i18n.T('install_starting_msg')), title=i18n.T('install_starting_title'))
     os.system('clear')
 
     size_logger = SizeLogger()
@@ -1161,7 +1180,7 @@ def main():
         html = fetch_url("https://download.kiwix.org/release/kiwix-desktop/")
         matches = re.findall(r'href="(kiwix-desktop_x86_64_[0-9.-]*\.appimage)"', html)
         if matches:
-            kiwix_appimage_name = sorted(matches)[-1]
+            kiwix_appimage_name = sorted(matches, key=version_key)[-1]
             kiwix_appimage_url = f"https://download.kiwix.org/release/kiwix-desktop/{kiwix_appimage_name}"
     except Exception as e:
         print(f"\033[1;33m[!] {i18n.T('warning')}:\033[0m Error fetching Kiwix AppImage: {e}")
@@ -1298,7 +1317,7 @@ def main():
         d_path = os.path.join(env.scripts_dir, s_name)
         # Force download latest version with cache busting
         nocache = random.randint(1000, 9999)
-        ok = download_with_aria2(f"{repo_url}/scripts/{s_name}?{nocache}", d_path, timeout=30)
+        ok = download_with_aria2(f"{repo_url}/scripts/{s_name}?{nocache}", d_path, timeout=30, keep_partial=False)
         if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
             local_dir = os.path.dirname(os.path.realpath(__file__))
             local_s = os.path.join(local_dir, "scripts", s_name)
@@ -1477,6 +1496,8 @@ Terminal=false
         for item in FAILED_ITEMS:
             report += f" - {item}\n"
         d.msgbox(sanitize_for_dialog(report), title=i18n.T('warning'))
+        # Report the failure to the caller (the desktop wrapper logs the exit code)
+        sys.exit(1)
     else:
         log_success("GLOBAL DEPLOYMENT OPERATION FINISHED. Please check desktop icon integrity and accessibility.")
         final_msg = f"{i18n.T('install_finished_msg')}\n\n{i18n.T('install_space_used').format(total_mb)}"
