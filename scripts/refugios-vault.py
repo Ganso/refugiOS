@@ -41,7 +41,10 @@ except ImportError:
     print(i18n.T('dialog_error'))
     sys.exit(1)
 
-HOME_DIR = os.environ['HOME']
+HOME_DIR = os.environ.get('HOME')
+if not HOME_DIR:
+    print("\033[1;31m[X] ERROR:\033[0m HOME is not set. Run this script as your regular user.")
+    sys.exit(1)
 BASE_DIR = os.path.join(HOME_DIR, "refugiOS")
 VAULT_DIR = os.path.join(BASE_DIR, "Vaults")
 
@@ -362,9 +365,12 @@ def op_create(d):
 
     print(f"\n\033[1;33m{i18n.T('vault_set_password')}\033[0m")
     print(f"\033[1;31m{i18n.T('vault_password_warning')}\033[0m\n")
-    if not run_cmd(f"sudo cryptsetup luksFormat --batch-mode \"{vault_file}\""):
+    # --verify-passphrase overrides the verification that --batch-mode would disable:
+    # without it a typo in the password makes the vault unrecoverable forever.
+    if not run_cmd(f"sudo cryptsetup luksFormat --batch-mode --verify-passphrase \"{vault_file}\""):
         os.remove(vault_file)
-        d.msgbox(i18n.T('vault_error_create'), title=i18n.T('error'))
+        # La causa habitual aqui es que las dos contrasenas no coincidiesen
+        d.msgbox(i18n.T('vault_error_password'), title=i18n.T('error'))
         return
 
     if not run_cmd(f"sudo cryptsetup open \"{vault_file}\" {mapper}"):

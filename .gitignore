@@ -60,3 +60,6 @@ Desktop.ini
 refugios_vars.fd
 *.log
 scripts/*.log
+
+# Salida de los tests (capturas de QEMU, variables UEFI)
+tests/out/

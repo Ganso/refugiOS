@@ -35,8 +35,8 @@ elif [ -f "$HOME/refugiOS/Apps/kiwix-desktop.appimage" ]; then
 elif flatpak list --app | grep -q "org.kiwix.desktop"; then
     KIWIX_BIN="flatpak run org.kiwix.desktop"
 else
-    # Fallback: search for any kiwix AppImage in Apps folder
-    KIWIX_BIN=$(find "$HOME/refugiOS/Apps" -name "kiwix-desktop*.appimage" 2>/dev/null | sort | tail -1)
+    # Fallback: search for any runnable kiwix AppImage in Apps folder (newest version)
+    KIWIX_BIN=$(find "$HOME/refugiOS/Apps" -name "kiwix-desktop*.appimage" -type f -executable 2>/dev/null | sort -V | tail -1)
 fi
 
 if [ -z "$KIWIX_BIN" ]; then
