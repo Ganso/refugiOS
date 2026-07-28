@@ -71,6 +71,22 @@ def main():
         subprocess.run(["convert", ppm, png], check=True)
         os.unlink(ppm)
         print(png)
+    elif action in ("click", "dblclick"):
+        x, y = int(args[0]), int(args[1])
+        width = int(args[2]) if len(args) > 2 else 1280
+        height = int(args[3]) if len(args) > 3 else 800
+        qmp.command("input-send-event", events=[
+            {"type": "abs", "data": {"axis": "x", "value": x * 32767 // width}},
+            {"type": "abs", "data": {"axis": "y", "value": y * 32767 // height}},
+        ])
+        time.sleep(0.3)
+        for _ in (1, 2) if action == "dblclick" else (1,):
+            qmp.command("input-send-event",
+                        events=[{"type": "btn", "data": {"down": True, "button": "left"}}])
+            qmp.command("input-send-event",
+                        events=[{"type": "btn", "data": {"down": False, "button": "left"}}])
+            time.sleep(0.08)
+        print(f"{action} en ({x}, {y})")
     elif action == "key":
         for combo in args:
             send_key(qmp, combo)

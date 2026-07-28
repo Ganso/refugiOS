@@ -231,6 +231,40 @@ class TestDialogSanitizing(unittest.TestCase):
             text.encode("latin-1")  # falla la prueba si algo se colo sin sanear
 
 
+class TestDeveloperModeScripts(unittest.TestCase):
+    """C3 (install.py): con una copia del repositorio, los scripts locales mandan."""
+
+    def test_local_scripts_win(self):
+        source = open(os.path.join(REPO_DIR, "install.py"), encoding="utf-8").read()
+        body = source.split("def fetch_script(")[1].split("\n    if install_maps")[0]
+        local_check = body.index("os.path.exists(local_s)")
+        download = body.index("download_with_aria2")
+        self.assertLess(local_check, download,
+                        "fetch_script descarga antes de mirar la copia local: el "
+                        "Developer Mode no llega a los scripts")
+
+
+class TestTranslationKeys(unittest.TestCase):
+    """Ninguna clave usada puede quedar sin traducir: el usuario veria la clave cruda."""
+
+    def test_every_key_is_translated(self):
+        import re
+        import i18n
+
+        used = set()
+        for name in ("install.py", "scripts/refugios-vault.py"):
+            with open(os.path.join(REPO_DIR, name), encoding="utf-8") as f:
+                used |= set(re.findall(r"i18n\.T\(\s*['\"]([a-zA-Z0-9_]+)['\"]", f.read()))
+
+        english = set(i18n.TRANSLATIONS["en"])
+        spanish = set(i18n.TRANSLATIONS["es"])
+
+        self.assertEqual(sorted(used - english), [],
+                         "claves sin traduccion en ingles")
+        self.assertEqual(sorted(used - spanish), [],
+                         "claves sin traduccion en espanol")
+
+
 class TestExitCode(unittest.TestCase):
     """C12: si algun modulo fallo, el instalador debe salir con codigo != 0."""
 

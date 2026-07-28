@@ -1315,17 +1315,23 @@ def main():
     
     def fetch_script(s_name):
         d_path = os.path.join(env.scripts_dir, s_name)
+        local_dir = os.path.dirname(os.path.realpath(__file__))
+        local_s = os.path.join(local_dir, "scripts", s_name)
+
+        # Developer Mode: running from a checkout of the repository, the local scripts
+        # take precedence. Otherwise the published version would silently replace them
+        # and local changes could never be tested (same reasoning as install.sh).
+        if os.path.exists(local_s):
+            shutil.copy(local_s, d_path)
+            os.chmod(d_path, 0o755)
+            return d_path
+
         # Force download latest version with cache busting
         nocache = random.randint(1000, 9999)
         ok = download_with_aria2(f"{repo_url}/scripts/{s_name}?{nocache}", d_path, timeout=30, keep_partial=False)
         if not ok or not os.path.exists(d_path) or os.path.getsize(d_path) == 0:
-            local_dir = os.path.dirname(os.path.realpath(__file__))
-            local_s = os.path.join(local_dir, "scripts", s_name)
-            if os.path.exists(local_s):
-                shutil.copy(local_s, d_path)
-            else:
-                log_err(i18n.T('script_not_found').format(s_name), fatal=False)
-                return None
+            log_err(i18n.T('script_not_found').format(s_name), fatal=False)
+            return None
         if os.path.exists(d_path):
             os.chmod(d_path, 0o755)
         return d_path if os.path.exists(d_path) else None
