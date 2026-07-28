@@ -42,21 +42,16 @@ echo "   opciones de luksFormat en el script: [$LUKS_OPTS]"
 grep -q -- "--verify-passphrase" <<<"$LUKS_OPTS"
 check $? "C6: el script usa --verify-passphrase"
 
+# Los parametros de derivacion por defecto (argon2id con 1 GiB de memoria) tardan
+# minutos por operacion en un contenedor y no tienen nada que ver con lo que se
+# esta probando, que es la verificacion de la contrasena. Se abaratan solo aqui.
+KDF_TUNING="--pbkdf pbkdf2 --pbkdf-force-iterations 1000"
+
 run_luksformat() {
-    # $1 = fichero, $2 = contrasena, $3 = confirmacion. Con pty real (expect),
-    # porque cryptsetup se niega a verificar sobre una tuberia.
-    expect -c "
-        set timeout 400
-        spawn cryptsetup luksFormat $LUKS_OPTS \"$1\"
-        expect {
-            -re {(?i)enter passphrase} { send \"$2\r\"; exp_continue }
-            -re {(?i)verify passphrase} { send \"$3\r\"; exp_continue }
-            timeout { puts \"TIMEOUT\"; exec kill -9 [exp_pid]; exit 99 }
-            eof
-        }
-        catch wait result
-        exit [lindex \$result 3]
-    " > /dev/null 2>&1
+    # $1 = fichero, $2 = contrasena, $3 = confirmacion. Hace falta un terminal real
+    # porque cryptsetup no verifica la contrasena sobre una tuberia.
+    python3 "$TESTS_DIR/luks_pty.py" "$1" "$2" "$3" -- \
+        $LUKS_OPTS $KDF_TUNING > "$WORK/luks_last.log" 2>&1
 }
 
 truncate -s 32M "$WORK/distintas.img"

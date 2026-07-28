@@ -36,7 +36,9 @@ fi
 
 if [ "$DEV_MODE" == "1" ]; then
     log_info "Developer Mode: using local files, skipping GitHub downloads."
-    [ -f "$LOCAL_SCRIPTS/scripts/i18n.sh" ] && cp "$LOCAL_SCRIPTS/scripts/i18n.sh" "$I18N_SH"
+    if [ -f "$LOCAL_SCRIPTS/scripts/i18n.sh" ]; then
+        cp "$LOCAL_SCRIPTS/scripts/i18n.sh" "$I18N_SH"
+    fi
     cp "$LOCAL_SCRIPTS/i18n.py" "$I18N_PY"
     cp "$LOCAL_SCRIPTS/install.py" "$PYTHON_SCRIPT"
 else

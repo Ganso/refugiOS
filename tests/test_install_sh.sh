@@ -119,6 +119,16 @@ check $? "C4: sin terminal el instalador se lanza igualmente (codigo $STATUS)"
 grep -qiE "terminal|tty" "$WORK/run5.log"
 check $? "C4: se avisa de que no hay terminal disponible"
 
+# Developer Mode sin scripts/i18n.sh local: no debe abortar por 'set -e'
+export HOME="$WORK/home5"
+mkdir -p "$HOME"
+prepare_fake_repo "$WORK/repo_sin_i18nsh"
+rm -f "$WORK/repo_sin_i18nsh/scripts/i18n.sh"
+DEBUG=1 bash "$WORK/repo_sin_i18nsh/install.sh" > "$WORK/run6.log" 2>&1
+grep -q "instalador local ejecutado" "$WORK/run6.log"
+check $? "C3: sin scripts/i18n.sh local el arranque no se interrumpe"
+
+
 echo
 if [ "$FAILED" -eq 0 ]; then
     echo "=> test_install_sh.sh: TODO CORRECTO"
