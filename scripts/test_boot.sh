@@ -26,18 +26,40 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Permitir especificar el tamaño de la imagen o autodetectar una existente
-IMG_SIZE="$1"
+# Permitir especificar tamaño e idioma de la imagen, o autodetectar una existente
+IMG_SIZE=""
+REFUGIOS_LANG=""
+
+while getopts "s:l:" opt; do
+    case $opt in
+        s) IMG_SIZE="$OPTARG" ;;
+        l) REFUGIOS_LANG="$OPTARG" ;;
+        :) echo "ERROR: La opción -$OPTARG requiere un argumento."; exit 1 ;;
+        \?) echo "Uso: $0 [-s TAMAÑO] [-l IDIOMA]"; echo "  -s TAMAÑO   Tamaño de la imagen a arrancar (ej. 16G)"; echo "  -l IDIOMA   Idioma de la imagen: 'es' o 'en'. Por defecto: es"; exit 1 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+# Compatibilidad con la forma antigua de invocación: test_boot.sh 16G
+if [ -z "$IMG_SIZE" ] && [ -n "${1:-}" ]; then
+    IMG_SIZE="$1"
+fi
+
 if [ -z "$IMG_SIZE" ]; then
     # Buscar cualquier imagen que coincida en el workspace
-    EXISTING_IMG=$(find "$WORKSPACE_DIR" -maxdepth 1 -name "refugios-base-*.img" | head -n 1)
+    EXISTING_IMG=$(find "$WORKSPACE_DIR" -maxdepth 1 -name "refugios-base-*.img" | sort | head -n 1)
     if [ -n "$EXISTING_IMG" ]; then
         IMG_NAME="$EXISTING_IMG"
     else
-        IMG_NAME="$WORKSPACE_DIR/refugios-base-16G-es.img"
+        IMG_NAME="$WORKSPACE_DIR/refugios-base-16G-${REFUGIOS_LANG:-es}.img"
     fi
 else
-    IMG_NAME="$WORKSPACE_DIR/refugios-base-${IMG_SIZE}.img"
+    # El generador nombra las imágenes como refugios-base-TAMAÑO-IDIOMA.img
+    IMG_NAME="$WORKSPACE_DIR/refugios-base-${IMG_SIZE}-${REFUGIOS_LANG:-es}.img"
+    if [ ! -f "$IMG_NAME" ] && [ -z "$REFUGIOS_LANG" ]; then
+        MATCH=$(find "$WORKSPACE_DIR" -maxdepth 1 -name "refugios-base-${IMG_SIZE}-*.img" | sort | head -n 1)
+        [ -n "$MATCH" ] && IMG_NAME="$MATCH"
+    fi
 fi
 
 VARS_FILE="$WORKSPACE_DIR/refugios_vars.fd"
@@ -97,22 +119,33 @@ if [ -n "$OVMF_VARS_TEMPLATE" ]; then
 fi
 
 # 2. Comprobar soporte de aceleración por hardware (KVM)
-KVM_ARGS=""
+KVM_ARGS=()
 if [ -w /dev/kvm ]; then
     echo "=> Aceleración KVM habilitada y con permisos de escritura."
-    KVM_ARGS="-enable-kvm -cpu host"
+    KVM_ARGS=(-enable-kvm -cpu host)
 else
     echo "=> ADVERTENCIA: KVM no está habilitado o no tienes permisos en /dev/kvm."
     echo "   El arranque puede ser extremadamente lento."
 fi
 
-# 3. Lanzar QEMU
+# 3. Calcular la RAM de la máquina virtual a partir de la memoria libre del anfitrión
+# (la mitad de la disponible, acotada a [2G, 8G]) para no fallar en equipos modestos.
+VM_RAM_GB=4
+MEM_AVAILABLE_KB=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo 2>/dev/null)
+if [ -n "$MEM_AVAILABLE_KB" ]; then
+    VM_RAM_GB=$(( MEM_AVAILABLE_KB / 1024 / 1024 / 2 ))
+    [ "$VM_RAM_GB" -lt 2 ] && VM_RAM_GB=2
+    [ "$VM_RAM_GB" -gt 8 ] && VM_RAM_GB=8
+fi
+echo "=> RAM asignada a la máquina virtual: ${VM_RAM_GB}G"
+
+# 4. Lanzar QEMU
 echo "=> Lanzando QEMU con la imagen de refugiOS..."
 # Estructuramos los argumentos de QEMU
 QEMU_CMD=(
     qemu-system-x86_64
-    $KVM_ARGS
-    -m 8G
+    "${KVM_ARGS[@]}"
+    -m "${VM_RAM_GB}G"
     -smp 2
     -drive file="$IMG_NAME",format=raw,index=0,media=disk
     -vga virtio
