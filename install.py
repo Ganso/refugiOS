@@ -431,7 +431,7 @@ Categories=System;
 
 def set_wallpaper(sys_info):
     """
-    Sets the desktop wallpaper to logo/fondo.png scaled without deformation.
+    Sets the desktop wallpaper to media/logo/fondo.png scaled without deformation.
     Supports XFCE and Raspberry OS (PCManFM).
     """
     try:
@@ -446,16 +446,22 @@ def set_wallpaper(sys_info):
     perm_wallpaper_path = os.path.join(perm_wallpaper_dir, "fondo.png")
     
     installer_dir = os.path.dirname(os.path.realpath(__file__))
-    local_wallpaper_path = os.path.join(installer_dir, "logo", "fondo.png")
+    # 'logo/' is where the artwork lived before 0.23; kept so a checkout of an
+    # older revision still finds the wallpaper
+    local_candidates = [
+        os.path.join(installer_dir, "media", "logo", "fondo.png"),
+        os.path.join(installer_dir, "logo", "fondo.png"),
+    ]
+    local_wallpaper_path = next((p for p in local_candidates if os.path.exists(p)), None)
 
-    if os.path.exists(local_wallpaper_path):
+    if local_wallpaper_path:
         try:
             shutil.copy(local_wallpaper_path, perm_wallpaper_path)
         except Exception:
             pass
     else:
         repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
-        remote_url = f"{repo_url}/logo/fondo.png"
+        remote_url = f"{repo_url}/media/logo/fondo.png"
         download_with_aria2(remote_url, perm_wallpaper_path, timeout=30, keep_partial=False)
 
     if not os.path.exists(perm_wallpaper_path) or os.path.getsize(perm_wallpaper_path) == 0:

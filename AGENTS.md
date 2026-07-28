@@ -19,7 +19,7 @@ Internet dependency.
   (Wikipedia tier, AI model, maps, etc.). After that, the device operates 100% offline.
 - **License:** GNU AGPL-3.0 (`LICENSE`).
 - **Status:** First Beta, actively developed.
-- **Current version:** `0.22` (see `CHANGELOG.md`). Versioning follows
+- **Current version:** `0.23` (see `CHANGELOG.md`). Versioning follows
   [Semantic Versioning](https://semver.org/spec/v2.0.0.html); the changelog follows
   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository:** `https://github.com/Ganso/refugiOS.git` (branch `main`).
@@ -44,7 +44,9 @@ refugiOS/
 ├── install.sh                # Bash bootstrapper (downloads + launches install.py)
 ├── i18n.py                   # Python localization system (EN/ES dictionary + T())
 ├── doc/                      # 26 bilingual .md docs (GitHub Wiki source)
-├── logo/                     # Branding: refugiOS.png, .ai, .pdf, fondo.png (wallpaper)
+├── media/                    # Branding + screenshots (see media/README.md)
+│   ├── logo/                 # refugiOS.png, .ai, .pdf, fondo.png (wallpaper)
+│   └── screenshots/          # Application screenshots, ES + EN
 └── scripts/                  # Helper / runtime / build / test scripts
     ├── build_refugios.sh     # Image builder (debootstrap Debian Trixie + XFCE)
     ├── i18n.sh               # Bash localization system (parallel to i18n.py)
@@ -53,8 +55,8 @@ refugiOS/
     ├── refugios-maps.sh      # Organic Maps launcher (RPi software-rendering hack)
     ├── refugios-vault.py     # LUKS vault manager (create/open/close/delete, TUI)
     └── test_boot.sh          # QEMU UEFI boot test for generated images
-└── tests/                    # Automated test suite (see tests/README.md)
-    ├── README.md             # How the tests work and how to run them
+└── tests/                    # Automated test suite (docs: doc/Test-Suite-EN.md)
+    ├── README.md             # Pointer to the bilingual guides in doc/
     ├── run_all.sh            # Whole suite; --quick skips anything needing Docker
     ├── run_in_container.sh   # Runs a command in the privileged Debian container
     ├── docker/Dockerfile     # Test container (debootstrap, cryptsetup, shellcheck...)
@@ -80,7 +82,7 @@ There is **no** `package.json`, `requirements.txt`, `Makefile`, `pyproject.toml`
 There **is** an automated test suite under `tests/` (plain `unittest` + Bash, no test
 framework to install), but **no CI**: nothing runs it automatically, so run
 `bash tests/run_all.sh` yourself before proposing changes. Whatever needs root runs in a
-privileged Docker container, so `sudo` is never required. Read `tests/README.md` first.
+privileged Docker container, so `sudo` is never required. Read `doc/Test-Suite-EN.md` first.
 
 ### Gitignored artifacts (never commit)
 
@@ -226,7 +228,7 @@ The core of the project. A `dialog`-based TUI wizard (~1490 lines). Must run as 
   script icons from previous refugiOS versions.
 - `ensure_install_icon(env, sys_info)` — creates
   `/usr/local/bin/refugios-install-wrapper.sh` + desktop re-install icon if missing.
-- `set_wallpaper(sys_info)` — sets `logo/fondo.png` for XFCE (`xfconf-query`) and RPi
+- `set_wallpaper(sys_info)` — sets `media/logo/fondo.png` for XFCE (`xfconf-query`) and RPi
   (`pcmanfm`).
 - `SystemInfo` — detects OS (Ubuntu/Debian/RPi via `/etc/os-release` +
   `/proc/device-tree/model`), RAM (`/proc/meminfo`), storage (`shutil.disk_usage`),
@@ -497,8 +499,8 @@ bash -n scripts/test_boot.sh
 bash tests/run_all.sh          # whole suite (needs Docker; ~3-4 min)
 bash tests/run_all.sh --quick  # only what runs on the host
 ```
-See `tests/README.md` for running individual tests, building images without `sudo`, and
-driving a full installation inside QEMU.
+See `doc/Test-Suite-EN.md` for running individual tests, building images without `sudo`,
+and driving a full installation inside QEMU.
 
 ### Dry-run / debug
 - `DEBUG=1 python3 install.py` (or `DEBUG=1 ... install.sh`) — dry-run simulation: no
@@ -561,7 +563,7 @@ The project follows **Keep a Changelog** + **Semantic Versioning**. On a release
 | `tests/run_all.sh` | Entry point for the whole test suite | ~44 |
 | `tests/unit_install.py` | Unit tests for `install.py` | ~290 |
 | `tests/unit_bash.sh` | Tests for the Bash scripts | ~219 |
-| `tests/README.md` | How the tests work and how to run them | ~250 |
+| `doc/Test-Suite-EN.md` | How the tests work and how to run them | ~250 |
 
 ---
 

@@ -73,8 +73,10 @@ def main():
         print(png)
     elif action in ("click", "dblclick"):
         x, y = int(args[0]), int(args[1])
-        width = int(args[2]) if len(args) > 2 else 1280
-        height = int(args[3]) if len(args) > 3 else 800
+        # Las coordenadas absolutas se normalizan contra el tamano de la pantalla
+        # virtual; se puede indicar otro si la VM no arranco a 1920x1080
+        width = int(args[2]) if len(args) > 2 else 1920
+        height = int(args[3]) if len(args) > 3 else 1080
         qmp.command("input-send-event", events=[
             {"type": "abs", "data": {"axis": "x", "value": x * 32767 // width}},
             {"type": "abs", "data": {"axis": "y", "value": y * 32767 // height}},

@@ -83,9 +83,15 @@ def main():
     ap.add_argument("--out", default="tests/out")
     ap.add_argument("--net", default="user", choices=["user", "none"])
     ap.add_argument("--ram", default="4", help="GiB de RAM para la VM")
+    ap.add_argument("--size", default="1920x1080", help="resolucion de la pantalla virtual")
     ap.add_argument("--prefix", default="boot")
     ap.add_argument("--keep", action="store_true")
     args = ap.parse_args()
+
+    try:
+        xres, yres = (int(v) for v in args.size.lower().split("x"))
+    except ValueError:
+        sys.exit(f"ERROR: resolucion no valida: {args.size} (formato: 1920x1080)")
 
     if not os.path.isfile(args.image):
         sys.exit(f"ERROR: no existe la imagen {args.image}")
@@ -108,7 +114,10 @@ def main():
         "-drive", f"file={os.path.abspath(args.image)},format=raw,index=0,media=disk",
         "-drive", f"if=pflash,format=raw,readonly=on,file={code}",
         "-drive", f"if=pflash,format=raw,file={vars_file}",
-        "-vga", "virtio",
+        # La resolucion preferida se anuncia por EDID, para que el servidor X del
+        # invitado arranque directamente en ella
+        "-vga", "none",
+        "-device", f"virtio-vga,xres={xres},yres={yres}",
         "-display", "none",
         "-qmp", f"unix:{qmp_path},server,nowait",
     ]

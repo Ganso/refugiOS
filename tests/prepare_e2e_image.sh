@@ -35,10 +35,10 @@ mount "${LOOP}p3" "$MNT"
 echo "=> Inyectando el repositorio local en la imagen"
 SRC_DIR="$MNT/home/refugios/refugiOS-src"
 rm -rf "$SRC_DIR"
-mkdir -p "$SRC_DIR/scripts" "$SRC_DIR/logo"
+mkdir -p "$SRC_DIR/scripts" "$SRC_DIR/media/logo"
 cp "$REPO_DIR/install.sh" "$REPO_DIR/install.py" "$REPO_DIR/i18n.py" "$SRC_DIR/"
 cp "$REPO_DIR"/scripts/*.sh "$REPO_DIR"/scripts/*.py "$SRC_DIR/scripts/"
-cp "$REPO_DIR"/logo/fondo.png "$SRC_DIR/logo/" 2>/dev/null || true
+cp "$REPO_DIR"/media/logo/fondo.png "$SRC_DIR/media/logo/" 2>/dev/null || true
 chmod +x "$SRC_DIR/install.sh" "$SRC_DIR"/scripts/*.sh
 chown -R 1000:1000 "$SRC_DIR"
 

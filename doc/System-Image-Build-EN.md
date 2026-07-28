@@ -15,6 +15,9 @@ Unlike the traditional method based on a Xubuntu Live ISO with persistence, this
 
 To test the generated image in a virtual machine before flashing it to a USB, see the **[Virtualization Guide](Virtualization-Guide-EN.md)**.
 
+> [!TIP]
+> If you are going to **modify** the project scripts and not just build the image, the repository ships an automated check suite that verifies the build, the installation and the launchers without needing `sudo`. See the **[Automated Test Suite](Test-Suite-EN.md)**.
+
 ---
 
 ## 1. Prerequisites
@@ -305,7 +308,7 @@ This is the only metadata field that XFCE checks to consider a `.desktop` file a
 ### Workflow A: Prepare a Single USB Drive
 
 1. Build the image: `sudo bash scripts/build_refugios.sh 64G`
-2. Test booting in a virtual machine: see the **[Virtualization Guide](Virtualization-Guide-EN.md)** or use the quick script: `bash scripts/test_boot.sh 64G`
+2. Test booting in a virtual machine: see the **[Virtualization Guide](Virtualization-Guide-EN.md)** or use the quick script: `bash scripts/test_boot.sh -s 64G -l en`. For an unattended boot check, see the **[Automated Test Suite](Test-Suite-EN.md)**.
 3. If it boots correctly, flash to USB: `sudo dd if=refugios-base-64G.img of=/dev/sdX bs=4M status=progress conv=fsync`
 4. Boot from the USB and complete the installation.
 

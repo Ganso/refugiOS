@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-  <img src="logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
+  <img src="media/logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.22-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.23-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -203,6 +203,17 @@ Consulta el **[Roadmap y Aplicaciones](doc/Modulos-y-Roadmap-ES.md)** para ver e
 
 ## Historial de Versiones
 
+### [0.23] - 2026-07-28
+
+#### Añadido
+- **Carpeta [`media/`](media/README.md) con todo el material gráfico:** el logotipo en sus distintos formatos y cuarenta capturas de pantalla de las aplicaciones principales, en español y en inglés, tomadas sobre el sistema real.
+- **Documentación de la suite de tests en `doc/`**, en español e inglés, enlazada desde el índice de la wiki y desde las guías de construcción de imagen.
+
+#### Cambiado
+- **`logo/` pasa a ser `media/logo/`.** El instalador busca el fondo de escritorio en la ruta nueva y sigue aceptando la antigua en copias locales anteriores a esta versión.
+
+→ Consulta el [CHANGELOG.md](CHANGELOG.md) para el detalle completo de esta versión.
+
 ### [0.22] - 2026-07-28
 
 Revisión crítica de los scripts del proyecto centrada en errores que rompían el comportamiento de forma silenciosa. Todas las correcciones respetan el modelo de seguridad existente y la capacidad de funcionamiento sin conexión.
@@ -217,7 +228,7 @@ Revisión crítica de los scripts del proyecto centrada en errores que rompían 
 - **Otros:** `fetch_url()` sin timeout podía colgar el instalador indefinidamente; las versiones se comparaban como texto (2.9 por encima de 2.10); `sanitize_for_dialog()` no se aplicaba en los menús; el instalador terminaba con código 0 aunque fallaran módulos; y `scripts/test_boot.sh` nunca encontraba la imagen al pasarle un tamaño y pedía 8 GB de RAM fijos.
 
 #### Añadido
-- **Suite de tests automáticos (`tests/`):** Comprobación estática, tests unitarios de `install.py`, tests de los scripts Bash con dobles de los binarios externos, test del bootstrapper, test de bóvedas LUKS con ciclo completo y test de construcción de imagen con fallo inyectado. No requiere `sudo`: lo que necesita root se ejecuta en un contenedor Debian privilegiado. Se ejecuta con `bash tests/run_all.sh` y está documentada en [tests/README.md](tests/README.md).
+- **Suite de tests automáticos (`tests/`):** Comprobación estática, tests unitarios de `install.py`, tests de los scripts Bash con dobles de los binarios externos, test del bootstrapper, test de bóvedas LUKS con ciclo completo y test de construcción de imagen con fallo inyectado. No requiere `sudo`: lo que necesita root se ejecuta en un contenedor Debian privilegiado. Se ejecuta con `bash tests/run_all.sh` y está documentada en la **[Suite de Tests Automáticos](doc/Suite-de-Tests-ES.md)**.
 - **Verificación de arranque por captura de pantalla:** `tests/qemu_boot_check.py` arranca una imagen sin interfaz gráfica y toma capturas en los instantes indicados, para comprobar el arranque completo sin intervención manual.
 
 → Consulta el [CHANGELOG.md](CHANGELOG.md) para el detalle completo de esta versión.
@@ -245,6 +256,15 @@ Revisión crítica de los scripts del proyecto centrada en errores que rompían 
 </details>
 
 → Consulta el [CHANGELOG.md](CHANGELOG.md) para el historial completo de versiones.
+
+---
+
+## Material Gráfico
+
+La carpeta **[media/](media/README.md)** reúne todo el material gráfico del proyecto:
+
+*   **[Logotipo](media/logo/)** en PNG, PDF vectorial y fuente de Illustrator, más el fondo de escritorio que aplica el instalador. Diseño de [Felipe Monge "PlayOnRetro"](https://x.com/PlayOnRetro); cítalo siempre que lo uses.
+*   **[Capturas de pantalla](media/screenshots/README.md)** — cuarenta capturas de las aplicaciones principales funcionando, en español y en inglés, tomadas sobre el sistema real.
 
 ---
 

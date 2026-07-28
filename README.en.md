@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-  <img src="logo/refugiOS.png" alt="refugiOS logo" width="200"><br />
+  <img src="media/logo/refugiOS.png" alt="refugiOS logo" width="200"><br />
   <img src="https://img.shields.io/badge/Status-Development-green.svg" alt="Project Status">
-  <img src="https://img.shields.io/badge/Version-0.22-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.23-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/Paradigm-Offline_First-orange.svg" alt="Offline First">
   <img src="https://img.shields.io/badge/AI-Llamafile_(Local)-purple.svg" alt="Offline AI">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certified-red.svg" alt="Raspberry Pi">
@@ -203,6 +203,17 @@ See the **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md)** for the current
 
 ## Version History
 
+### [0.23] - 2026-07-28
+
+#### Added
+- **[`media/`](media/README.md) folder with all the graphic material:** the logo in its various formats and forty screenshots of the main applications, in Spanish and English, taken on the real system.
+- **Test suite documentation in `doc/`**, in Spanish and English, linked from the wiki index and from the system image build guides.
+
+#### Changed
+- **`logo/` becomes `media/logo/`.** The installer looks for the wallpaper at the new path and still accepts the old one in local copies from before this version.
+
+→ See [CHANGELOG.md](CHANGELOG.md) for the full detail of this version.
+
 ### [0.22] - 2026-07-28
 
 Critical review of the project scripts, focused on errors that broke behaviour silently. Every fix respects the existing security model and the ability to run without a connection.
@@ -217,7 +228,7 @@ Critical review of the project scripts, focused on errors that broke behaviour s
 - **Others:** `fetch_url()` had no timeout and could hang the installer forever; versions were compared as text (2.9 above 2.10); `sanitize_for_dialog()` was not applied in the menus; the installer exited with code 0 even when modules failed; and `scripts/test_boot.sh` never found the image when given a size and asked for a fixed 8 GB of RAM.
 
 #### Added
-- **Automated test suite (`tests/`):** Static checks, unit tests for `install.py`, tests for the Bash scripts using doubles of the external binaries, a bootstrapper test, a LUKS vault test with a full cycle, and an image build test with an injected failure. No `sudo` needed: whatever requires root runs in a privileged Debian container. Run it with `bash tests/run_all.sh`; documented in [tests/README.md](tests/README.md).
+- **Automated test suite (`tests/`):** Static checks, unit tests for `install.py`, tests for the Bash scripts using doubles of the external binaries, a bootstrapper test, a LUKS vault test with a full cycle, and an image build test with an injected failure. No `sudo` needed: whatever requires root runs in a privileged Debian container. Run it with `bash tests/run_all.sh`; documented in the **[Automated Test Suite](doc/Test-Suite-EN.md)**.
 - **Boot verification by screenshot:** `tests/qemu_boot_check.py` boots an image headless and captures the screen at the given moments, to verify a full boot without manual intervention.
 
 → See [CHANGELOG.md](CHANGELOG.md) for the full detail of this version.
@@ -245,6 +256,15 @@ Critical review of the project scripts, focused on errors that broke behaviour s
 </details>
 
 → See [CHANGELOG.md](CHANGELOG.md) for the full version history.
+
+---
+
+## Media
+
+The **[media/](media/README.md)** folder gathers all the project's graphic material:
+
+*   **[Logo](media/logo/)** in PNG, vector PDF and Illustrator source, plus the desktop wallpaper the installer applies. Designed by [Felipe Monge "PlayOnRetro"](https://x.com/PlayOnRetro); credit him whenever you use it.
+*   **[Screenshots](media/screenshots/README.md)** — forty screenshots of the main applications in use, in Spanish and English, taken on the real system.
 
 ---
 

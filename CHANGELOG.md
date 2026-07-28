@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23] - 2026-07-28
+
+### Añadido
+- **Carpeta `media/` con todo el material gráfico:** Reúne el logotipo en sus distintos formatos y una colección de **cuarenta capturas de pantalla** de las aplicaciones principales (instalador, Wikipedia en Kiwix, Organic Maps, asistente de IA local y gestor de bóvedas), veinte en español y veinte en inglés, tomadas sobre el sistema real arrancado en una máquina virtual a 1920×1080. Cada subcarpeta tiene su propio índice bilingüe, y `media/` se enlaza desde ambos README. La autoría del logotipo ([Felipe Monge "PlayOnRetro"](https://x.com/PlayOnRetro)) se acredita en cada punto donde se enlaza.
+- **Documentación de la suite de tests en `doc/`:** La guía de la suite pasa a formar parte de la documentación general del proyecto, en español ([Suite-de-Tests-ES.md](doc/Suite-de-Tests-ES.md)) e inglés ([Test-Suite-EN.md](doc/Test-Suite-EN.md)), enlazada desde el índice de la wiki y desde las guías de construcción de imagen, por ser un punto técnico que no afecta a todos los usuarios. `tests/README.md` queda como puntero a ambas.
+- **Resolución configurable en las pruebas de arranque:** `tests/qemu_boot_check.py` acepta `--size` y arranca la máquina virtual a 1920×1080 por defecto, en lugar del tamaño heredado del adaptador.
+
+### Cambiado
+- **`logo/` pasa a ser `media/logo/`:** El instalador busca el fondo de escritorio en la ruta nueva y sigue aceptando la antigua en copias locales del repositorio anteriores a esta versión. Los sistemas ya instalados con una versión previa del instalador no encontrarán el fondo remoto y simplemente lo omitirán, sin afectar a ninguna otra parte de la instalación.
+
 ## [0.22] - 2026-07-28
 
 Revisión crítica de los scripts del proyecto centrada en errores que rompían el
@@ -31,7 +41,7 @@ seguridad existente y la capacidad de funcionamiento sin conexión.
 - **QEMU pedía 8 GB de RAM fijos:** El arranque de prueba fallaba en equipos modestos, justo el hardware al que apunta el proyecto. La memoria se calcula ahora a partir de la disponible, acotada a [2G, 8G].
 
 ### Añadido
-- **Suite de tests automáticos (`tests/`):** Comprobación estática, tests unitarios de `install.py`, tests de los scripts Bash con dobles de los binarios externos, test del bootstrapper, test de bóvedas LUKS con ciclo completo y test de construcción de imagen con fallo inyectado. No requiere `sudo`: lo que necesita root se ejecuta en un contenedor Debian privilegiado. Se ejecuta con `bash tests/run_all.sh`.
+- **Suite de tests automáticos (`tests/`):** Comprobación estática, tests unitarios de `install.py`, tests de los scripts Bash con dobles de los binarios externos, test del bootstrapper, test de bóvedas LUKS con ciclo completo y test de construcción de imagen con fallo inyectado. No requiere `sudo`: lo que necesita root se ejecuta en un contenedor Debian privilegiado. Se ejecuta con `bash tests/run_all.sh` y está documentada en la [Suite de Tests Automáticos](doc/Suite-de-Tests-ES.md).
 - **Verificación de arranque por captura de pantalla:** `tests/qemu_boot_check.py` arranca una imagen construida sin interfaz gráfica y toma capturas en los instantes indicados, para comprobar el arranque completo sin intervención manual.
 - **Nuevas claves de i18n:** `fail_i18n`, `no_tty`, `ai_llamafile_missing`, `ai_waiting_server`, `ai_server_died`, `ai_server_timeout`, `setting_wallpaper` y `vault_error_password` (EN + ES). Un test falla ahora si alguna clave usada en el código carece de traducción.
 

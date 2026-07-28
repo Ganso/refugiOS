@@ -19,7 +19,7 @@ Welcome to **refugiOS**! We are glad you're here. This project is dedicated to d
 1. **Fork the repo.**
 2. **Create a branch:** `git checkout -b feature/your-feature-name`.
 3. **Commit messages:** Please write them in **English**.
-4. **Run the tests:** `bash tests/run_all.sh` before opening the PR (see [tests/README.md](tests/README.md)). If you fix a bug, add a test for it and check that it fails without your fix.
+4. **Run the tests:** `bash tests/run_all.sh` before opening the PR (see [doc/Test-Suite-EN.md](doc/Test-Suite-EN.md)). If you fix a bug, add a test for it and check that it fails without your fix.
 5. **Pull Request:** Link your PR to the corresponding Issue.
 6. **Code Language:** Please keep all code comments, variable names, and logic in **English** for international consistency.
 
@@ -40,6 +40,6 @@ Welcome to **refugiOS**! We are glad you're here. This project is dedicated to d
 1. **Haz un Fork del repositorio.**
 2. **Crea una rama:** `git checkout -b feature/nombre-de-tu-mejora`.
 3. **Mensajes de commit:** Por favor, escríbelos en **inglés**.
-4. **Ejecuta los tests:** `bash tests/run_all.sh` antes de abrir el PR (ver [tests/README.md](tests/README.md)). Si corriges un fallo, añade un test y comprueba que falla sin tu corrección.
+4. **Ejecuta los tests:** `bash tests/run_all.sh` antes de abrir el PR (ver [doc/Suite-de-Tests-ES.md](doc/Suite-de-Tests-ES.md)). Si corriges un fallo, añade un test y comprueba que falla sin tu corrección.
 5. **Pull Request:** Vincula tu PR al Issue correspondiente.
 6. **Idioma del código:** Por favor, mantén los comentarios del código, nombres de variables y lógica en **inglés** para mantener la consistencia internacional.

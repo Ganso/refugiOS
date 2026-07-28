@@ -1,7 +1,7 @@
 # Bienvenido a la Wiki de refugiOS / Welcome to the refugiOS Wiki
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Ganso/refugiOS/main/logo/refugiOS.png" alt="logo de refugiOS" width="300">
+  <img src="https://raw.githubusercontent.com/Ganso/refugiOS/main/media/logo/refugiOS.png" alt="logo de refugiOS" width="300">
 </p>
 
 > **refugiOS no es una distribución Linux al uso.** Es un sistema portátil que arranca desde un USB y funciona de forma completamente autónoma, sin instalar nada en el ordenador anfitrión.

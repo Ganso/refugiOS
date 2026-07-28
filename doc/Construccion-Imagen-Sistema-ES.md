@@ -15,6 +15,9 @@ A diferencia del método tradicional basado en una ISO Live de Xubuntu con persi
 
 Para probar la imagen generada en una máquina virtual antes de grabarla en un USB, consulta la **[Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES.md)**.
 
+> [!TIP]
+> Si vas a **modificar** los scripts del proyecto y no solo a construir la imagen, el repositorio incluye una suite de comprobación automática que verifica la construcción, la instalación y los lanzadores sin necesidad de `sudo`. Consulta la **[Suite de Tests Automáticos](Suite-de-Tests-ES.md)**.
+
 ---
 
 ## 1. Requisitos Previos
@@ -305,7 +308,7 @@ Este es el único campo de metadatos que XFCE verifica para considerar un archiv
 ### Flujo A: Preparar una única unidad USB
 
 1. Construye la imagen: `sudo bash scripts/build_refugios.sh 64G`
-2. Prueba el arranque en una máquina virtual: consulta la **[Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES.md)** o usa el script rápido: `bash scripts/test_boot.sh 64G`
+2. Prueba el arranque en una máquina virtual: consulta la **[Guía de Virtualización](Guia-Virtualizacion-y-Pendrive-ES.md)** o usa el script rápido: `bash scripts/test_boot.sh -s 64G -l es`. Para una verificación de arranque sin intervención manual, consulta la **[Suite de Tests Automáticos](Suite-de-Tests-ES.md)**.
 3. Si arranca correctamente, vuelca al USB: `sudo dd if=refugios-base-64G.img of=/dev/sdX bs=4M status=progress conv=fsync`
 4. Arranca desde el USB y completa la instalación.
 

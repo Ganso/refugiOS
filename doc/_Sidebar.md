@@ -12,6 +12,7 @@
     *   [Instalación en XUbuntu](Instalacion-Xubuntu-ES)
     *   [Instalación en Raspberry Pi](Instalacion-Raspberry-ES)
     *   [Construcción de Imagen de Sistema](Construccion-Imagen-Sistema-ES)
+    *   [Suite de Tests Automáticos](Suite-de-Tests-ES)
 *   **Fundamentos**
     *   [Visión y Experiencia](Vision-y-Experiencia-ES)
     *   [Arquitectura del Sistema](Arquitectura-ES)
@@ -34,6 +35,7 @@
     *   [XUbuntu Installation](Xubuntu-Installation-EN)
     *   [Raspberry Pi Installation](Raspberry-Pi-Installation-EN)
     *   [System Image Build](System-Image-Build-EN)
+    *   [Automated Test Suite](Test-Suite-EN)
 *   **Fundamentals**
     *   [Vision and User Experience](Vision-and-User-Experience-EN)
     *   [System Architecture](System-Architecture-EN)
