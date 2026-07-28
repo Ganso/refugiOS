@@ -9,7 +9,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="refugiOS logo" width="200"><br />
   <img src="https://img.shields.io/badge/Status-Development-green.svg" alt="Project Status">
-  <img src="https://img.shields.io/badge/Version-0.21-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.22-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/Paradigm-Offline_First-orange.svg" alt="Offline First">
   <img src="https://img.shields.io/badge/AI-Llamafile_(Local)-purple.svg" alt="Offline AI">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certified-red.svg" alt="Raspberry Pi">
@@ -203,6 +203,28 @@ See the **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md)** for the current
 
 ## Version History
 
+### [0.22] - 2026-07-28
+
+Critical review of the project scripts, focused on errors that broke behaviour silently. Every fix respects the existing security model and the ability to run without a connection.
+
+#### Fixed
+- **The image build treated a failing chroot as successful:** The `chroot` heredoc in `scripts/build_refugios.sh` had no `set -e`, so a failing `apt-get`, `grub-install` or `locale-gen` did not stop it and the build reported success while producing an image that does not boot. It now aborts on the first failure with a descriptive message. Leftovers from previous builds are also discarded, and `sync` runs before detaching the loop device.
+- **The vault password was never confirmed:** `cryptsetup luksFormat` ran with `--batch-mode`, which is precisely the flag that disables passphrase verification. The password was typed once and a typo made the vault permanently unrecoverable, with no warning.
+- **Large downloads could never finish on slow links:** The partial file was deleted on any failure, cancelling out resumption: a multi-gigabyte model restarted from zero every time. Partials are now kept, and the absolute `timeout` is no longer a limit on how long a legitimate download may take.
+- **"Developer Mode" had no effect:** Neither in `install.sh` (the `wget` calls overwrote the local copies) nor in `install.py` (`fetch_script` always downloaded from GitHub). Running the installer from a checkout actually tested the published code.
+- **The AI engine stayed resident in memory** after closing the launcher, and the browser opened against a dead port because of a fixed `sleep` too short to load a large model.
+- **The language chosen by the user was ignored:** `scripts/i18n.sh` read `~/.refugios_lang` and then `$LANG` always overrode it.
+- **Others:** `fetch_url()` had no timeout and could hang the installer forever; versions were compared as text (2.9 above 2.10); `sanitize_for_dialog()` was not applied in the menus; the installer exited with code 0 even when modules failed; and `scripts/test_boot.sh` never found the image when given a size and asked for a fixed 8 GB of RAM.
+
+#### Added
+- **Automated test suite (`tests/`):** Static checks, unit tests for `install.py`, tests for the Bash scripts using doubles of the external binaries, a bootstrapper test, a LUKS vault test with a full cycle, and an image build test with an injected failure. No `sudo` needed: whatever requires root runs in a privileged Debian container. Run it with `bash tests/run_all.sh`; documented in [tests/README.md](tests/README.md).
+- **Boot verification by screenshot:** `tests/qemu_boot_check.py` boots an image headless and captures the screen at the given moments, to verify a full boot without manual intervention.
+
+→ See [CHANGELOG.md](CHANGELOG.md) for the full detail of this version.
+
+<details>
+<summary><b>Previous versions</b></summary>
+
 ### [0.21] - 2026-06-30
 
 #### Fixed
@@ -219,6 +241,8 @@ See the **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md)** for the current
 
 #### Changed
 - **Error summary with dashes instead of bullets:** The list of failed components in the final message now uses `-` instead of `•` to avoid the `UnicodeEncodeError` with `dialog`.
+
+</details>
 
 → See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 

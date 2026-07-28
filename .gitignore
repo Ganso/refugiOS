@@ -61,6 +61,5 @@ refugios_vars.fd
 *.log
 scripts/*.log
 
-# Fichero de seguimiento temporal de la corrección de bugs críticos
-FIXPLAN-PROGRESS.md
+# Salida de los tests (capturas de QEMU, variables UEFI)
 tests/out/

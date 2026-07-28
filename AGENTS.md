@@ -19,7 +19,7 @@ Internet dependency.
   (Wikipedia tier, AI model, maps, etc.). After that, the device operates 100% offline.
 - **License:** GNU AGPL-3.0 (`LICENSE`).
 - **Status:** First Beta, actively developed.
-- **Current version:** `0.21` (see `CHANGELOG.md`). Versioning follows
+- **Current version:** `0.22` (see `CHANGELOG.md`). Versioning follows
   [Semantic Versioning](https://semver.org/spec/v2.0.0.html); the changelog follows
   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository:** `https://github.com/Ganso/refugiOS.git` (branch `main`).
@@ -53,6 +53,21 @@ refugiOS/
     ├── refugios-maps.sh      # Organic Maps launcher (RPi software-rendering hack)
     ├── refugios-vault.py     # LUKS vault manager (create/open/close/delete, TUI)
     └── test_boot.sh          # QEMU UEFI boot test for generated images
+└── tests/                    # Automated test suite (see tests/README.md)
+    ├── README.md             # How the tests work and how to run them
+    ├── run_all.sh            # Whole suite; --quick skips anything needing Docker
+    ├── run_in_container.sh   # Runs a command in the privileged Debian container
+    ├── docker/Dockerfile     # Test container (debootstrap, cryptsetup, shellcheck...)
+    ├── lint.sh               # bash -n + py_compile (+ shellcheck when available)
+    ├── unit_bash.sh          # i18n precedence, launchers, test_boot.sh arguments
+    ├── unit_install.py       # install.py internals (downloads, dialog, exit code...)
+    ├── test_install_sh.sh    # Bootstrapper: Developer Mode and validations
+    ├── test_vault.sh         # Real LUKS vaults: password verification + full cycle
+    ├── test_build.sh         # Real image build aborted on purpose inside the chroot
+    ├── luks_pty.py           # Drives cryptsetup over a real terminal
+    ├── qemu_boot_check.py    # Headless boot + screenshots at given moments
+    ├── qemu_ctl.py           # Controls a running VM (keys, text, clicks, screenshots)
+    └── prepare_e2e_image.sh  # Injects the local repo into an image for an E2E run
 ```
 
 ### Notable absences
@@ -60,9 +75,12 @@ refugiOS/
 There is **no** `package.json`, `requirements.txt`, `Makefile`, `pyproject.toml`,
 `setup.py`, `.github/workflows/`, CI configuration, `.opencode/`, `opencode.json`, or
 `CLAUDE.md`. Python dependencies are declared inline in `install.sh` /
-`build_refugios.sh` and installed via apt at runtime. There is **no automated test
-suite** (no pytest, no test framework) — testing is manual via `test_boot.sh` and
-`DEBUG=1` dry-runs.
+`build_refugios.sh` and installed via apt at runtime.
+
+There **is** an automated test suite under `tests/` (plain `unittest` + Bash, no test
+framework to install), but **no CI**: nothing runs it automatically, so run
+`bash tests/run_all.sh` yourself before proposing changes. Whatever needs root runs in a
+privileged Docker container, so `sudo` is never required. Read `tests/README.md` first.
 
 ### Gitignored artifacts (never commit)
 
@@ -154,7 +172,9 @@ XFCE desktop with installer launcher and welcome popup.
 - Auto-finds `refugios-base-*.img` in workspace, or accepts a size arg.
 - Detects OVMF firmware across distro-specific paths; creates writable
   `refugios_vars.fd` copy; detects KVM (`/dev/kvm`); 8 GB RAM, 2 CPUs, virtio VGA, NAT.
-- **Run:** `bash scripts/test_boot.sh [SIZE]`
+- **Run:** `bash scripts/test_boot.sh [-s SIZE] [-l LANG]` (the old positional
+  `test_boot.sh SIZE` still works; images are named `refugios-base-SIZE-LANG.img`).
+- RAM is derived from the host's available memory, clamped to [2G, 8G].
 
 ---
 
@@ -472,6 +492,14 @@ bash -n scripts/build_refugios.sh
 bash -n scripts/test_boot.sh
 ```
 
+### Automated tests
+```bash
+bash tests/run_all.sh          # whole suite (needs Docker; ~3-4 min)
+bash tests/run_all.sh --quick  # only what runs on the host
+```
+See `tests/README.md` for running individual tests, building images without `sudo`, and
+driving a full installation inside QEMU.
+
 ### Dry-run / debug
 - `DEBUG=1 python3 install.py` (or `DEBUG=1 ... install.sh`) — dry-run simulation: no
   system changes, no downloads, exits before execution phases.
@@ -528,8 +556,12 @@ The project follows **Keep a Changelog** + **Semantic Versioning**. On a release
 | `scripts/refugios-maps.sh` | Organic Maps launcher | ~19 |
 | `scripts/build_refugios.sh` | Image builder (debootstrap) | ~577 |
 | `scripts/test_boot.sh` | QEMU UEFI boot test | ~135 |
-| `scripts/i18n.sh` | Bash localization | ~102 |
+| `scripts/i18n.sh` | Bash localization | ~120 |
 | `build_all.sh` | Build both ES+EN images | 2 |
+| `tests/run_all.sh` | Entry point for the whole test suite | ~44 |
+| `tests/unit_install.py` | Unit tests for `install.py` | ~290 |
+| `tests/unit_bash.sh` | Tests for the Bash scripts | ~219 |
+| `tests/README.md` | How the tests work and how to run them | ~250 |
 
 ---
 
@@ -543,8 +575,10 @@ The project follows **Keep a Changelog** + **Semantic Versioning**. On a release
 4. **i18n every user-facing string** — add keys to both `en` and `es` in `i18n.py`
    (and `i18n.sh` if bash).
 5. **Wrap dialog text in `sanitize_for_dialog()`** if it could contain non-ASCII.
-6. **Verify syntax** with `python3 -m py_compile` / `bash -n` after editing.
-7. **Update `CHANGELOG.md`** and **both READMEs** (version badge + history section)
+6. **Verify syntax** with `python3 -m py_compile` / `bash -n` after editing, and run
+   `bash tests/run_all.sh` before proposing the change.
+7. **Add a test** for any behaviour you fix, and check it fails without your fix.
+8. **Update `CHANGELOG.md`** and **both READMEs** (version badge + history section)
    when releasing a new version.
 8. **Never commit unless explicitly asked.** Stage only intended files; never commit
    secrets or gitignored binaries.

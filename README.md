@@ -9,7 +9,7 @@
 <p align="center">
   <img src="logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.21-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.22-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -203,6 +203,28 @@ Consulta el **[Roadmap y Aplicaciones](doc/Modulos-y-Roadmap-ES.md)** para ver e
 
 ## Historial de Versiones
 
+### [0.22] - 2026-07-28
+
+Revisión crítica de los scripts del proyecto centrada en errores que rompían el comportamiento de forma silenciosa. Todas las correcciones respetan el modelo de seguridad existente y la capacidad de funcionamiento sin conexión.
+
+#### Corregido
+- **La construcción de la imagen daba por bueno un chroot fallido:** El heredoc de `chroot` en `scripts/build_refugios.sh` no llevaba `set -e`, así que un fallo de `apt-get`, `grub-install` o `locale-gen` no lo detenía y el build informaba de éxito generando una imagen que no arranca. Ahora aborta al primer fallo con un mensaje descriptivo. También se descartan los restos de construcciones anteriores y se hace `sync` antes de desasociar el dispositivo loop.
+- **La contraseña de las bóvedas no se confirmaba:** `cryptsetup luksFormat` se invocaba con `--batch-mode`, que es precisamente la opción que desactiva la verificación. El usuario tecleaba la contraseña una sola vez y, ante una errata, la bóveda quedaba inaccesible para siempre sin ningún aviso.
+- **Las descargas grandes no podían completarse en conexiones lentas:** Se borraba el fichero parcial ante cualquier fallo, lo que anulaba la reanudación: un modelo de varios GB reiniciaba desde cero en cada intento. Los parciales se conservan ahora y el `timeout` absoluto deja de ser un límite a la duración legítima de la descarga.
+- **El "Developer Mode" no tenía ningún efecto:** Ni en `install.sh` (los `wget` sobrescribían las copias locales) ni en `install.py` (`fetch_script` descargaba siempre desde GitHub). Ejecutar el instalador desde una copia del repositorio probaba en realidad el código publicado.
+- **El motor de IA quedaba consumiendo memoria** al cerrar el lanzador, y el navegador se abría contra un puerto muerto porque se esperaba un `sleep` fijo insuficiente para cargar un modelo grande.
+- **El idioma elegido por el usuario se ignoraba:** `scripts/i18n.sh` leía `~/.refugios_lang` y a continuación `$LANG` lo sobrescribía siempre.
+- **Otros:** `fetch_url()` sin timeout podía colgar el instalador indefinidamente; las versiones se comparaban como texto (2.9 por encima de 2.10); `sanitize_for_dialog()` no se aplicaba en los menús; el instalador terminaba con código 0 aunque fallaran módulos; y `scripts/test_boot.sh` nunca encontraba la imagen al pasarle un tamaño y pedía 8 GB de RAM fijos.
+
+#### Añadido
+- **Suite de tests automáticos (`tests/`):** Comprobación estática, tests unitarios de `install.py`, tests de los scripts Bash con dobles de los binarios externos, test del bootstrapper, test de bóvedas LUKS con ciclo completo y test de construcción de imagen con fallo inyectado. No requiere `sudo`: lo que necesita root se ejecuta en un contenedor Debian privilegiado. Se ejecuta con `bash tests/run_all.sh` y está documentada en [tests/README.md](tests/README.md).
+- **Verificación de arranque por captura de pantalla:** `tests/qemu_boot_check.py` arranca una imagen sin interfaz gráfica y toma capturas en los instantes indicados, para comprobar el arranque completo sin intervención manual.
+
+→ Consulta el [CHANGELOG.md](CHANGELOG.md) para el detalle completo de esta versión.
+
+<details>
+<summary><b>Versiones anteriores</b></summary>
+
 ### [0.21] - 2026-06-30
 
 #### Corregido
@@ -219,6 +241,8 @@ Consulta el **[Roadmap y Aplicaciones](doc/Modulos-y-Roadmap-ES.md)** para ver e
 
 #### Cambiado
 - **Resumen de errores con guiones en vez de bullets:** La lista de componentes fallidos en el mensaje final usa ahora `-` en lugar de `•` para evitar el `UnicodeEncodeError` con `dialog`.
+
+</details>
 
 → Consulta el [CHANGELOG.md](CHANGELOG.md) para el historial completo de versiones.
 
