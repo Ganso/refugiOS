@@ -60,3 +60,7 @@ Desktop.ini
 refugios_vars.fd
 *.log
 scripts/*.log
+
+# Fichero de seguimiento temporal de la corrección de bugs críticos
+FIXPLAN-PROGRESS.md
+tests/out/
