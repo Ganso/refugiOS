@@ -170,6 +170,12 @@ cd "$AI_DIR"
 # Launch Llamafile
 # ============================================================================
 
+if [ ! -x "$AI_DIR/llamafile" ]; then
+    dialog --msgbox "$(t ai_llamafile_missing)" 10 60
+    clear
+    exit 1
+fi
+
 NGL_FLAG=""
 if [ "$VRAM_MB" -gt 0 ]; then
     # Dedicated GPU available: full offloading
@@ -179,13 +185,45 @@ elif ! grep -q avx2 /proc/cpuinfo; then
     NGL_FLAG="-ngl 0"
 fi
 
-# Start llamafile server on port 8080
+AI_PORT="${REFUGIOS_AI_PORT:-8080}"
+AI_URL="http://localhost:${AI_PORT}"
+
+# Start llamafile server
 ./llamafile -m "$SELECTED_SYMLINK" --ctx-size 4096 $NGL_FLAG --server &
 LLAMA_PID=$!
-sleep 5
+
+# Never leave the model resident in RAM if this script goes away
+cleanup_llama() {
+    kill "$LLAMA_PID" 2>/dev/null
+    wait "$LLAMA_PID" 2>/dev/null
+}
+trap cleanup_llama EXIT INT TERM
+
+# Loading a multi-gigabyte model from a USB drive can take minutes: wait for the
+# server to actually answer before opening the browser.
+AI_WAIT_SECONDS="${REFUGIOS_AI_WAIT:-600}"
+echo "$(t ai_waiting_server)"
+SERVER_READY=0
+DEADLINE=$((SECONDS + AI_WAIT_SECONDS))
+while [ "$SECONDS" -lt "$DEADLINE" ]; do
+    if ! kill -0 "$LLAMA_PID" 2>/dev/null; then
+        echo "$(t ai_server_died)"
+        exit 1
+    fi
+    if curl -s -o /dev/null --max-time 1 "$AI_URL"; then
+        SERVER_READY=1
+        break
+    fi
+    sleep 1
+done
+
+if [ "$SERVER_READY" -ne 1 ]; then
+    echo "$(t ai_server_timeout)"
+    exit 1
+fi
 
 # Open browser to AI chat interface
-epiphany-browser --new-window http://localhost:8080 2>/dev/null || xdg-open http://localhost:8080 2>/dev/null
+epiphany-browser --new-window "$AI_URL" 2>/dev/null || xdg-open "$AI_URL" 2>/dev/null
 
 echo "$(t ai_purge_notice)"
 wait $LLAMA_PID
