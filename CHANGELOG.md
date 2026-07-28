@@ -5,6 +5,36 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22] - 2026-07-28
+
+Revisión crítica de los scripts del proyecto centrada en errores que rompían el
+comportamiento de forma silenciosa. Todas las correcciones respetan el modelo de
+seguridad existente y la capacidad de funcionamiento sin conexión.
+
+### Corregido
+- **La construcción de la imagen daba por bueno un chroot fallido:** El heredoc de `chroot` en `scripts/build_refugios.sh` se ejecutaba con `set -x` pero sin `set -e`, así que un fallo de `apt-get`, `grub-install` o `locale-gen` no lo detenía: continuaba hasta `apt-get clean`, cuyo código 0 se propagaba al script exterior. El build informaba de éxito y generaba una imagen que no arranca. Ahora el chroot aborta al primer fallo, su código de salida se comprueba explícitamente y el build termina con un mensaje descriptivo.
+- **Restos de construcciones anteriores en la imagen:** `truncate` no vacía un fichero preexistente del mismo tamaño, por lo que se reparticionaba sobre el contenido previo. La imagen se elimina ahora antes de crearla, se hace `sync` antes de desasociar el dispositivo loop y se desmonta cualquier resto de un build interrumpido antes de empezar.
+- **El "Developer Mode" de `install.sh` no tenía ningún efecto:** Las copias locales de `i18n.sh`, `i18n.py` e `install.py` se copiaban y acto seguido se sobrescribían con `wget` desde GitHub, de modo que los cambios locales solo podían probarse sin conexión a internet. Ahora, cuando el instalador se lanza desde una copia del repositorio, los ficheros locales tienen prioridad y no se descarga nada.
+- **La contraseña de las bóvedas no se confirmaba:** `cryptsetup luksFormat` se invocaba con `--batch-mode`, que es precisamente la opción que desactiva la verificación de la contraseña. El usuario la tecleaba una sola vez y, ante una errata, la bóveda quedaba inaccesible para siempre sin ningún aviso. Se ha añadido `--verify-passphrase`, que anula esa desactivación manteniendo suprimida la confirmación de sobrescritura.
+- **Las descargas grandes no podían completarse en conexiones lentas:** `download_with_aria2()` borraba el fichero parcial ante cualquier fallo, lo que anulaba `--continue=true`: un modelo de varios GB reiniciaba desde cero en cada intento y nunca terminaba. Los parciales se conservan ahora para poder reanudar, y el `timeout` absoluto pasa a ser solo una red de seguridad frente a una congelación, no un límite a la duración legítima de la descarga. Los ficheros pequeños mantienen el comportamiento anterior para que un script truncado no se confunda con uno válido.
+- **El instalador podía quedarse colgado indefinidamente:** `fetch_url()` no tenía timeout, así que un mirror que aceptaba la conexión sin responder bloqueaba la instalación para siempre.
+- **Selección de versiones por orden alfabético:** Tanto `install.py` (AppImage de Kiwix) como `scripts/refugios-kiwix.sh` comparaban versiones como texto, eligiendo la 2.9 por encima de la 2.10. Ahora se comparan numéricamente. Además `refugios-kiwix.sh` descarta los AppImage sin permiso de ejecución.
+- **`UnicodeEncodeError` en los menús del instalador:** `sanitize_for_dialog()` no se aplicaba en `multi_select_menu()`, `single_select_menu()` ni `simple_question()`, que son precisamente los que reciben las etiquetas traducidas de los módulos. Ahora todo texto pasa por el saneado antes de llegar a `dialog`.
+- **El instalador terminaba con código 0 aunque fallaran módulos:** El wrapper del escritorio registraba «finalizado con código: 0» incluso con varios componentes fallidos. Ahora se devuelve un código distinto de cero cuando hay errores.
+- **El idioma elegido por el usuario se ignoraba:** `scripts/i18n.sh` leía `~/.refugios_lang` y a continuación `$LANG` lo sobrescribía siempre. Ahora la elección persistida tiene prioridad y `$LANG` solo se consulta mientras no haya ninguna guardada. Además la función `t()` y sus cadenas se exportan, para que los lanzadores hijos muestren traducciones reales en lugar de la clave.
+- **El motor de IA quedaba consumiendo memoria:** Al cerrar el lanzador, `llamafile` seguía residente; la única mitigación era un mensaje pidiendo al usuario que cerrase la ventana. Ahora un `trap` lo detiene siempre.
+- **El navegador de la IA se abría contra un puerto muerto:** Se esperaba un `sleep 5` fijo, insuficiente para cargar un modelo grande desde una unidad lenta. Ahora se sondea el servidor y el navegador solo se abre cuando responde. Si `llamafile` no está instalado se avisa con un diálogo en vez de fallar con «No such file or directory».
+- **`scripts/test_boot.sh` no encontraba la imagen:** Componía `refugios-base-TAMAÑO.img` mientras que el generador crea `refugios-base-TAMAÑO-IDIOMA.img`, así que pasar un tamaño nunca funcionaba. Acepta ahora `-s` y `-l` como `build_refugios.sh`, manteniendo la forma posicional antigua.
+- **QEMU pedía 8 GB de RAM fijos:** El arranque de prueba fallaba en equipos modestos, justo el hardware al que apunta el proyecto. La memoria se calcula ahora a partir de la disponible, acotada a [2G, 8G].
+
+### Añadido
+- **Suite de tests automáticos (`tests/`):** Comprobación estática, tests unitarios de `install.py`, tests de los scripts Bash con dobles de los binarios externos, test del bootstrapper, test de bóvedas LUKS con ciclo completo y test de construcción de imagen con fallo inyectado. No requiere `sudo`: lo que necesita root se ejecuta en un contenedor Debian privilegiado. Se ejecuta con `bash tests/run_all.sh`.
+- **Verificación de arranque por captura de pantalla:** `tests/qemu_boot_check.py` arranca una imagen construida sin interfaz gráfica y toma capturas en los instantes indicados, para comprobar el arranque completo sin intervención manual.
+- **Nuevas claves de i18n:** `fail_i18n`, `no_tty`, `ai_llamafile_missing`, `ai_waiting_server`, `ai_server_died` y `ai_server_timeout` (EN + ES).
+
+### Eliminado
+- **Variable `USER_PASS` muerta** en `scripts/build_refugios.sh`: el usuario se crea con `passwd -d` y la variable no se usaba en ninguna parte.
+
 ## [0.21] - 2026-06-30
 
 ### Corregido
