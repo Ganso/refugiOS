@@ -33,7 +33,6 @@ IMG_NAME="refugios-base-${IMG_SIZE}-${REFUGIOS_LANG}.img"
 MNT_DIR="/mnt/refugios_build"
 DEBIAN_RELEASE="trixie"
 USER_NAME="refugios"
-USER_PASS="refugios"
 
 # Redirigir toda la salida a consola Y archivo de log
 exec > >(tee -i "$LOG_FILE") 2>&1
@@ -123,19 +122,24 @@ fi
 
 LOOP_DEV=""
 
+# Desmonta cualquier resto de un build anterior (o del actual, al terminar)
+unmount_all() {
+    for mp in "$MNT_DIR/dev/pts" "$MNT_DIR/dev" "$MNT_DIR/sys" "$MNT_DIR/proc" "$MNT_DIR/run" "$MNT_DIR/boot/efi" "$MNT_DIR"; do
+        while mountpoint -q "$mp" 2>/dev/null; do
+            echo "Desmontando $mp..."
+            umount "$mp" || umount -lf "$mp" || break
+        done
+    done
+}
+
 # Función de limpieza robusta (trap)
 cleanup() {
     local exit_code=$?
     echo "=> Realizando limpieza de montajes y dispositivos..."
-    
-    # Desmontar en orden inverso
-    for mp in "$MNT_DIR/dev/pts" "$MNT_DIR/dev" "$MNT_DIR/sys" "$MNT_DIR/proc" "$MNT_DIR/run" "$MNT_DIR/boot/efi" "$MNT_DIR"; do
-        if mountpoint -q "$mp" 2>/dev/null; then
-            echo "Desmontando $mp..."
-            umount "$mp" || umount -lf "$mp" || true
-        fi
-    done
-    
+
+    sync
+    unmount_all
+
     # Desasociar dispositivo loop
     if [ -n "$LOOP_DEV" ]; then
         if losetup -a | grep -q "$LOOP_DEV"; then
@@ -143,7 +147,7 @@ cleanup() {
             losetup -d "$LOOP_DEV" || true
         fi
     fi
-    
+
     if [ $exit_code -ne 0 ]; then
         echo "=> ERROR: La construcción de la imagen falló."
     fi
@@ -157,40 +161,44 @@ apt-get update
 apt-get install -y debootstrap parted dosfstools e2fsprogs
 
 # 2. Crear el archivo de imagen esparso (rápido)
+# Se elimina cualquier imagen previa: 'truncate' sobre un fichero del mismo tamaño no lo
+# vacía, y se acabaría particionando sobre los restos de una construcción anterior.
 echo "=> Creando imagen de ${IMG_SIZE}..."
-truncate -s $IMG_SIZE $IMG_NAME
+rm -f "$IMG_NAME"
+truncate -s "$IMG_SIZE" "$IMG_NAME"
 
 # 3. Particionar la imagen (GPT: BIOS Boot + EFI + Root)
 echo "=> Particionando..."
-parted -s $IMG_NAME mklabel gpt
-parted -s $IMG_NAME mkpart BIOS_BOOT 1MiB 2MiB
-parted -s $IMG_NAME set 1 bios_grub on
-parted -s $IMG_NAME mkpart EFI fat32 2MiB 514MiB
-parted -s $IMG_NAME set 2 esp on
-parted -s $IMG_NAME mkpart ROOT ext4 514MiB 100%
+parted -s "$IMG_NAME" mklabel gpt
+parted -s "$IMG_NAME" mkpart BIOS_BOOT 1MiB 2MiB
+parted -s "$IMG_NAME" set 1 bios_grub on
+parted -s "$IMG_NAME" mkpart EFI fat32 2MiB 514MiB
+parted -s "$IMG_NAME" set 2 esp on
+parted -s "$IMG_NAME" mkpart ROOT ext4 514MiB 100%
 
 # 4. Mapear la imagen a dispositivos loop
-LOOP_DEV=$(losetup -Pf --show $IMG_NAME)
+LOOP_DEV=$(losetup -Pf --show "$IMG_NAME")
 LOOP_EFI="${LOOP_DEV}p2"
 LOOP_ROOT="${LOOP_DEV}p3"
 
 echo "=> Formateando particiones..."
-mkfs.vfat -F32 $LOOP_EFI
-mkfs.ext4 -F $LOOP_ROOT
+mkfs.vfat -F32 "$LOOP_EFI"
+mkfs.ext4 -F "$LOOP_ROOT"
 
 # Obtener UUIDs para fstab
-UUID_EFI=$(blkid -s UUID -o value $LOOP_EFI)
-UUID_ROOT=$(blkid -s UUID -o value $LOOP_ROOT)
+UUID_EFI=$(blkid -s UUID -o value "$LOOP_EFI")
+UUID_ROOT=$(blkid -s UUID -o value "$LOOP_ROOT")
 
-# 5. Montar sistemas de archivos
-mkdir -p $MNT_DIR
-mount $LOOP_ROOT $MNT_DIR
-mkdir -p $MNT_DIR/boot/efi
-mount $LOOP_EFI $MNT_DIR/boot/efi
+# 5. Montar sistemas de archivos (descartando restos de un build interrumpido)
+mkdir -p "$MNT_DIR"
+unmount_all
+mount "$LOOP_ROOT" "$MNT_DIR"
+mkdir -p "$MNT_DIR/boot/efi"
+mount "$LOOP_EFI" "$MNT_DIR/boot/efi"
 
 # 6. Instalar el sistema base con debootstrap
 echo "=> Ejecutando debootstrap (esto llevará unos minutos)..."
-debootstrap --arch=amd64 $DEBIAN_RELEASE $MNT_DIR http://deb.debian.org/debian/
+debootstrap --arch=amd64 $DEBIAN_RELEASE "$MNT_DIR" http://deb.debian.org/debian/
 
 # Generar /etc/fstab para evitar advertencias de UUIDs y asegurar montajes correctos en arranque
 cat << FSTAB > $MNT_DIR/etc/fstab
@@ -200,16 +208,21 @@ UUID=$UUID_EFI   /boot/efi  vfat  umask=0077          0  2
 FSTAB
 
 # 7. Preparar el entorno chroot
-mount --bind /dev $MNT_DIR/dev
-mount --bind /dev/pts $MNT_DIR/dev/pts
-mount --bind /proc $MNT_DIR/proc
-mount --bind /sys $MNT_DIR/sys
-mount --bind /run $MNT_DIR/run
+mount --bind /dev "$MNT_DIR/dev"
+mount --bind /dev/pts "$MNT_DIR/dev/pts"
+mount --bind /proc "$MNT_DIR/proc"
+mount --bind /sys "$MNT_DIR/sys"
+mount --bind /run "$MNT_DIR/run"
 
 echo "=> Configurando el sistema dentro del chroot..."
 
 # 8. Ejecutar comandos DENTRO del chroot
-chroot $MNT_DIR /bin/bash <<EOF
+# 'set -e' es imprescindible: sin él un fallo de apt-get o grub-install no detiene el
+# heredoc, el chroot termina con el código del último comando y el build se da por bueno
+# generando una imagen que no arranca.
+CHROOT_STATUS=0
+chroot "$MNT_DIR" /bin/bash <<EOF || CHROOT_STATUS=$?
+set -e
 set -x
 
 # Forzar locale C durante toda la instalación para evitar warnings
@@ -561,17 +574,28 @@ chmod +x /etc/xdg/autostart/refugios-welcome.desktop
 apt-get clean
 EOF
 
+if [ "$CHROOT_STATUS" -ne 0 ]; then
+    echo "=========================================================="
+    echo " ERROR: La configuración dentro del chroot falló (código $CHROOT_STATUS)."
+    echo " La imagen $IMG_NAME está incompleta y no debe usarse."
+    echo " Revisa el log: $LOG_FILE"
+    echo "=========================================================="
+    exit 1
+fi
+
 # 9. Desmontar y limpiar
 echo "=> Limpiando y desmontando de forma normal..."
-umount $MNT_DIR/sys
-umount $MNT_DIR/proc
-umount $MNT_DIR/run
-umount $MNT_DIR/dev/pts
-umount $MNT_DIR/dev
-umount $MNT_DIR/boot/efi
-umount $MNT_DIR
+sync
+umount "$MNT_DIR/sys"
+umount "$MNT_DIR/proc"
+umount "$MNT_DIR/run"
+umount "$MNT_DIR/dev/pts"
+umount "$MNT_DIR/dev"
+umount "$MNT_DIR/boot/efi"
+umount "$MNT_DIR"
 
-losetup -d $LOOP_DEV
+sync
+losetup -d "$LOOP_DEV"
 
 echo "=> ¡Imagen $IMG_NAME generada con éxito!"
 echo "=> Log de construcción: $LOG_FILE"
