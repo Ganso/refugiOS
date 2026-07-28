@@ -369,7 +369,8 @@ def op_create(d):
     # without it a typo in the password makes the vault unrecoverable forever.
     if not run_cmd(f"sudo cryptsetup luksFormat --batch-mode --verify-passphrase \"{vault_file}\""):
         os.remove(vault_file)
-        d.msgbox(i18n.T('vault_error_create'), title=i18n.T('error'))
+        # La causa habitual aqui es que las dos contrasenas no coincidiesen
+        d.msgbox(i18n.T('vault_error_password'), title=i18n.T('error'))
         return
 
     if not run_cmd(f"sudo cryptsetup open \"{vault_file}\" {mapper}"):
