@@ -589,7 +589,36 @@ the user for it — do not guess or look elsewhere.
 
 9. **Stale files on the server.** If the published names changed, the previous files stay
    behind and nothing links to them. **Ask the user before deleting anything remote** —
-   the deletion is irreversible and is theirs to authorize.
+   the deletion is irreversible and is theirs to authorize. Verify the local checksums
+   (`sha256sum -c SHA256SUMS.txt`) before deleting the corresponding local copies.
+
+10. **Redirect the retired URLs — do not just delete them.** Old links keep circulating in
+    forums, bookmarks and articles. `/refugios/.htaccess` on the server holds this, and it
+    must be extended whenever a published filename changes:
+
+    ```apache
+    Options -MultiViews
+    Redirect 301 /refugios-base-16G-es.img /refugios-base-16G-es.img.zip
+    Redirect 301 /refugios-base-16G-en.img /refugios-base-16G-en.img.zip
+    ```
+
+    `Options -MultiViews` is not cosmetic. Apache's content negotiation is enabled on that
+    host, so after renaming `…-es.img` to `…-es.img.zip` a request for the old name kept
+    answering **200 with the ZIP bytes under the `.img` name**. Anyone following an old
+    link downloaded a ZIP disguised as a disk image, flashed it, and got a USB that does
+    not boot with no hint as to why. With MultiViews off the negotiation stops (it drops
+    to `300 Multiple Choices`), and the explicit `Redirect 301` then sends the request to
+    the real file, which the browser saves under its correct name.
+
+    Verify all three behaviours after uploading the file — and check for a `500`, which
+    would mean the host does not allow `Options` in `.htaccess`; if that happens, remove
+    the file immediately:
+
+    ```bash
+    curl -sI https://refugios.ganso.org/refugios-base-16G-es.img.zip | head -1   # 200
+    curl -sI https://refugios.ganso.org/refugios-base-16G-es.img | head -2       # 301 + Location
+    curl -sI https://refugios.ganso.org/.htaccess | head -1                      # 403
+    ```
 
 ---
 
