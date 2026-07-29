@@ -9,7 +9,7 @@
 <p align="center">
   <img src="media/logo/refugiOS.png" alt="refugiOS logo" width="200"><br />
   <img src="https://img.shields.io/badge/Status-Development-green.svg" alt="Project Status">
-  <img src="https://img.shields.io/badge/Version-0.23-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.24-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/Paradigm-Offline_First-orange.svg" alt="Offline First">
   <img src="https://img.shields.io/badge/AI-Llamafile_(Local)-purple.svg" alt="Offline AI">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certified-red.svg" alt="Raspberry Pi">
@@ -39,10 +39,10 @@ The easiest way to get refugiOS is to download the ready-made image, flash it to
 
 | Language | Download | Size |
 | :--- | :--- | :--- |
-| 🇬🇧🇺🇸 **English** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 4.0 GB compressed (16 GB once extracted) |
-| 🇪🇸 **Spanish** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 3.7 GB compressed (16 GB once extracted) |
+| 🇬🇧🇺🇸 **English** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 3.9 GB compressed (16 GB once extracted) |
+| 🇪🇸 **Spanish** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 4.0 GB compressed (16 GB once extracted) |
 
-> **Images last updated: 28 July 2026** (version 0.23).
+> **Images last updated: 29 July 2026** (version 0.24). If you downloaded an image before this date, replace it: the ones published on the 28th did not expand the partition to the size of the USB drive.
 
 Extract the `.zip` before flashing it: on Windows, right-click → *Extract All*; on Linux or macOS, `unzip refugios-base-16G-en.img.zip`. You will get the `.img` file that goes onto the USB drive.
 

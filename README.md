@@ -9,7 +9,7 @@
 <p align="center">
   <img src="media/logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.23-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.24-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -39,10 +39,10 @@ La forma más fácil de tener refugiOS es descargar la imagen ya preparada, grab
 
 | Idioma | Descarga | Tamaño |
 | :--- | :--- | :--- |
-| 🇪🇸 **Español** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 3,7 GB comprimido (16 GB al descomprimir) |
-| 🇬🇧🇺🇸 **Inglés** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 4,0 GB comprimido (16 GB al descomprimir) |
+| 🇪🇸 **Español** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 4,0 GB comprimido (16 GB al descomprimir) |
+| 🇬🇧🇺🇸 **Inglés** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 3,9 GB comprimido (16 GB al descomprimir) |
 
-> **Última actualización de las imágenes: 28 de julio de 2026** (versión 0.23).
+> **Última actualización de las imágenes: 29 de julio de 2026** (versión 0.24). Si descargaste una imagen anterior a esta fecha, sustitúyela: las publicadas el día 28 no expandían la partición al tamaño del pendrive.
 
 Descomprime el `.zip` antes de grabarlo: en Windows, clic derecho → *Extraer todo*; en Linux o macOS, `unzip refugios-base-16G-es.img.zip`. Obtendrás el fichero `.img` que se graba en el USB.
 

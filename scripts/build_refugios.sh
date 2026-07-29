@@ -396,6 +396,12 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EXPAND_SVC
 systemctl enable refugios-expand.service
+# El enlace es lo único que hace que el disco se expanda al tamaño real del
+# dispositivo. Se comprueba y se crea a mano si falta: sin él la imagen arranca
+# con normalidad y el usuario no tiene forma de saber que se ha quedado en 16 GB.
+WANTS=/etc/systemd/system/multi-user.target.wants
+mkdir -p \$WANTS
+[ -L \$WANTS/refugios-expand.service ] || ln -s /etc/systemd/system/refugios-expand.service \$WANTS/refugios-expand.service
 
 # Inyectar wrapper para comprobación de conexión antes de instalar
 cat << 'WRAPPER_SCRIPT' > /usr/local/bin/refugios-install-wrapper.sh
@@ -572,6 +578,7 @@ chmod +x /etc/xdg/autostart/refugios-welcome.desktop
 
 # Limpieza de apt
 apt-get clean
+sync
 EOF
 
 if [ "$CHROOT_STATUS" -ne 0 ]; then
@@ -593,6 +600,65 @@ umount "$MNT_DIR/dev/pts"
 umount "$MNT_DIR/dev"
 umount "$MNT_DIR/boot/efi"
 umount "$MNT_DIR"
+sync
+
+# 10. Dejar el sistema de ficheros comprobado y limpio.
+# Si se distribuye con inconsistencias, el primer arranque en el equipo del usuario
+# se detiene en un initramfs pidiendo un fsck manual, y ahí ya no hay escritorio,
+# ni traducciones, ni forma de que alguien sin experiencia siga adelante.
+echo "=> Comprobando el sistema de ficheros de la imagen..."
+FSCK_STATUS=0
+e2fsck -fy "$LOOP_ROOT" || FSCK_STATUS=$?
+# 0 = sin errores, 1 = corregidos; a partir de 2 la imagen no es utilizable
+if [ "$FSCK_STATUS" -ge 2 ]; then
+    echo "ERROR: el sistema de ficheros de la imagen tiene errores que e2fsck no ha podido corregir (código $FSCK_STATUS)."
+    exit 1
+fi
+if [ "$FSCK_STATUS" -eq 1 ]; then
+    echo "AVISO: e2fsck ha tenido que corregir el sistema de ficheros de la imagen."
+fi
+
+# 11. Verificar que la imagen contiene todo lo que este script debía dejar dentro.
+# Un fallo silencioso aquí se traduce en una imagen que arranca con normalidad pero a
+# la que le falta algo esencial, como el servicio que expande el disco al tamaño real
+# del dispositivo: el usuario no tiene forma de darse cuenta hasta que le falta espacio.
+echo "=> Verificando el contenido de la imagen..."
+VERIFY_DIR="${MNT_DIR}_verify"
+mkdir -p "$VERIFY_DIR"
+mount -o ro "$LOOP_ROOT" "$VERIFY_DIR"
+
+MISSING=""
+for artefacto in \
+    /usr/local/bin/refugios-expand.sh \
+    /etc/systemd/system/refugios-expand.service \
+    /etc/systemd/system/multi-user.target.wants/refugios-expand.service \
+    /usr/local/bin/refugios-install-wrapper.sh \
+    /usr/local/bin/refugios-trust-launcher.sh \
+    /usr/local/bin/refugios-welcome.sh \
+    /etc/xdg/autostart/refugios-desktop-trust.desktop \
+    /etc/xdg/autostart/refugios-welcome.desktop \
+    /etc/skel/Desktop/Instalar_refugiOS.desktop \
+    "/home/$USER_NAME/Desktop/Instalar_refugiOS.desktop" \
+    /etc/fstab /etc/hostname /boot/grub/grub.cfg ; do
+    if [ -e "$VERIFY_DIR$artefacto" ] || [ -L "$VERIFY_DIR$artefacto" ]; then
+        echo "   [OK]    $artefacto"
+    else
+        echo "   [FALTA] $artefacto"
+        MISSING="$MISSING $artefacto"
+    fi
+done
+
+umount "$VERIFY_DIR"
+rmdir "$VERIFY_DIR"
+
+if [ -n "$MISSING" ]; then
+    echo "=========================================================="
+    echo " ERROR: la imagen está incompleta. Faltan:"
+    for artefacto in $MISSING; do echo "   $artefacto"; done
+    echo " No la distribuyas: $IMG_NAME"
+    echo "=========================================================="
+    exit 1
+fi
 
 sync
 losetup -d "$LOOP_DEV"

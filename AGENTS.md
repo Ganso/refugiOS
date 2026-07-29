@@ -19,7 +19,7 @@ Internet dependency.
   (Wikipedia tier, AI model, maps, etc.). After that, the device operates 100% offline.
 - **License:** GNU AGPL-3.0 (`LICENSE`).
 - **Status:** First Beta, actively developed.
-- **Current version:** `0.23` (see `CHANGELOG.md`). Versioning follows
+- **Current version:** `0.24` (see `CHANGELOG.md`). Versioning follows
   [Semantic Versioning](https://semver.org/spec/v2.0.0.html); the changelog follows
   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository:** `https://github.com/Ganso/refugiOS.git` (branch `main`).
@@ -551,7 +551,27 @@ the user for it — do not guess or look elsewhere.
    python3 tests/qemu_boot_check.py ~/refugios-images/refugios-base-16G-es.img \
      --shots 30,70,110 --out tests/out --prefix v_es
    ```
-   The last capture must show the XFCE desktop with the welcome popup reporting **16 GB**.
+   The last capture must show the XFCE desktop with the welcome popup, and there must be
+   no `fsck` prompt during boot.
+
+   **Also verify the disk auto-expansion on a larger disk**, which is the case every real
+   user hits and the one the 16 GB image cannot exercise. Version 0.23 shipped without the
+   expansion service enabled and nobody noticed, because on a 16 GB image there is nothing
+   to expand:
+   ```bash
+   truncate -s 123009761280 ~/refugios-images/disco128.img
+   dd if=~/refugios-images/refugios-base-16G-es.img of=~/refugios-images/disco128.img \
+      bs=4M conv=notrunc,sparse status=none
+   python3 tests/qemu_boot_check.py ~/refugios-images/disco128.img --shots 40,90,150 \
+      --out tests/out --prefix exp128
+   ```
+   Then check the partition really grew — **the welcome popup is not evidence**, it reports
+   the size of the *disk*, not of the partition:
+   ```bash
+   docker run --rm --privileged -v ~/refugios-images:/out -v /dev:/dev refugios-test:trixie \
+     bash -c 'L=$(losetup -Pf --show /out/disco128.img); sfdisk -l "$L" | tail -4; losetup -d "$L"'
+   ```
+   The third partition must span the whole disk (~114 G), not the original 15.5 G.
 
 4. **Compress and decide the format.** Use `7z` (multithreaded; Info-ZIP `zip` is single
    threaded and takes far longer):

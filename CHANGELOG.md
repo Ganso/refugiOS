@@ -5,6 +5,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24] - 2026-07-29
+
+### Corregido
+- **El disco no se expandía al tamaño real del dispositivo:** A las imágenes base publicadas les faltaba el enlace `/etc/systemd/system/multi-user.target.wants/refugios-expand.service`, que es lo único que hace que el servicio de autoexpansión se ejecute en el primer arranque. Sin él, la partición raíz se quedaba en los 15,5 GB de la imagen por muy grande que fuese el pendrive: en una unidad de 128 GB el usuario disponía de unos 8 GB libres, insuficientes para instalar los módulos, y el instalador fallaba. El enlace se crea ahora de forma explícita con `ln -s` además de mediante `systemctl enable`, sin depender del comportamiento de systemctl dentro de un chroot.
+- **La imagen se distribuía con el sistema de ficheros dañado:** `e2fsck` encontraba en la imagen publicada checksums de bitmap incorrectos en varios grupos, un inodo huérfano y el contador de inodos libres descuadrado. Al arrancar, el equipo se detenía en un initramfs pidiendo un `fsck` manual — una pantalla en la que no hay escritorio ni traducciones y de la que un usuario sin experiencia no puede salir. Esa misma corrupción es la que hizo desaparecer el enlace de autoexpansión, que el log de construcción registra como creado correctamente. El generador ejecuta ahora `sync` al final del chroot y comprueba la imagen con `e2fsck -fy` antes de darla por buena, abortando si quedan errores no corregibles.
+
+### Añadido
+- **Verificación del contenido de la imagen al construirla:** `scripts/build_refugios.sh` monta la imagen recién generada y comprueba que están los trece artefactos que debe contener (servicio y script de autoexpansión con su enlace, wrapper del instalador, lanzadores del escritorio, `fstab`, `grub.cfg`…). Si falta alguno, aborta y avisa de que la imagen no debe distribuirse. Es la comprobación que habría evitado publicar unas imágenes sin la autoexpansión.
+
 ## [0.23] - 2026-07-28
 
 ### Añadido
