@@ -78,6 +78,7 @@ docker info >/dev/null && test -w /dev/kvm && ls /usr/share/OVMF/OVMF_CODE*.fd &
 | `luks_pty.py` | Runs `cryptsetup luksFormat` over a real terminal and answers its prompts. Needed because cryptsetup refuses to verify the password when the input is a pipe. |
 | `qemu_boot_check.py` | Boots an image headless and takes screenshots at the moments you specify. |
 | `qemu_ctl.py` | Controls an already running virtual machine: screenshots, keys, text, and mouse clicks. |
+| `verify_image.sh` | Verifies a built image **before publishing it**: filesystem integrity, presence of the thirteen artefacts it must contain and, with `--expand`, that the partition really grows to the size of the device. |
 | `prepare_e2e_image.sh` | Prepares a copy of a built image to test the installer end to end: injects the local repository and launches the installer at login. |
 
 ---
@@ -140,7 +141,27 @@ The image ends up owned by `root`; to boot it with QEMU, hand it back to your us
 docker run --rm -v ~/refugios-builds:/out refugios-test:trixie chown -R 1000:1000 /out
 ```
 
-### 5.2. Verifying that it boots
+### 5.2. Verifying the image before publishing it
+
+```bash
+bash tests/verify_image.sh ~/refugios-builds/refugios-base-16G-en.img --expand
+```
+
+It checks the **artefact**, not the build: that the filesystem is clean, that the thirteen
+items the image must contain are inside it (auto-expansion service and script with its
+symlink, installer wrapper, launchers, `fstab`, `grub.cfg`…) and, with `--expand`, that
+dropping it onto a 128 GB disk really grows the root partition. Without `--expand` it
+takes seconds; with it, about five minutes.
+
+> [!IMPORTANT]
+> Do not skip `--expand`. Version 0.23 was published without the auto-expansion service
+> enabled and every signal said it was fine: the build exited 0, its log recorded the
+> symlink as created, and the screenshot showed a correct desktop. None of them looks
+> inside the image, and on a disk the same size as the image the expansion has nothing to
+> do. Watch out for the welcome popup too: it reports the size of the **disk**, not of the
+> partition, so it says "114 GB" whether or not the expansion worked.
+
+### 5.3. Verifying that it boots
 
 ```bash
 python3 tests/qemu_boot_check.py ~/refugios-builds/refugios-base-12G-en.img --shots 25,60,100 --out tests/out --prefix my_image
@@ -155,7 +176,7 @@ Useful options:
 - `--size 1920x1080` sets the virtual screen resolution.
 - `--keep` leaves the machine alive at the end so you can drive it (see below).
 
-### 5.3. Testing the installer end to end
+### 5.4. Testing the installer end to end
 
 Prepare a copy of the image with the local repository injected, so the installer uses **your code** and not the one published on GitHub:
 

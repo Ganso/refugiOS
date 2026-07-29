@@ -545,33 +545,23 @@ the user for it — do not guess or look elsewhere.
    Check both logs end with a zero exit. About 30-40 minutes each. The `chown` is needed
    or QEMU cannot read the images afterwards.
 
-3. **Verify each image boots** and read the screenshots — a green exit code is not proof
-   the image is usable:
+3. **Verify each image before publishing it.** One command, and it must pass:
    ```bash
-   python3 tests/qemu_boot_check.py ~/refugios-images/refugios-base-16G-es.img \
-     --shots 30,70,110 --out tests/out --prefix v_es
+   bash tests/verify_image.sh ~/refugios-images/refugios-base-16G-es.img --expand
    ```
-   The last capture must show the XFCE desktop with the welcome popup, and there must be
-   no `fsck` prompt during boot.
+   It checks the *artefact*, not the build: that the filesystem is clean, that the
+   thirteen artefacts the image must contain are inside it, and — with `--expand` — that
+   a copy dropped onto a 128 GB disk really grows its root partition. Without `--expand`
+   it takes seconds; with it, about five minutes per image. **Do not skip `--expand`**:
+   it is the only check that exercises what every real user hits.
 
-   **Also verify the disk auto-expansion on a larger disk**, which is the case every real
-   user hits and the one the 16 GB image cannot exercise. Version 0.23 shipped without the
-   expansion service enabled and nobody noticed, because on a 16 GB image there is nothing
-   to expand:
-   ```bash
-   truncate -s 123009761280 ~/refugios-images/disco128.img
-   dd if=~/refugios-images/refugios-base-16G-es.img of=~/refugios-images/disco128.img \
-      bs=4M conv=notrunc,sparse status=none
-   python3 tests/qemu_boot_check.py ~/refugios-images/disco128.img --shots 40,90,150 \
-      --out tests/out --prefix exp128
-   ```
-   Then check the partition really grew — **the welcome popup is not evidence**, it reports
-   the size of the *disk*, not of the partition:
-   ```bash
-   docker run --rm --privileged -v ~/refugios-images:/out -v /dev:/dev refugios-test:trixie \
-     bash -c 'L=$(losetup -Pf --show /out/disco128.img); sfdisk -l "$L" | tail -4; losetup -d "$L"'
-   ```
-   The third partition must span the whole disk (~114 G), not the original 15.5 G.
+   Read the boot screenshots too (`tests/qemu_boot_check.py`, see the test suite guide):
+   the desktop must come up with no `fsck` prompt.
+
+   Why this exists: 0.23 shipped without the expansion service enabled and every signal
+   said it was fine. The build exited 0, its log recorded the symlink as created, and the
+   screenshot showed a correct desktop. None of those look inside the image, and a 16 GB
+   image on a 16 GB disk cannot exercise the expansion at all — it is a no-op there.
 
 4. **Compress and decide the format.** Use `7z` (multithreaded; Info-ZIP `zip` is single
    threaded and takes far longer):
@@ -643,6 +633,26 @@ the user for it — do not guess or look elsewhere.
 ---
 
 ## 13. Common Pitfalls
+
+0. **Verify the artefact, not the process.** This is the lesson of 0.23, which shipped
+   base images that never expanded the disk. Every signal said the build was fine — exit
+   code 0, a log line reading `Created symlink …`, a screenshot of a working desktop —
+   and none of them looked inside the image, where the symlink was in fact missing. When
+   you produce something that other people will download and flash, open it and check its
+   contents (`bash tests/verify_image.sh IMAGEN --expand`). Related traps from the same
+   incident:
+   - **A build log is not evidence.** It records what a command *reported*, not what
+     survived into the artefact.
+   - **A boot screenshot proves very little.** An image can boot perfectly to the desktop
+     while missing something essential.
+   - **The welcome popup reports the size of the *disk*, not of the partition.** It says
+     "114 GB" on a 128 GB stick whether or not the expansion worked. To check expansion,
+     read the partition table.
+   - **Testing a feature only where it is a no-op is not testing it.** A 16 GB image on a
+     16 GB disk has nothing to expand; the case had to be built on purpose.
+   - **`docker run` without `-i` silently ignores a script fed on stdin** and exits 0.
+     A check written that way passes without checking anything — it happened while
+     writing `verify_image.sh` itself.
 
 1. **`UnicodeEncodeError` with `dialog` (latin-1).** Any non-ASCII char (bullets `•`,
    em-dashes, smart quotes, accented letters beyond latin-1) passed to a `dialog` call
