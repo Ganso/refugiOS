@@ -19,7 +19,7 @@ Internet dependency.
   (Wikipedia tier, AI model, maps, etc.). After that, the device operates 100% offline.
 - **License:** GNU AGPL-3.0 (`LICENSE`).
 - **Status:** First Beta, actively developed.
-- **Current version:** `0.24` (see `CHANGELOG.md`). Versioning follows
+- **Current version:** `0.25` (see `CHANGELOG.md`). Versioning follows
   [Semantic Versioning](https://semver.org/spec/v2.0.0.html); the changelog follows
   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository:** `https://github.com/Ganso/refugiOS.git` (branch `main`).
@@ -597,12 +597,23 @@ the user for it — do not guess or look elsewhere.
 8. **Commit, tag and push**, and add a `### Cambiado` entry to `CHANGELOG.md` describing
    what the new images contain.
 
-9. **Stale files on the server.** If the published names changed, the previous files stay
+9. **The landing page.** `web/index.html` is the page served at
+   https://refugios.ganso.org, styled after ganso.org (Poppins + Bootstrap + Font Awesome
+   from the same CDNs). It is deliberately written to survive version changes: no version
+   numbers, no file sizes, no dates, and no mention of the specific applications bundled.
+   The download buttons use relative links to the published filenames, which stay stable.
+   It only needs re-uploading when the page itself changes:
+   ```bash
+   # index.html + refugiOS.png to /refugios
+   ```
+   Keep the logo credit in the footer.
+
+10. **Stale files on the server.** If the published names changed, the previous files stay
    behind and nothing links to them. **Ask the user before deleting anything remote** —
    the deletion is irreversible and is theirs to authorize. Verify the local checksums
    (`sha256sum -c SHA256SUMS.txt`) before deleting the corresponding local copies.
 
-10. **Redirect the retired URLs — do not just delete them.** Old links keep circulating in
+11. **Redirect the retired URLs — do not just delete them.** Old links keep circulating in
     forums, bookmarks and articles. `/refugios/.htaccess` on the server holds this, and it
     must be extended whenever a published filename changes:
 
