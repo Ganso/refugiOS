@@ -8,7 +8,7 @@ y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.25] - 2026-07-30
 
 ### Añadido
-- **Página de presentación en https://refugios.ganso.org (`web/index.html`):** Hasta ahora esa dirección solo servía los ficheros de descarga y no explicaba nada a quien llegaba a ella. Ahora muestra una portada con el mismo estilo que [ganso.org](https://ganso.org) —misma tipografía, misma paleta y mismos componentes—, adaptada a refugiOS: logotipo, una descripción breve del proyecto en español y en inglés, los enlaces de descarga y el enlace al repositorio. Está escrita a propósito sin números de versión, tamaños ni fechas, para que no haya que retocarla cada vez que se republican las imágenes.
+- **Página de presentación en https://refugios.ganso.org (`web/index.html`):** Hasta ahora esa dirección solo servía los ficheros de descarga y no explicaba nada a quien llegaba a ella. Ahora muestra una portada con el mismo estilo que [ganso.org](https://ganso.org) —misma tipografía, misma paleta y mismos componentes—, adaptada a refugiOS: logotipo, una descripción breve del proyecto en español y en inglés, tres capturas de pantalla del sistema en funcionamiento, los enlaces de descarga y el enlace al repositorio. Está escrita a propósito sin números de versión, tamaños ni fechas, para que no haya que retocarla cada vez que se republican las imágenes.
 
 ## [0.24] - 2026-07-29
 

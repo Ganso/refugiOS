@@ -96,6 +96,26 @@
             margin-bottom: 0;
         }
 
+        /* Capturas de pantalla */
+        .shot img {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .shot a:hover img {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+        }
+        .shot p {
+            margin-top: 14px;
+            margin-bottom: 0;
+            color: #6c757d;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
         /* Bloque en inglés, discreto */
         #english {
             background-color: #2c2c2c;
@@ -189,6 +209,35 @@
                     <p>Cifrado para tus documentos personales.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="project-section pt-0">
+        <div class="container text-center">
+            <div class="row col-lg-11 mx-auto g-4">
+                <div class="col-12 col-md-4 shot">
+                    <a href="shots/escritorio.jpg" target="_blank">
+                        <img src="shots/escritorio.jpg" alt="El escritorio de refugiOS con los accesos a cada módulo" loading="lazy">
+                    </a>
+                    <p>El escritorio, con un acceso por módulo</p>
+                </div>
+                <div class="col-12 col-md-4 shot">
+                    <a href="shots/wikipedia.jpg" target="_blank">
+                        <img src="shots/wikipedia.jpg" alt="Un artículo de la enciclopedia consultado sin conexión" loading="lazy">
+                    </a>
+                    <p>La enciclopedia, consultada sin red</p>
+                </div>
+                <div class="col-12 col-md-4 shot">
+                    <a href="shots/mapas.jpg" target="_blank">
+                        <img src="shots/mapas.jpg" alt="Cartografía con detalle de carreteras y topónimos, sin conexión" loading="lazy">
+                    </a>
+                    <p>La cartografía, con todo el detalle</p>
+                </div>
+            </div>
+            <p class="text-muted mt-4 mb-0">
+                Hay más capturas de todas las aplicaciones, en español y en inglés,
+                <a href="https://github.com/Ganso/refugiOS/blob/main/media/screenshots/README.md" target="_blank">en el repositorio</a>.
+            </p>
         </div>
     </section>
 
