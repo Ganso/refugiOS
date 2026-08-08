@@ -586,6 +586,15 @@ the user for it — do not guess or look elsewhere.
    instructions fail for everyone. The name never changes, so no link needs updating —
    but the contents do, on every republish.
 
+   **It must always list both images**, even when only one was rebuilt. A sums file with a
+   single line makes the documented check fail for the other language, which is the worst
+   possible outcome: it tells a user with a perfectly good download that it is corrupt. If
+   you no longer have the image you did not rebuild, take its hash from the copy already
+   published, which is the one users get anyway:
+   ```bash
+   curl -s https://refugios.ganso.org/refugios-base-16G-en.img.zip | sha256sum
+   ```
+
 5. **Upload by SFTP to `/refugios`.** List the directory first and confirm the previous
    files are there — publishing into the wrong path is worse than not publishing. Upload
    to a temporary name and rename at the end, so an interrupted transfer never leaves a
