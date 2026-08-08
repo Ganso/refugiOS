@@ -570,13 +570,46 @@ the user for it — do not guess or look elsewhere.
    ```
    **Rule:** if the `.zip` is at most **60%** of the `.img`, publish the compressed
    version; otherwise publish the raw `.img`. In practice it lands around 22%, so the
-   published files are `.img.zip`. Generate `SHA256SUMS.txt` for whatever gets published.
+   published files are `.img.zip`.
+
+   Then **generate `SHA256SUMS.txt` for whatever gets published**, with plain relative
+   filenames and nothing else in it, so that a user who drops it next to the download can
+   run `sha256sum -c` on it unchanged:
+   ```bash
+   cd ~/refugios-images && sha256sum refugios-base-16G-es.img.zip refugios-base-16G-en.img.zip > SHA256SUMS.txt
+   ```
+   It is published alongside the images and it is **not optional**: the download is
+   several GB, and on a poor connection it arrives truncated with a USB that does not boot
+   as the only symptom. `README.md`, `README.en.md`, `doc/Home.md` and the landing page all
+   link to `https://refugios.ganso.org/SHA256SUMS.txt` and document
+   `sha256sum --ignore-missing -c SHA256SUMS.txt`; if the file is missing or stale, those
+   instructions fail for everyone. The name never changes, so no link needs updating —
+   but the contents do, on every republish.
 
 5. **Upload by SFTP to `/refugios`.** List the directory first and confirm the previous
    files are there — publishing into the wrong path is worse than not publishing. Upload
    to a temporary name and rename at the end, so an interrupted transfer never leaves a
    half-written file under the public name. Verify the remote size matches the local one.
    Roughly 9 MB/s, so about 15 minutes for the pair.
+
+   With no `sshpass` or `lftp` installed, `curl` speaks SFTP (libssh2): add the host to
+   `known_hosts` with `ssh-keyscan` once, and pass the credentials through a `curl -K`
+   config file written by a script, never on the command line. Two traps in the
+   upload-then-rename dance: SFTP `rename` **fails if the destination already exists**, so
+   an existing file must be renamed out of the way first (`index.html` →
+   `index.html.old`) and deleted afterwards; and while the temporary name is in place a
+   request for the real name answers **300**, not 404 — that is `Options -MultiViews`
+   doing its job, and it clears as soon as the rename lands.
+
+   Upload `SHA256SUMS.txt` **last**, after both images are in place under their final
+   names — it is the signal that the publication is complete, and a sums file that
+   describes files not yet uploaded (or half uploaded) sends users chasing a mismatch that
+   is not theirs. Then verify end to end from the outside, which also proves the served
+   bytes match the local ones:
+   ```bash
+   curl -s https://refugios.ganso.org/SHA256SUMS.txt                             # both lines, right names
+   curl -s https://refugios.ganso.org/refugios-base-16G-es.img.zip | sha256sum   # equals its line
+   ```
 
 6. **Update every link** if the published filenames changed. They live in:
    `README.md` and `README.en.md` (download table, sizes, extraction instructions),
@@ -601,7 +634,9 @@ the user for it — do not guess or look elsewhere.
    https://refugios.ganso.org, styled after ganso.org (Poppins + Bootstrap + Font Awesome
    from the same CDNs). It is deliberately written to survive version changes: no version
    numbers, no file sizes, no dates, and no mention of the specific applications bundled.
-   The download buttons use relative links to the published filenames, which stay stable.
+   The download buttons use relative links to the published filenames, which stay stable,
+   and the "¿Llegó entera la descarga?" block links `SHA256SUMS.txt` the same way — the
+   page carries no hashes of its own, so republishing the images never dates it.
    It only needs re-uploading when the page itself changes:
    ```bash
    # index.html + refugiOS.png to /refugios

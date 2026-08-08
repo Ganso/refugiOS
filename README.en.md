@@ -46,6 +46,16 @@ The easiest way to get refugiOS is to download the ready-made image, flash it to
 
 Extract the `.zip` before flashing it: on Windows, right-click → *Extract All*; on Linux or macOS, `unzip refugios-base-16G-en.img.zip`. You will get the `.img` file that goes onto the USB drive.
 
+> [!TIP]
+> **Check that the download arrived intact.** It is several gigabytes, and on an unstable connection the file can end up truncated, with a USB drive that does not boot as the only symptom. Download [SHA256SUMS.txt](https://refugios.ganso.org/SHA256SUMS.txt) into the same folder as the `.zip` and verify the checksum before flashing:
+>
+> ```bash
+> sha256sum --ignore-missing -c SHA256SUMS.txt   # Linux
+> shasum -a 256 --ignore-missing -c SHA256SUMS.txt   # macOS
+> ```
+>
+> On Windows, from PowerShell: `Get-FileHash refugios-base-16G-en.img.zip -Algorithm SHA256`, and compare the result with the matching line in the file. It must answer `OK` or match character for character; if it does not, download the `.zip` again.
+
 You need a USB drive of **at least 16 GB**. The system partition will automatically expand to the full size of the USB drive on first boot.
 
 > [!NOTE]

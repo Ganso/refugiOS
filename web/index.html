@@ -116,6 +116,32 @@
             font-weight: 600;
         }
 
+        /* Comprobación de la descarga */
+        .checksums {
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 16px 22px;
+        }
+        .checksums summary {
+            font-weight: 600;
+            cursor: pointer;
+            color: #123240;
+        }
+        .checksums p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin: 14px 0 6px;
+        }
+        .checksums pre {
+            background-color: #f1f3f5;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 0;
+            overflow-x: auto;
+            font-size: 0.85rem;
+        }
+
         /* Bloque en inglés, discreto */
         #english {
             background-color: #2c2c2c;
@@ -257,6 +283,26 @@
                     <i class="fa-solid fa-download"></i> English
                 </a>
             </div>
+            <details class="checksums col-md-9 col-lg-8 mx-auto text-start mb-4">
+                <summary><i class="fa-solid fa-fingerprint"></i> ¿Llegó entera la descarga? Compruébalo</summary>
+                <p>
+                    Son varios gigabytes: con una conexión inestable el fichero puede llegar incompleto y
+                    el pendrive no arrancar, sin más pista del motivo. Descarga
+                    <a href="SHA256SUMS.txt">SHA256SUMS.txt</a> (unos pocos bytes) en la misma carpeta que
+                    el <code>.zip</code> y comprueba que coincide.
+                </p>
+                <p>En Linux:</p>
+<pre><code>sha256sum --ignore-missing -c SHA256SUMS.txt</code></pre>
+                <p>En macOS:</p>
+<pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS.txt</code></pre>
+                <p>En Windows, desde PowerShell (compara el resultado con la línea del fichero):</p>
+<pre><code>Get-FileHash refugios-base-16G-es.img.zip -Algorithm SHA256</code></pre>
+                <p>
+                    Debe responder <code>OK</code> (o mostrar el mismo código). Si no coincide, vuelve a
+                    descargar el <code>.zip</code>: no lo grabes. Y si al descomprimirlo el programa avisa
+                    de un error, la descarga tampoco está completa.
+                </p>
+            </details>
             <p class="text-muted">
                 Las instrucciones paso a paso, los requisitos y las guías completas están en
                 <a href="https://github.com/Ganso/refugiOS/" target="_blank">GitHub</a>.

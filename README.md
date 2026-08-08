@@ -46,6 +46,16 @@ La forma más fácil de tener refugiOS es descargar la imagen ya preparada, grab
 
 Descomprime el `.zip` antes de grabarlo: en Windows, clic derecho → *Extraer todo*; en Linux o macOS, `unzip refugios-base-16G-es.img.zip`. Obtendrás el fichero `.img` que se graba en el USB.
 
+> [!TIP]
+> **Comprueba que la descarga llegó entera.** Son varios gigabytes y con una conexión inestable el fichero puede quedar incompleto, con el único síntoma de un pendrive que no arranca. Descarga [SHA256SUMS.txt](https://refugios.ganso.org/SHA256SUMS.txt) en la misma carpeta que el `.zip` y comprueba la suma antes de grabarlo:
+>
+> ```bash
+> sha256sum --ignore-missing -c SHA256SUMS.txt   # Linux
+> shasum -a 256 --ignore-missing -c SHA256SUMS.txt   # macOS
+> ```
+>
+> En Windows, desde PowerShell: `Get-FileHash refugios-base-16G-es.img.zip -Algorithm SHA256`, y compara el resultado con la línea correspondiente del fichero. Debe responder `OK` o coincidir carácter a carácter; si no, descarga el `.zip` de nuevo.
+
 Necesitas un USB de **al menos 16 GB**. La partición del sistema se expandirá automáticamente al tamaño completo del USB en el primer arranque.
 
 > [!NOTE]
