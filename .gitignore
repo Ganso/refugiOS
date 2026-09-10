@@ -57,6 +57,8 @@ Desktop.ini
 *.img
 *.appimage
 *.torrent
+*.zip
+SHA256SUMS.txt
 refugios_vars.fd
 *.log
 scripts/*.log
