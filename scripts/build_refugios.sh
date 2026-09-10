@@ -241,9 +241,10 @@ apt-get install -y linux-image-amd64 linux-headers-amd64 build-essential \
                    grub-efi-amd64 grub-pc-bin sudo network-manager network-manager-gnome xfce4-goodies \
                    xfce4 xfce4-terminal curl cloud-guest-utils zenity lightdm \
                    epiphany-browser locales keyboard-configuration flatpak libglib2.0-bin libfuse2t64 \
+                   python3 python3-dialog dialog aria2 pciutils wget jq rsync apt-utils \
                    firmware-iwlwifi firmware-brcm80211 firmware-atheros \
                    firmware-libertas firmware-misc-nonfree firmware-realtek \
-                   firmware-amd-graphics xserver-xorg-video-amdgpu nvidia-driver
+                   firmware-amd-graphics xserver-xorg-video-amdgpu
 
 # Generar locale antes de configurarlo
 sed -i "s/^# ${REFUGIOS_LOCALE}/${REFUGIOS_LOCALE}/" /etc/locale.gen

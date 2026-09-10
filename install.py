@@ -533,12 +533,21 @@ class SystemInfo:
         self.os_type = "Unknown"
         self.is_rpi = False
         self.rpi_model = ""
-        # Detect if running old graphics server (X11) or modern (Wayland)
-        self.desktop_env = os.environ.get("XDG_SESSION_TYPE", "Unknown").capitalize()
+        desktop = os.environ.get("XDG_CURRENT_DESKTOP") or os.environ.get("DESKTOP_SESSION")
+        session_type = os.environ.get("XDG_SESSION_TYPE")
+        if desktop and session_type:
+            self.desktop_env = f"{desktop} ({session_type.upper()})"
+        elif desktop:
+            self.desktop_env = desktop
+        elif session_type:
+            self.desktop_env = session_type.upper()
+        else:
+            self.desktop_env = "Unknown"
         self.ram_mb = 0
         self.free_space_mb = 0
         self.gpu_info = "Unknown"
         self.vram_info = "Unknown"
+        self.has_nvidia = False
         self.lang = i18n.REFUGIOS_LANG
         
         self.detect_os()
@@ -612,6 +621,8 @@ class SystemInfo:
             vga_match = re.search(r'(VGA compatible controller|3D controller): (.*)', out)
             if vga_match:
                 self.gpu_info = vga_match.group(2).strip()
+                if re.search(r'nvidia|geforce', self.gpu_info, re.IGNORECASE):
+                    self.has_nvidia = True
                 # Extract prefetchable memory, commonly indicating VRAM segments
                 mem_match = re.search(r'Memory at .*?\(prefetchable\) \[size=([A-Za-z0-9]+)\]', out)
                 if mem_match:
@@ -981,6 +992,8 @@ def main():
 """
     if sys_info.is_rpi:
         diag_info += f"\n{i18n.T('rpi_arch_detected')}"
+    elif sys_info.has_nvidia:
+        diag_info += f"\n{i18n.T('nvidia_detected_note')}"
 
     d.msgbox(sanitize_for_dialog(diag_info), title=i18n.T('sys_diag_title'))
 
@@ -989,16 +1002,22 @@ def main():
         log_info(i18n.T('lite_mode_msg'))
         def_wiki = 1
         def_other_wikis = [0]
-        def_ai = [0, 1]
     elif sys_info.free_space_mb < 70000:
         log_info(i18n.T('standard_mode_msg'))
         def_wiki = 2
         def_other_wikis = [0]
-        def_ai = [0, 1]
     else:
         log_info(i18n.T('rich_mode_msg'))
         def_wiki = 3
         def_other_wikis = [0, 1]
+
+    # Preselect AI models considering both disk space and available system RAM.
+    # Models >= 8GB (ia_base, ia_med) require at least 6-8GB of physical RAM.
+    if sys_info.ram_mb < 6000 or sys_info.free_space_mb < 30000:
+        def_ai = [0]
+    elif sys_info.free_space_mb < 70000 or sys_info.ram_mb < 12000:
+        def_ai = [0, 1]
+    else:
         def_ai = [1, 2, 3]
 
     # Force download mode
@@ -1086,11 +1105,22 @@ def main():
 
     ai_selected = multi_select_menu(d, i18n.T('ia_menu_title'), ai_opts, def_ai)
 
+    install_nvidia = False
+    if sys_info.has_nvidia and not sys_info.is_rpi:
+        install_nvidia = simple_question(
+            d,
+            i18n.T('nvidia_title'),
+            i18n.T('nvidia_prompt').format(sys_info.gpu_info),
+            default_yes=True
+        )
+
     use_torrent = simple_question(d, i18n.T('p2p_menu_title'), i18n.T('p2p_menu_prompt'), default_yes=False)
     
     estimated_mb = 300
     if install_extras:
         estimated_mb += 1300
+    if install_nvidia:
+        estimated_mb += 1200
     estimated_mb += 160
 
     if wiki_selected is not None and wiki_selected > 0:
@@ -1176,6 +1206,14 @@ def main():
     fix_flatpak_permissions()
     if sys_info.is_rpi:
         fix_rpi_pcmanfm_warnings()
+
+    if install_nvidia:
+        log_info(i18n.T('installing_nvidia_driver'))
+        install_package(
+            env, "NVIDIA Proprietary Driver", sys_info.is_rpi,
+            appimage_url=None, appimage_name=None, flatpak_id=None,
+            apt_deps="nvidia-driver firmware-misc-nonfree"
+        )
 
     size_logger.log_section("Fase 1: OS Utilities & Ofimática")
 
@@ -1364,14 +1402,14 @@ Terminal=false
 """)
             certify_icon(maps_desktop)
     else:
-        log_info("Skipping Cartographic module (Organic Maps).")
+        log_info(i18n.T('skip_maps_log'))
 
     size_logger.log_section("Fase 4: Mapas Offline (Organic Maps)")
 
     # Phase 5: AI Motor (Llamafile)
     script_path = fetch_script("refugios-ai-selector.sh")
     if ai_selected:
-        log_info("Establishing cognitive engine core foundations, Llamafile...")
+        log_info(i18n.T('installing_ai_engine_log'))
         try:
              req = urllib.request.Request("https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest")
              with urllib.request.urlopen(req) as r:
@@ -1414,7 +1452,8 @@ Terminal=false
                  f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
-Name=Local AI Assistant
+Name={i18n.T('ai_desktop_name')}
+Comment={i18n.T('ai_desktop_desc')}
 Exec=xfce4-terminal -e "{script_path}"
 Icon=utilities-terminal
 Terminal=false
@@ -1424,7 +1463,7 @@ Terminal=false
     size_logger.log_section("Fase 5: Motor AI y Modelos")
 
     # Phase 6: Privacy Cryptographic Foundations
-    log_info("Assembling security vaults and privacy policies...")
+    log_info(i18n.T('installing_vaults_log'))
     
     vault_script = fetch_script("refugios-vault.py")
 

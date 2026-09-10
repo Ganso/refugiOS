@@ -19,7 +19,7 @@ Internet dependency.
   (Wikipedia tier, AI model, maps, etc.). After that, the device operates 100% offline.
 - **License:** GNU AGPL-3.0 (`LICENSE`).
 - **Status:** First Beta, actively developed.
-- **Current version:** `0.25` (see `CHANGELOG.md`). Versioning follows
+- **Current version:** `0.26` (see `CHANGELOG.md`). Versioning follows
   [Semantic Versioning](https://semver.org/spec/v2.0.0.html); the changelog follows
   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository:** `https://github.com/Ganso/refugiOS.git` (branch `main`).
@@ -143,8 +143,8 @@ Generates a base refugiOS disk image from scratch via `debootstrap`.
   `truncate` sparse image → GPT partition (BIOS_BOOT 1MiB, EFI FAT32 514MiB ESP, ROOT
   ext4) → `losetup -Pf` → format → mount → `debootstrap --arch=amd64 trixie` →
   generate `/etc/fstab` with real UUIDs → chroot: APT sources (main/contrib/non-free),
-  install kernel + GRUB + XFCE + lightdm + firmware (iwlwifi, brcm, atheros, amd,
-  nvidia) + flatpak, set locale/keyboard, install GRUB both UEFI-removable
+  install kernel + GRUB + XFCE + lightdm + firmware (iwlwifi, brcm, atheros, amd)
+  + offline installer tools (python3, dialog, aria2, jq, rsync) + flatpak, set locale/keyboard, install GRUB both UEFI-removable
   (`--removable --no-nvram`) and BIOS-MBR, create `refugios` user (passwordless sudo,
   LightDM autologin, screenlock disabled).
 - **`trap cleanup EXIT`** robustly unmounts/detaches on any exit.

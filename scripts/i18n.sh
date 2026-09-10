@@ -61,7 +61,26 @@ t_es_no_tty="No hay terminal disponible (/dev/tty). El instalador podría no pod
 t_en_launching_python="Launching Python installer..."
 t_es_launching_python="Lanzando instalador Python..."
 
+t_en_fail_installing_deps="Failed to install required dependencies. Please check your internet connection."
+t_es_fail_installing_deps="Fallo al instalar las dependencias requeridas. Por favor, comprueba tu conexión a internet."
+
 # refugios-ai-selector.sh
+t_en_ai_selector_title="refugiOS - AI Model Selector"
+t_es_ai_selector_title="refugiOS - Selector de Modelos de IA"
+t_en_ai_no_models="No AI models installed.\n\nRun the refugiOS installer to download models first."
+t_es_ai_no_models="No hay modelos de IA instalados.\n\nEjecuta el instalador de refugiOS para descargar modelos primero."
+t_en_ai_hw_ram="RAM"
+t_es_ai_hw_ram="RAM"
+t_en_ai_hw_vram="VRAM"
+t_es_ai_hw_vram="VRAM"
+t_en_ai_hw_usable="Usable for AI"
+t_es_ai_hw_usable="Utilizable para IA"
+t_en_ai_hw_reserved="2GB OS reserved"
+t_es_ai_hw_reserved="2GB reservados para el SO"
+t_en_ai_select_model="Select an AI model to run:"
+t_es_ai_select_model="Selecciona un modelo de IA para ejecutar:"
+t_en_ai_err_resolve_model="Error: Could not resolve selected model."
+t_es_ai_err_resolve_model="Error: No se pudo resolver el modelo seleccionado."
 t_en_ai_llamafile_missing="The AI engine (llamafile) is not installed. Run the refugiOS installer and select the AI module."
 t_es_ai_llamafile_missing="El motor de IA (llamafile) no está instalado. Ejecuta el instalador de refugiOS y selecciona el módulo de IA."
 t_en_ai_waiting_server="Loading the model. This can take several minutes on slow drives, please wait..."
@@ -72,6 +91,16 @@ t_en_ai_server_timeout="ERROR: the AI engine did not become ready in time. Try a
 t_es_ai_server_timeout="ERROR: el motor de IA no ha llegado a estar listo a tiempo. Prueba con un modelo más pequeño."
 t_en_ai_purge_notice="Server Notice: Proceeding to purge the task. Please close this final black window to stop AI process consumption on your computer."
 t_es_ai_purge_notice="Aviso de Servidor: Procediendo a purgar la tarea. Cierra por favor esta ventana negra final para erradicar el consumo del proceso IA de tu ordenador."
+
+# refugios-maps.sh & refugios-kiwix.sh
+t_en_maps_title="refugiOS - Maps"
+t_es_maps_title="refugiOS - Mapas"
+t_en_maps_not_installed="Organic Maps is not installed. Run the refugiOS installer to install it."
+t_es_maps_not_installed="Organic Maps no está instalado. Ejecuta el instalador de refugiOS para instalarlo."
+t_en_kiwix_not_found="Kiwix Desktop not found. Run the refugiOS installer to install it."
+t_es_kiwix_not_found="Kiwix Desktop no encontrado. Ejecuta el instalador de refugiOS para instalarlo."
+t_en_zim_not_found="ZIM file not found"
+t_es_zim_not_found="Archivo ZIM no encontrado"
 
 # refugios-vault scripts
 t_en_vault_create="CREATING SECURE VAULT"

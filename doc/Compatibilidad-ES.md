@@ -38,5 +38,9 @@ Se ha probado la instalación en Debian 11, pero se han identificado varios prob
 
 La imagen base generada por `scripts/build_refugios.sh` no requiere pasos manuales posteriores para los iconos del escritorio. Los lanzadores se marcan automáticamente como fiables por XFCE en el primer inicio de sesión mediante el mecanismo de metadatos GIO `metadata::xfce-exe-checksum` (requiere `libglib2.0-bin`, incluido en la imagen).
 
+### Aceleración Gráfica y GPUs NVIDIA
+
+La imagen base de refugiOS incluye controladores libres y firmware estándar (`amdgpu`, `intel`, `nouveau`) para garantizar compatibilidad universal y arranque inmediato tanto en máquinas virtuales (QEMU, VirtualBox) como en ordenadores con GPUs Intel y AMD. Si el equipo dispone de una tarjeta gráfica NVIDIA, el instalador (`install.py`) detecta el hardware y ofrece instalar de forma asistida los controladores propietarios oficiales (`nvidia-driver`) para habilitar aceleración CUDA en los modelos locales de Inteligencia Artificial.
+
 ---
 [Volver al README](../README.md)

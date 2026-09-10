@@ -5,6 +5,22 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26] - 2026-09-10
+
+### Corregido
+- **Bloqueo del arranque con GRUB en BIOS y UEFI:** La instalación por defecto del metapaquete `nvidia-driver` en `scripts/build_refugios.sh` forzaba la inclusión de módulos DKMS propietarios en el `initrd.img` (haciéndolo crecer a más de 114 MB) e inyectaba reglas que desactivaban los controladores libres genéricos (nouveau/KMS). Esto provocaba que la carga del kernel se quedara colgada indefinidamente en `Loading initial ramdisk ...` en máquinas virtuales (QEMU virtio/std-vga) y equipos sin tarjetas NVIDIA recientes. Se ha retirado `nvidia-driver` de los paquetes base de la imagen, garantizando un arranque instantáneo y limpio en cualquier hardware x86_64.
+- **Fallo silencioso del instalador al arrancar sin conexión a Internet:** `install.sh` abortaba inmediatamente por culpa de `set -e` al intentar descargar con `apt-get` herramientas imprescindibles que no venían preinstaladas en la imagen base (`dialog`, `python3-dialog`, `aria2`, `pciutils`, `wget`, `jq`, `rsync`, `apt-utils`). La terminal se cerraba en una fracción de segundo sin mostrar ningún mensaje al usuario. Ahora todos estos paquetes vienen preinstalados de serie en la imagen generada por `build_refugios.sh`, y `install.sh` captura cualquier posible error de dependencias mostrando un mensaje explicativo con pausa antes de salir.
+- **Detección errónea del entorno de escritorio en el diagnóstico:** `SystemInfo` en `install.py` leía `XDG_SESSION_TYPE` y mostraba `ENTORNO DE ESCRITORIO: X11` en lugar de identificar el entorno real. Ahora consulta `XDG_CURRENT_DESKTOP` y `DESKTOP_SESSION` para reportar con precisión `XFCE (X11)` o el entorno correspondiente.
+- **Presets de IA ciegos a la memoria RAM:** En discos con más de 30 GB libres, los presets automáticos seleccionaban modelos de IA de 8 GB (`ia_base`) incluso en equipos con solo 1 GB a 4 GB de RAM (como Raspberry Pi o portátiles modestos), provocando fallos por falta de memoria (OOM). La preselección comprueba ahora la memoria física (`sys_info.ram_mb`), recomendando únicamente el modelo mínimo (`ia_min`) si el equipo tiene menos de 6 GB de RAM.
+- **Cierre instantáneo de terminales ante fallos:** En los lanzadores de escritorio (`refugios-maps.sh`, `refugios-kiwix.sh`, etc.), si un componente no estaba instalado, la ventana de `xfce4-terminal -e` se cerraba inmediatamente. Ahora comprueban la presencia del paquete (por ejemplo, si el Flatpak de Organic Maps está instalado) y muestran una alerta visual (`zenity`) o pausan en terminal para que el usuario pueda comprender el motivo.
+- **Inconsistencias de idioma e internacionalización (i18n):**
+  - El acceso directo en el escritorio para la IA se creaba con el nombre fijo en inglés `Name=Local AI Assistant`; ahora se genera localizado (`Asistente de IA Local` en español).
+  - El menú y las pantallas de `scripts/refugios-ai-selector.sh` estaban completamente en inglés; ahora utilizan las cadenas traducidas de `i18n.sh`.
+  - Las trazas de registro de `install.py` que aún salían en inglés (`skip_maps_log`, `installing_ai_engine_log`, `installing_vaults_log`) ahora utilizan el diccionario multilingüe de `i18n.py`.
+
+### Añadido
+- **Detección e instalación asistida de drivers NVIDIA para IA:** Si el instalador detecta una tarjeta gráfica NVIDIA en el equipo durante el diagnóstico, pregunta de forma interactiva al usuario si desea instalar los controladores propietarios (`nvidia-driver`) para habilitar aceleración por hardware (CUDA) en el motor de Inteligencia Artificial local (`llamafile`). Si se rechaza o el sistema no tiene NVIDIA, la base opera de forma segura y universal con controladores de código abierto.
+
 ## [0.25] - 2026-07-30
 
 ### Añadido

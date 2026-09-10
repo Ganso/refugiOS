@@ -115,7 +115,7 @@ done
 
 # No models installed
 if [ ${#MENU_ITEMS[@]} -eq 0 ]; then
-    dialog --msgbox "No AI models installed.\n\nRun the refugiOS installer to download models first." 10 60
+    dialog --msgbox "$(t ai_no_models)" 10 60
     exit 1
 fi
 
@@ -135,12 +135,18 @@ fi
 # Show dialog menu
 # ============================================================================
 
-HW_INFO="RAM: ${TOTAL_RAM_MB}MB | VRAM: ${VRAM_MB}MB | Usable for AI: ${USABLE_MB}MB (2GB OS reserved)"
+RAM_LABEL=$(t ai_hw_ram)
+VRAM_LABEL=$(t ai_hw_vram)
+USABLE_LABEL=$(t ai_hw_usable)
+RESERVED_LABEL=$(t ai_hw_reserved)
+HW_INFO="${RAM_LABEL}: ${TOTAL_RAM_MB}MB | ${VRAM_LABEL}: ${VRAM_MB}MB | ${USABLE_LABEL}: ${USABLE_MB}MB (${RESERVED_LABEL})"
+PROMPT_LABEL=$(t ai_select_model)
+TITLE_LABEL=$(t ai_selector_title)
 
 CHOICE=$(dialog --stdout \
-    --title "refugiOS - AI Model Selector" \
+    --title "$TITLE_LABEL" \
     --default-item "$DEFAULT_ITEM" \
-    --menu "$HW_INFO\n\nSelect a model to run:" \
+    --menu "$HW_INFO\n\n$PROMPT_LABEL" \
     16 72 8 \
     "${MENU_ITEMS[@]}")
 
@@ -158,7 +164,7 @@ for i in "${!MODEL_IDS[@]}"; do
 done
 
 if [ -z "$SELECTED_SYMLINK" ]; then
-    dialog --msgbox "Error: Could not resolve selected model." 8 50
+    dialog --msgbox "$(t ai_err_resolve_model)" 8 50
     exit 1
 fi
 

@@ -211,7 +211,16 @@ TRANSLATIONS = {
         'wrapper_console_prompt': "Press ENTER to close...",
         'install_errors_found': "The following components could not be installed and will need to be reviewed manually:",
         'install_errors_summary': "Installation finished with some errors.",
-        'desktop_cert_error': "Error certifying desktop shortcut {0}: {1}"
+        'desktop_cert_error': "Error certifying desktop shortcut {0}: {1}",
+        'ai_desktop_name': "Local AI Assistant",
+        'ai_desktop_desc': "Run private offline language models",
+        'skip_maps_log': "Skipping Cartographic module (Organic Maps).",
+        'installing_ai_engine_log': "Establishing cognitive engine core foundations (Llamafile)...",
+        'installing_vaults_log': "Assembling security vaults and privacy policies...",
+        'nvidia_title': "NVIDIA Hardware Acceleration",
+        'nvidia_prompt': "An NVIDIA GPU was detected ({0}). To enable hardware acceleration (CUDA) for local AI models, proprietary drivers are required.\n\nWould you like to install the NVIDIA driver now? (Requires Internet connection).",
+        'nvidia_detected_note': "Note: NVIDIA GPU detected. Proprietary driver can be installed for AI acceleration.",
+        'installing_nvidia_driver': "Installing NVIDIA proprietary driver for CUDA acceleration..."
     },
     'es': {
         'info': 'INFO',
@@ -376,7 +385,16 @@ TRANSLATIONS = {
         'wrapper_console_prompt': "Presiona ENTER para cerrar...",
         'install_errors_found': "Los siguientes componentes no pudieron instalarse y deberán revisarse manualmente:",
         'install_errors_summary': "Instalación finalizada con algunos errores.",
-        'desktop_cert_error': "Error al certificar el acceso directo {0}: {1}"
+        'desktop_cert_error': "Error al certificar el acceso directo {0}: {1}",
+        'ai_desktop_name': "Asistente de IA Local",
+        'ai_desktop_desc': "Ejecutar modelos de lenguaje privados sin conexión",
+        'skip_maps_log': "Omitiendo módulo cartográfico (Organic Maps).",
+        'installing_ai_engine_log': "Estableciendo bases del motor cognitivo (Llamafile)...",
+        'installing_vaults_log': "Configurando bóvedas de seguridad y privacidad...",
+        'nvidia_title': "Aceleración por Hardware NVIDIA",
+        'nvidia_prompt': "Se ha detectado una GPU NVIDIA ({0}). Para aprovechar la aceleración por hardware (CUDA) en los modelos de IA locales, se requiere el controlador propietario.\n\n¿Deseas instalar el controlador de NVIDIA ahora? (Requiere conexión a Internet).",
+        'nvidia_detected_note': "Nota: GPU NVIDIA detectada. Se puede instalar el controlador propietario para aceleración en IA.",
+        'installing_nvidia_driver': "Instalando controlador propietario NVIDIA para aceleración CUDA..."
     }
 }
 

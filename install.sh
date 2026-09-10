@@ -12,7 +12,13 @@ mkdir -p "$REFUGIOS_DIR/Scripts"
 
 # Initial log functions (will be supplemented by i18n)
 log_info() { echo -e "\e[1;34m[*]\e[0m $1"; }
-log_err()  { echo -e "\e[1;31m[X] ERROR:\e[0m $1"; exit 1; }
+log_err()  {
+    echo -e "\e[1;31m[X] ERROR:\e[0m $1"
+    if [ -t 0 ] && [ -t 1 ]; then
+        read -p "$(t press_enter 2>/dev/null || echo 'Press ENTER to close...')" -r || true
+    fi
+    exit 1
+}
 
 # Important paths and URLs
 REPO_URL="https://raw.githubusercontent.com/Ganso/refugiOS/main"
@@ -82,7 +88,9 @@ if [ -n "$MISSING" ]; then
         log_info "$(t installing_deps) $MISSING"
         sudo apt-get update -y >/dev/null 2>&1 || true
         sudo apt-get install -f -y < /dev/null || true
-        sudo apt-get install -y $MISSING < /dev/null
+        if ! sudo apt-get install -y $MISSING < /dev/null; then
+            log_err "$(t fail_installing_deps 2>/dev/null || echo 'Failed to install required dependencies. Please check your internet connection.')"
+        fi
     fi
 fi
 

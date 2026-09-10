@@ -23,6 +23,9 @@ fi
 
 if [ ! -f "$ZIM_FILE" ]; then
     echo "$(t error): ZIM file not found: $ZIM_FILE"
+    if [ -n "$DISPLAY" ] && command -v zenity >/dev/null 2>&1; then
+        zenity --error --title="Kiwix" --text="$(t zim_not_found): $ZIM_FILE" --width=400 2>/dev/null || true
+    fi
     exit 1
 fi
 
@@ -32,7 +35,7 @@ if command -v kiwix-desktop &>/dev/null; then
 elif [ -f "$HOME/refugiOS/Apps/kiwix-desktop.appimage" ]; then
     KIWIX_BIN="$HOME/refugiOS/Apps/kiwix-desktop.appimage"
     export APPIMAGE_EXTRACT_AND_RUN=1
-elif flatpak list --app | grep -q "org.kiwix.desktop"; then
+elif flatpak list --app 2>/dev/null | grep -q "org.kiwix.desktop"; then
     KIWIX_BIN="flatpak run org.kiwix.desktop"
 else
     # Fallback: search for any runnable kiwix AppImage in Apps folder (newest version)
@@ -41,6 +44,9 @@ fi
 
 if [ -z "$KIWIX_BIN" ]; then
     echo "$(t error): Kiwix Desktop not found."
+    if [ -n "$DISPLAY" ] && command -v zenity >/dev/null 2>&1; then
+        zenity --error --title="Kiwix" --text="$(t kiwix_not_found)" --width=400 2>/dev/null || true
+    fi
     exit 1
 fi
 
