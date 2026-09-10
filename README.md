@@ -39,10 +39,10 @@ La forma más fácil de tener refugiOS es descargar la imagen ya preparada, grab
 
 | Idioma | Descarga | Tamaño |
 | :--- | :--- | :--- |
-| 🇪🇸 **Español** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 4,0 GB comprimido (16 GB al descomprimir) |
-| 🇬🇧🇺🇸 **Inglés** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 3,9 GB comprimido (16 GB al descomprimir) |
+| 🇪🇸 **Español** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 2,9 GB comprimido (16 GB al descomprimir) |
+| 🇬🇧🇺🇸 **Inglés** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 2,9 GB comprimido (16 GB al descomprimir) |
 
-> **Última actualización de las imágenes: 29 de julio de 2026** (versión 0.24). Si descargaste una imagen anterior a esta fecha, sustitúyela: las publicadas el día 28 no expandían la partición al tamaño del pendrive.
+> **Última actualización de las imágenes: 10 de septiembre de 2026** (versión 0.26). Si descargaste una imagen anterior a esta fecha, sustitúyela para contar con todas las correcciones y soporte de aceleración gráfica.
 
 Descomprime el `.zip` antes de grabarlo: en Windows, clic derecho → *Extraer todo*; en Linux o macOS, `unzip refugios-base-16G-es.img.zip`. Obtendrás el fichero `.img` que se graba en el USB.
 

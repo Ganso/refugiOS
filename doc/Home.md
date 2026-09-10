@@ -16,10 +16,10 @@ Descarga la imagen pregenerada, grábala en un USB y arranca:
 
 | Idioma | Enlace | Tamaño |
 | :--- | :--- | :--- |
-| 🇪🇸 Español | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 4,0 GB |
-| 🇬🇧 Inglés | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 3,9 GB |
+| 🇪🇸 Español | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 2,9 GB |
+| 🇬🇧 Inglés | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 2,9 GB |
 
-> **Última actualización de las imágenes: 29 de julio de 2026** (versión 0.24).
+> **Última actualización de las imágenes: 10 de septiembre de 2026** (versión 0.26).
 
 Antes de grabar el `.zip`, comprueba que la descarga llegó entera con [SHA256SUMS.txt](https://refugios.ganso.org/SHA256SUMS.txt): descárgalo en la misma carpeta y ejecuta `sha256sum --ignore-missing -c SHA256SUMS.txt` (en macOS, `shasum -a 256`; en Windows, `Get-FileHash` desde PowerShell).
 
@@ -51,10 +51,10 @@ Download the pre-built image, flash it to a USB drive, and boot:
 
 | Language | Link | Size |
 | :--- | :--- | :--- |
-| 🇬🇧 English | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 3.9 GB |
-| 🇪🇸 Spanish | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 4.0 GB |
+| 🇬🇧 English | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 2.9 GB |
+| 🇪🇸 Spanish | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 2.9 GB |
 
-> **Images last updated: 29 July 2026** (version 0.24).
+> **Images last updated: 10 September 2026** (version 0.26).
 
 Before flashing the `.zip`, check that the download arrived intact with [SHA256SUMS.txt](https://refugios.ganso.org/SHA256SUMS.txt): download it into the same folder and run `sha256sum --ignore-missing -c SHA256SUMS.txt` (on macOS, `shasum -a 256`; on Windows, `Get-FileHash` from PowerShell).
 
