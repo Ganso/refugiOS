@@ -524,10 +524,12 @@ images". It rebuilds both base images from the current `main`, verifies them, pu
 them to the download server and updates every place that links to them. It takes roughly
 two hours end to end, mostly unattended.
 
-**Credentials.** `.sftp` in the repository root holds two lines: `user@host` and the
-password. It is gitignored and **must never be committed, printed, or pasted into a
-command line**. Read it from inside a script (see step 5). If it is missing, stop and ask
-the user for it — do not guess or look elsewhere.
+**Credentials & Automated Uploads.** `.sftp` in the repository root holds three lines:
+1. `user@host`
+2. `password`
+3. `remote_directory` (e.g. `/var/www/refugios` or whatever the target path is on the remote server)
+
+It is gitignored and **must never be committed, printed, or pasted into a command line**. Read it from inside automated scripts (such as `scripts/publish_images.py`). If it is missing, stop and ask the user for it — do not guess or look elsewhere.
 
 1. **Delete previous builds.** Any `.img` left from earlier work; they are several GB
    each and only cause confusion.
@@ -595,25 +597,13 @@ the user for it — do not guess or look elsewhere.
    curl -s https://refugios.ganso.org/refugios-base-16G-en.img.zip | sha256sum
    ```
 
-5. **Upload by SFTP to `/refugios`.** List the directory first and confirm the previous
-   files are there — publishing into the wrong path is worse than not publishing. Upload
-   to a temporary name and rename at the end, so an interrupted transfer never leaves a
-   half-written file under the public name. Verify the remote size matches the local one.
-   Roughly 9 MB/s, so about 15 minutes for the pair.
+5. **Upload by SFTP to the download server.** Run the automated publishing script:
+   ```bash
+   python3 scripts/publish_images.py
+   ```
+   This script reads `.sftp`, validates local checksums against `SHA256SUMS.txt`, verifies the remote destination contains `index.html`, uploads each image to a temporary name (`.tmp`), validates exact byte count on the server, rotates files atomically (`<file>` -> `<file>.old`, `<file>.tmp` -> `<file>`, remove `<file>.old`), uploads `SHA256SUMS.txt` **last**, and verifies the checksums remotely via SSH.
 
-   With no `sshpass` or `lftp` installed, `curl` speaks SFTP (libssh2): add the host to
-   `known_hosts` with `ssh-keyscan` once, and pass the credentials through a `curl -K`
-   config file written by a script, never on the command line. Two traps in the
-   upload-then-rename dance: SFTP `rename` **fails if the destination already exists**, so
-   an existing file must be renamed out of the way first (`index.html` →
-   `index.html.old`) and deleted afterwards; and while the temporary name is in place a
-   request for the real name answers **300**, not 404 — that is `Options -MultiViews`
-   doing its job, and it clears as soon as the rename lands.
-
-   Upload `SHA256SUMS.txt` **last**, after both images are in place under their final
-   names — it is the signal that the publication is complete, and a sums file that
-   describes files not yet uploaded (or half uploaded) sends users chasing a mismatch that
-   is not theirs. Then verify end to end from the outside, which also proves the served
+   Then verify end to end from the outside, which also proves the served
    bytes match the local ones:
    ```bash
    curl -s https://refugios.ganso.org/SHA256SUMS.txt                             # both lines, right names
