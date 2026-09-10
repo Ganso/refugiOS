@@ -629,18 +629,15 @@ It is gitignored and **must never be committed, printed, or pasted into a comman
 8. **Commit, tag and push**, and add a `### Cambiado` entry to `CHANGELOG.md` describing
    what the new images contain.
 
-9. **The landing page.** `web/index.html` is the page served at
-   https://refugios.ganso.org, styled after ganso.org (Poppins + Bootstrap + Font Awesome
-   from the same CDNs). It is deliberately written to survive version changes: no version
-   numbers, no file sizes, no dates, and no mention of the specific applications bundled.
-   The download buttons use relative links to the published filenames, which stay stable,
-   and the "¿Llegó entera la descarga?" block links `SHA256SUMS.txt` the same way — the
-   page carries no hashes of its own, so republishing the images never dates it.
-   It only needs re-uploading when the page itself changes:
-   ```bash
-   # index.html + refugiOS.png to /refugios
-   ```
-   Keep the logo credit in the footer.
+9. **The landing page.** `web/index.html` is the landing page served at
+   https://refugios.ganso.org, styled after ganso.org (Poppins + Bootstrap + Font Awesome).
+   
+   **MANDATORY on every release/republish:** Update the download button file sizes and
+   advisory texts in `web/index.html` (both in the Spanish and English blocks) to match the
+   real compressed size of the new `.img.zip` files (e.g. `2.9 GB` and `~2.9 GB`), and
+   upload `web/index.html` to the remote server alongside the images and `SHA256SUMS.txt`.
+   The script `scripts/publish_images.py` performs this size synchronization and upload
+   automatically. Always keep the logo credit in the footer intact.
 
 10. **Stale files on the server.** If the published names changed, the previous files stay
    behind and nothing links to them. **Ask the user before deleting anything remote** —

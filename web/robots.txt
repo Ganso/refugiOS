@@ -1,0 +1,17 @@
+# refugiOS — GusHome, 2026-09-01.
+#
+# La pagina SI se indexa: interesa que la gente encuentre el proyecto.
+# Las IMAGENES NO: son dos ficheros de ~4 GB cada uno, servidos DIRECTOS sin el
+# proxy de Cloudflare (por su seccion 2.8), o sea que cada descarga sale integra
+# por la linea de casa.
+#
+# Medido el 01/09/2026 antes de escribir esto: 27,83 GB descargados en .zip, y un
+# rastreador ya se habia llevado 60 MB de uno. Indexarlos no aporta nada —nadie
+# busca "refugios-base-16G-es.img.zip"— y cuesta ancho de banda real.
+
+User-agent: *
+Allow: /
+Disallow: /*.zip$
+Disallow: /*.img$
+
+Crawl-delay: 10

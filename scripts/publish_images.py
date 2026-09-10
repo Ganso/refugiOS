@@ -18,6 +18,7 @@ Follows the publishing protocol defined in AGENTS.md:
 
 import os
 import sys
+import re
 import time
 import subprocess
 
@@ -30,11 +31,30 @@ except ImportError:
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SFTP_FILE = os.path.join(REPO_DIR, ".sftp")
 
-FILES_TO_UPLOAD = [
-    "refugios-base-16G-es.img.zip",
-    "refugios-base-16G-en.img.zip",
-    "SHA256SUMS.txt",
-]
+def update_landing_page_html(es_zip_path, en_zip_path):
+    index_path = os.path.join(REPO_DIR, "web", "index.html")
+    if not os.path.isfile(index_path):
+        return None
+
+    es_gb = os.path.getsize(es_zip_path) / (1024**3)
+    en_gb = os.path.getsize(en_zip_path) / (1024**3)
+
+    es_str = f"{es_gb:.1f} GB"
+    en_str = f"{en_gb:.1f} GB"
+
+    with open(index_path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    content = re.sub(r'Imagen en Español \([0-9\.]+ GB\)', f'Imagen en Español ({es_str})', content)
+    content = re.sub(r'English Image \([0-9\.]+ GB\)', f'English Image ({en_str})', content)
+    content = re.sub(r'Al ser ficheros grandes \(~[0-9\.]+ GB\)', f'Al ser ficheros grandes (~{es_str})', content)
+    content = re.sub(r'As these are large images \(~[0-9\.]+ GB\)', f'As these are large images (~{en_str})', content)
+
+    with open(index_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    print(f"   [OK] web/index.html actualizado con tamaños: ES={es_str}, EN={en_str}")
+    return index_path
 
 def format_size(bytes_num):
     for unit in ['B', 'KB', 'MB', 'GB']:
@@ -120,17 +140,19 @@ def main():
     pwd = lines[1]
     remote_dir = lines[2]
 
+    es_zip = os.path.join(REPO_DIR, "refugios-base-16G-es.img.zip")
+    en_zip = os.path.join(REPO_DIR, "refugios-base-16G-en.img.zip")
+    sums_file = os.path.join(REPO_DIR, "SHA256SUMS.txt")
+
     # 1. Validar que los ficheros locales existan
     print("=> Comprobando ficheros locales a publicar...")
-    for fname in FILES_TO_UPLOAD:
-        local_path = os.path.join(REPO_DIR, fname)
-        if not os.path.isfile(local_path):
-            print(f"ERROR: Falta el archivo local requerido: {local_path}")
+    for fpath in [es_zip, en_zip, sums_file]:
+        if not os.path.isfile(fpath):
+            print(f"ERROR: Falta el archivo local requerido: {fpath}")
             sys.exit(1)
-        print(f"   [OK] {fname} ({format_size(os.path.getsize(local_path))})")
+        print(f"   [OK] {os.path.basename(fpath)} ({format_size(os.path.getsize(fpath))})")
 
     # 2. Comprobar checksums locales
-    sums_file = os.path.join(REPO_DIR, "SHA256SUMS.txt")
     print("=> Verificando integridad local antes de subir...")
     res = subprocess.run(["sha256sum", "-c", "SHA256SUMS.txt"], cwd=REPO_DIR)
     if res.returncode != 0:
@@ -138,7 +160,11 @@ def main():
         sys.exit(1)
     print("   [OK] Integridad local verificada.")
 
-    # 3. Conectar al servidor
+    # 3. Actualizar tamaños reales en web/index.html
+    print("=> Sincronizando tamaños reales en web/index.html...")
+    index_file = update_landing_page_html(es_zip, en_zip)
+
+    # 4. Conectar al servidor
     print(f"\n=> Conectando a {user}@{host} vía SFTP...")
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -146,7 +172,7 @@ def main():
     sftp = client.open_sftp()
     print("=> Conexión establecida.")
 
-    # 4. Validar directorio remoto
+    # 5. Validar directorio remoto
     print(f"=> Verificando directorio remoto: {remote_dir}")
     try:
         remote_files = [f.filename for f in sftp.listdir_attr(remote_dir)]
@@ -163,13 +189,17 @@ def main():
         sys.exit(1)
     print(f"   [OK] Directorio remoto verificado ({len(remote_files)} archivos encontrados).")
 
-    # 5. Subir archivos en orden: imágenes primero, SHA256SUMS.txt al final
-    for fname in FILES_TO_UPLOAD:
-        local_path = os.path.join(REPO_DIR, fname)
-        remote_path = f"{remote_dir}/{fname}"
-        upload_file(sftp, local_path, remote_path)
+    # 6. Subir archivos en orden estricto:
+    #    a) Imágenes base (.zip)
+    #    b) index.html (landing page con los tamaños actualizados)
+    #    c) SHA256SUMS.txt (siempre al final como señal de publicación completa)
+    upload_file(sftp, es_zip, f"{remote_dir}/refugios-base-16G-es.img.zip")
+    upload_file(sftp, en_zip, f"{remote_dir}/refugios-base-16G-en.img.zip")
+    if index_file and os.path.isfile(index_file):
+        upload_file(sftp, index_file, f"{remote_dir}/index.html")
+    upload_file(sftp, sums_file, f"{remote_dir}/SHA256SUMS.txt")
 
-    # 6. Verificación remota
+    # 7. Verificación remota
     print("\n=======================================================")
     print("=> Verificando checksums en el servidor remoto vía SSH...")
     stdin, stdout, stderr = client.exec_command(f"cd {remote_dir} && sha256sum -c SHA256SUMS.txt")

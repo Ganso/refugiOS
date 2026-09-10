@@ -4,344 +4,1137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>refugiOS - Tu refugio digital y biblioteca de supervivencia</title>
-    <meta name="description" content="Sistema operativo portátil que arranca desde un USB y funciona sin conexión a Internet: enciclopedia, cartografía, inteligencia artificial local y bóvedas cifradas.">
+    <meta name="description" content="Sistema operativo portátil que arranca desde un pendrive y funciona sin conexión a Internet: enciclopedia, cartografía, inteligencia artificial local y bóvedas cifradas.">
 
     <link rel="icon" href="refugiOS.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
+        :root {
+            --bg-base: #0a1118;
+            --bg-card: rgba(13, 23, 33, 0.72);
+            --bg-card-hover: rgba(18, 32, 47, 0.82);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(6, 182, 212, 0.35);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --cyan-accent: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.28);
+            --coral-download: #fa5c5c;
+            --coral-glow: rgba(250, 92, 92, 0.32);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            color-scheme: dark;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-            color: #222;
-        }
-        h1, h2, h3 {
-            font-weight: 800;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.65;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(ellipse 75% 45% at 50% -10%, rgba(6, 182, 212, 0.18), transparent 70%),
+                radial-gradient(ellipse 50% 40% at 85% 85%, rgba(14, 116, 144, 0.15), transparent 60%),
+                radial-gradient(ellipse 50% 35% at 15% 65%, rgba(250, 92, 92, 0.08), transparent 60%),
+                linear-gradient(to bottom, rgba(10, 17, 24, 0.78) 0%, rgba(10, 17, 24, 0.88) 40%, rgba(10, 17, 24, 0.94) 100%),
+                url('fondo_refugios.webp');
+            background-repeat: no-repeat;
+            background-position: center top;
+            background-size: cover;
+            background-attachment: fixed;
         }
 
-        /* Mismo esquema que ganso.org, con el tono del fondo de escritorio de refugiOS */
-        .hero-section {
-            color: white;
-            padding: 80px 0 70px;
-            background: linear-gradient(135deg, #123240 0%, #212529 100%);
-        }
-        .hero-logo {
-            width: 420px;
-            max-width: 85%;
-            margin-bottom: 30px;
-            background-color: #fff;
-            border-radius: 16px;
-            padding: 18px 24px;
-            border: 5px solid #000;
-        }
-        .main-nav {
-            margin-bottom: 30px;
-        }
-        .main-nav a {
-            color: #adb5bd !important;
+        a {
+            color: inherit;
             text-decoration: none;
-            margin: 0 10px;
-            font-weight: 600;
-        }
-        .main-nav a:hover {
-            color: white !important;
         }
 
-        .project-section {
-            padding: 70px 0;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
         }
 
-        .btn-custom {
-            border-radius: 50px;
+        /* --- Site Header / Nav --- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: rgba(10, 17, 24, 0.82);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: var(--transition);
+        }
+
+        .site-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #06b6d4 30%, 
+                #38bdf8 50%, 
+                #fa5c5c 70%, 
+                transparent 100%);
+            opacity: 0.85;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 68px;
+            gap: 1rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: #fff;
+            padding: 4px;
+            object-fit: contain;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- Language Selector Pill in Header --- */
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            padding: 3px;
+            border-radius: 9999px;
+            gap: 3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lang-btn:hover {
+            color: #fff;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #0891b2, #0284c7);
+            color: #ffffff;
+            box-shadow: 0 2px 12px rgba(8, 145, 178, 0.5);
+        }
+
+        /* --- Prominent Body Language Banner --- */
+        .body-lang-banner-wrap {
+            padding-top: 1.8rem;
+            text-align: center;
+        }
+
+        .body-lang-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(14, 116, 144, 0.15);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+            padding: 0.65rem 1.4rem;
+            border-radius: 9999px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+
+        .body-lang-banner:hover {
+            background: rgba(14, 116, 144, 0.25);
+            border-color: rgba(6, 182, 212, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .body-lang-text {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .body-lang-action-btn {
+            background: linear-gradient(135deg, #0891b2, #0284c7);
+            color: #ffffff;
+            border: none;
+            padding: 0.38rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            font-family: inherit;
+            box-shadow: 0 2px 10px rgba(8, 145, 178, 0.4);
+        }
+
+        .body-lang-action-btn:hover {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.6);
+            transform: scale(1.04);
+        }
+
+        /* --- Language View Visibility --- */
+        .lang-view {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .lang-view.active-view {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            padding: 3.5rem 0 3.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-logo-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.75rem;
+        }
+
+        .logo-glow {
+            position: absolute;
+            inset: -12px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.6), rgba(250, 92, 92, 0.4));
+            border-radius: 24px;
+            filter: blur(18px);
+            opacity: 0.6;
+            z-index: 0;
+            animation: pulse-glow 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { opacity: 0.4; transform: scale(0.98); }
+            100% { opacity: 0.75; transform: scale(1.02); }
+        }
+
+        .hero-logo {
+            position: relative;
+            width: 380px;
+            max-width: 86vw;
+            background: #ffffff;
+            padding: 18px 30px;
+            border-radius: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+            z-index: 1;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(6, 182, 212, 0.10);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            padding: 0.4rem 1.1rem;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            color: #67e8f9;
+            margin-bottom: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.02em;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #06b6d4;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #06b6d4;
+        }
+
+        .hero-title {
+            font-size: clamp(2.3rem, 5vw, 3.8rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1.1rem;
+            background: linear-gradient(135deg, #ffffff 40%, #e2e8f0 70%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-bio {
+            max-width: 720px;
+            margin: 0 auto 2.2rem;
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            font-weight: 400;
+        }
+
+        .hero-bio em {
+            color: var(--text-primary);
+            font-style: normal;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
+        }
+
+        .hero-cta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            padding: 0.8rem 1.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #fa5c5c, #e04a4a);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 18px var(--coral-glow);
+        }
+
+        .btn-download:hover {
+            background: linear-gradient(135deg, #fb7185, #fa5c5c);
+            color: #fff;
+            box-shadow: 0 8px 26px var(--coral-glow);
+        }
+
+        .btn-github {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+            border-color: var(--border-subtle);
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-github:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #fff;
+        }
+
+        /* --- Section Styling --- */
+        .section-wrap {
+            padding: 3.5rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 760px;
+            margin: 0 auto 3rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(135deg, #ffffff 60%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.65;
+        }
+
+        .section-desc em {
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        /* --- Features Grid --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.6rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.3), transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            border-color: var(--border-highlight);
+            box-shadow: 0 16px 36px -10px var(--cyan-glow);
+        }
+
+        .feature-icon-box {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            background: rgba(6, 182, 212, 0.12);
+            border: 1px solid rgba(6, 182, 212, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-        }
-        .btn-custom:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            color: white;
-        }
-        .btn-github { background-color: #24292e; color: white; border: none; }
-        .btn-github:hover { background-color: #1b1f23; }
-        .btn-download { background-color: #fa5c5c; color: white; border: none; }
-        .btn-download:hover { background-color: #e04a4a; }
-
-        /* Rasgos del sistema */
-        .feature-icon {
-            font-size: 2.2rem;
-            color: #123240;
-            margin-bottom: 12px;
-        }
-        .feature h3 {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .feature p {
-            color: #6c757d;
-            font-size: 0.95rem;
-            margin-bottom: 0;
+            font-size: 1.6rem;
+            color: #38bdf8;
+            margin-bottom: 1.25rem;
+            transition: var(--transition);
         }
 
-        /* Capturas de pantalla */
-        .shot img {
-            width: 100%;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 0, 0, 0.12);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .feature-card:hover .feature-icon-box {
+            background: rgba(6, 182, 212, 0.22);
+            color: #67e8f9;
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
         }
-        .shot a:hover img {
+
+        .feature-heading {
+            font-size: 1.18rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-text {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.55;
+        }
+
+        /* --- Screenshots Grid --- */
+        .shots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+
+        .shot-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shot-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
-        }
-        .shot p {
-            margin-top: 14px;
-            margin-bottom: 0;
-            color: #6c757d;
-            font-size: 0.95rem;
-            font-weight: 600;
+            border-color: var(--border-highlight);
+            box-shadow: 0 20px 40px -15px var(--cyan-glow);
         }
 
-        /* Comprobación de la descarga */
-        .checksums {
-            border: 1px solid rgba(0, 0, 0, 0.12);
-            border-radius: 10px;
-            background-color: #fff;
-            padding: 16px 22px;
+        .shot-img-wrap {
+            overflow: hidden;
+            display: block;
+            position: relative;
+            background: #060b10;
         }
-        .checksums summary {
+
+        .shot-img-wrap img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .shot-card:hover .shot-img-wrap img {
+            transform: scale(1.03);
+        }
+
+        .shot-caption {
+            padding: 1.1rem 1.4rem;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* --- Download Box --- */
+        .download-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            max-width: 860px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(250, 92, 92, 0.4), transparent 50%, rgba(6, 182, 212, 0.3) 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .download-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            max-width: 540px;
+            margin: 2rem auto;
+        }
+
+        .btn-iso {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            background: linear-gradient(135deg, #fa5c5c, #e04a4a);
+            color: #fff;
+            box-shadow: 0 4px 18px var(--coral-glow);
+            transition: var(--transition);
+        }
+
+        .btn-iso:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #fb7185, #fa5c5c);
+            box-shadow: 0 8px 25px var(--coral-glow);
+            color: #fff;
+        }
+
+        .checksums-details {
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: rgba(10, 17, 24, 0.6);
+            padding: 1.2rem 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .checksums-details summary {
             font-weight: 600;
             cursor: pointer;
-            color: #123240;
+            color: #67e8f9;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            user-select: none;
         }
-        .checksums p {
-            color: #6c757d;
-            font-size: 0.95rem;
-            margin: 14px 0 6px;
+
+        .checksums-details summary:hover {
+            color: #fff;
         }
-        .checksums pre {
-            background-color: #f1f3f5;
+
+        .checksums-body {
+            margin-top: 1.2rem;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        .checksums-body p {
+            margin-bottom: 0.75rem;
+        }
+
+        .checksums-body a {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+
+        .checksums-body pre {
+            background: #060b10;
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 0;
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0 1rem;
             overflow-x: auto;
-            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: #cbd5e1;
         }
 
-        /* Bloque en inglés, discreto */
-        #english {
-            background-color: #2c2c2c;
-            color: #f8f9fa;
+        /* --- Footer --- */
+        .site-footer {
+            margin-top: 4rem;
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            background: rgba(10, 17, 24, 0.85);
         }
-        #english .lead { color: #adb5bd; }
 
-        /* Enlace de autoría, igual que en ganso.org */
         .link-playonretro {
-            color: #adb5bd;
-            text-decoration: none;
+            color: var(--text-secondary);
             font-weight: 600;
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 9px;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
             margin: 0 4px;
         }
+
         .link-playonretro:hover {
-            background-color: rgba(250, 92, 92, 0.1);
+            background: rgba(250, 92, 92, 0.15);
             color: #fa5c5c;
             border-color: rgba(250, 92, 92, 0.4);
+        }
+
+        .link-ganso {
+            color: #67e8f9;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .link-ganso:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 2.5rem 0 2rem; }
+            .hero-title { font-size: 2.2rem; }
+            .hero-bio { font-size: 1rem; }
+            .nav-inner { height: auto; padding: 1rem 0; flex-direction: column; gap: 0.8rem; }
+            .nav-right { flex-direction: column-reverse; gap: 0.8rem; }
+            .download-box { padding: 2rem 1.25rem; }
+            .body-lang-banner { flex-direction: column; gap: 8px; border-radius: 18px; padding: 0.8rem 1.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <header class="hero-section text-center">
-        <div class="container">
-            <nav class="main-nav">
-                <a href="https://ganso.org">El nido del ganso</a> |
-                <a href="https://github.com/Ganso/refugiOS/">GitHub</a> |
-                <a href="#descargas">Descargas</a>
-            </nav>
+    <header class="site-header">
+        <div class="container nav-inner">
+            <a href="https://refugios.ganso.org" class="brand">
+                <img src="refugiOS.png" alt="refugiOS" class="brand-logo">
+                <span>refugiOS</span>
+            </a>
+            
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="https://ganso.org"><i class="fa-solid fa-feather-pointed"></i> El nido del ganso</a></li>
+                    <li><a href="https://github.com/Ganso/refugiOS/" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a></li>
+                    <li><a href="#descargas"><i class="fa-solid fa-download"></i> <span class="nav-dl-text">Descargas</span></a></li>
+                </ul>
 
-            <img src="refugiOS.png" alt="Logo de refugiOS" class="hero-logo">
-
-            <h1 class="display-4 mb-3">refugiOS</h1>
-            <p class="lead mb-4 col-md-8 mx-auto">
-                Tu refugio digital y biblioteca de supervivencia.
-            </p>
-
-            <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="https://github.com/Ganso/refugiOS/" target="_blank" class="btn btn-github btn-lg btn-custom px-4 py-3">
-                    <i class="fa-brands fa-github"></i> Código y documentación
-                </a>
-                <a href="#descargas" class="btn btn-download btn-lg btn-custom px-4 py-3">
-                    <i class="fa-solid fa-download"></i> Descargar
-                </a>
+                <!-- Selector de idioma en la barra de navegación -->
+                <div class="lang-switch" role="group" aria-label="Language Selector">
+                    <button type="button" class="lang-btn active" id="btn-es">
+                        <span>🇪🇸</span> ES
+                    </button>
+                    <button type="button" class="lang-btn" id="btn-en">
+                        <span>🇬🇧</span> EN
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <section class="project-section">
-        <div class="container text-center">
-            <p class="lead col-md-8 mx-auto mb-4">
-                <strong>refugiOS</strong> es un sistema operativo portátil que arranca desde un pendrive en
-                cualquier ordenador y funciona <strong>sin conexión a Internet</strong>. No se instala en el
-                disco duro ni sustituye a tu sistema: lo llevas contigo y lo usas donde haga falta.
-                La idea es sencilla: <em>prepáralo hoy en casa, con calma y con buena conexión,
-                para tenerlo listo el día que no haya red</em>.
-            </p>
-            <p class="lead col-md-8 mx-auto mb-5">
-                Una vez configurado lleva dentro una copia de Wikipedia, cartografía de todo el mundo,
-                un asistente de inteligencia artificial que se ejecuta en el propio equipo y bóvedas
-                cifradas para tus documentos, sin depender de ningún servidor ni servicio en la nube.
-                Es software libre, y tú decides qué contenidos entran y cuáles no.
-            </p>
-
-            <div class="row col-lg-10 mx-auto g-4">
-                <div class="col-6 col-md-3 feature">
-                    <div class="feature-icon"><i class="fa-solid fa-book-open"></i></div>
-                    <h3>Conocimiento</h3>
-                    <p>Enciclopedia y guías, consultables sin red.</p>
-                </div>
-                <div class="col-6 col-md-3 feature">
-                    <div class="feature-icon"><i class="fa-solid fa-map-location-dot"></i></div>
-                    <h3>Cartografía</h3>
-                    <p>Mapas y posicionamiento sin cobertura.</p>
-                </div>
-                <div class="col-6 col-md-3 feature">
-                    <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
-                    <h3>IA local</h3>
-                    <p>Un asistente que funciona en tu propio equipo.</p>
-                </div>
-                <div class="col-6 col-md-3 feature">
-                    <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
-                    <h3>Bóvedas</h3>
-                    <p>Cifrado para tus documentos personales.</p>
+    <main>
+        <!-- =================================================================== -->
+        <!-- VERSIÓN EN ESPAÑOL -->
+        <!-- =================================================================== -->
+        <div id="view-es" class="lang-view active-view">
+            <!-- Banner llamativo de cambio a inglés en el cuerpo -->
+            <div class="container body-lang-banner-wrap">
+                <div class="body-lang-banner">
+                    <span class="body-lang-text">🌐 Looking for the English version of refugiOS?</span>
+                    <button type="button" class="body-lang-action-btn" id="banner-btn-en">
+                        <span>🇬🇧 Press here for English</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <section class="project-section pt-0">
-        <div class="container text-center">
-            <div class="row col-lg-11 mx-auto g-4">
-                <div class="col-12 col-md-4 shot">
-                    <a href="shots/escritorio.jpg" target="_blank">
-                        <img src="shots/escritorio.jpg" alt="El escritorio de refugiOS con los accesos a cada módulo" loading="lazy">
-                    </a>
-                    <p>El escritorio, con un acceso por módulo</p>
+            <!-- Hero ES -->
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-logo-wrapper">
+                        <div class="logo-glow"></div>
+                        <img src="refugiOS.png" alt="Logo de refugiOS" class="hero-logo">
+                    </div>
+
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>SISTEMA PORTÁTIL AUTÓNOMO · SIN CONEXIÓN</span>
+                    </div>
+
+                    <h1 class="hero-title">refugiOS</h1>
+                    <p class="hero-bio">
+                        Tu <em>refugio digital</em> y <em>biblioteca de supervivencia</em>.<br>
+                        Arranca en cualquier ordenador desde un pendrive y funciona al 100% sin Internet.
+                    </p>
+
+                    <div class="hero-cta">
+                        <a href="#descargas" class="btn btn-download">
+                            <i class="fa-solid fa-download"></i> Descargar imagen
+                        </a>
+                        <a href="https://github.com/Ganso/refugiOS/" target="_blank" class="btn btn-github">
+                            <i class="fa-brands fa-github"></i> Código y documentación
+                        </a>
+                    </div>
                 </div>
-                <div class="col-12 col-md-4 shot">
-                    <a href="shots/wikipedia.jpg" target="_blank">
-                        <img src="shots/wikipedia.jpg" alt="Un artículo de la enciclopedia consultado sin conexión" loading="lazy">
-                    </a>
-                    <p>La enciclopedia, consultada sin red</p>
+            </section>
+
+            <!-- Descripción & Rasgos ES -->
+            <section class="section-wrap">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">Prepáralo hoy en casa con calma</h2>
+                        <p class="section-desc">
+                            <strong>refugiOS</strong> no se instala en el disco duro ni sustituye a tu sistema habitual: lo llevas contigo en un pendrive y lo usas donde haga falta. La premisa es simple: <em>prepáralo hoy con buena conexión para tenerlo listo el día que no haya red</em>.
+                        </p>
+                        <p class="section-desc" style="margin-top: 1rem;">
+                            Al arrancar tendrás a mano Wikipedia completa, cartografía detallada de todo el planeta, inteligencia artificial local y bóvedas cifradas para salvaguardar tu documentación vital sin servidores ni nubes.
+                        </p>
+                    </div>
+
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <h3 class="feature-heading">Conocimiento</h3>
+                            <p class="feature-text">Enciclopedia completa, guías técnicas y manuales de supervivencia consultables sin conexión.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <h3 class="feature-heading">Cartografía</h3>
+                            <p class="feature-text">Mapas mundiales vectoriales y posicionamiento detallado sin necesidad de cobertura móvil.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <h3 class="feature-heading">IA Local</h3>
+                            <p class="feature-text">Asistente de inteligencia artificial integrado que razona y responde directamente en tu propio equipo.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <h3 class="feature-heading">Bóvedas</h3>
+                            <p class="feature-text">Cifrado robusto para proteger tus documentos personales, identificaciones y copias críticas.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-12 col-md-4 shot">
-                    <a href="shots/mapas.jpg" target="_blank">
-                        <img src="shots/mapas.jpg" alt="Cartografía con detalle de carreteras y topónimos, sin conexión" loading="lazy">
-                    </a>
-                    <p>La cartografía, con todo el detalle</p>
+            </section>
+
+            <!-- Capturas ES -->
+            <section class="section-wrap" style="padding-top: 1rem;">
+                <div class="container">
+                    <div class="section-header" style="margin-bottom: 2rem;">
+                        <h2 class="section-title">Un vistazo al sistema</h2>
+                        <p class="section-desc">Diseñado sobre un escritorio ágil, claro y preparado para funcionar en cualquier máquina.</p>
+                    </div>
+
+                    <div class="shots-grid">
+                        <div class="shot-card">
+                            <a href="shots/escritorio.jpg" target="_blank" class="shot-img-wrap">
+                                <img src="shots/escritorio.jpg" alt="Escritorio de refugiOS con accesos directos por módulo" loading="lazy">
+                            </a>
+                            <div class="shot-caption">El escritorio, con un acceso directo por módulo</div>
+                        </div>
+
+                        <div class="shot-card">
+                            <a href="shots/wikipedia.jpg" target="_blank" class="shot-img-wrap">
+                                <img src="shots/wikipedia.jpg" alt="Artículo de la enciclopedia Kiwix consultado sin red" loading="lazy">
+                            </a>
+                            <div class="shot-caption">La enciclopedia, consultada sin conexión</div>
+                        </div>
+
+                        <div class="shot-card">
+                            <a href="shots/mapas.jpg" target="_blank" class="shot-img-wrap">
+                                <img src="shots/mapas.jpg" alt="Cartografía offline con detalle de carreteras y topónimos" loading="lazy">
+                            </a>
+                            <div class="shot-caption">Cartografía mundial con todo el detalle</div>
+                        </div>
+                    </div>
+
+                    <p style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.95rem;">
+                        Colección ampliada con más de 40 capturas en español e inglés disponible en 
+                        <a href="https://github.com/Ganso/refugiOS/blob/main/media/screenshots/README.md" target="_blank" style="color: #38bdf8; text-decoration: underline;">el repositorio oficial</a>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Descargas ES -->
+            <section class="section-wrap" id="descargas">
+                <div class="container">
+                    <div class="download-box">
+                        <div class="section-header" style="margin-bottom: 1.5rem;">
+                            <h2 class="section-title">Descarga la imagen lista para USB</h2>
+                            <p class="section-desc">
+                                Descarga la imagen en tu idioma, descomprime el <code>.zip</code> y graba el archivo <code>.img</code> resultante en un pendrive (con balenaEtcher, Rufus o <code>dd</code>). Al arrancar el USB, el asistente de bienvenida te guiará en el primer inicio.
+                            </p>
+                        </div>
+
+                        <div class="download-buttons">
+                            <a href="refugios-base-16G-es.img.zip" class="btn-iso">
+                                <i class="fa-solid fa-download"></i> Imagen en Español (2.9 GB)
+                            </a>
+                            <a href="refugios-base-16G-en.img.zip" class="btn-iso">
+                                <i class="fa-solid fa-download"></i> English Image (2.9 GB)
+                            </a>
+                        </div>
+
+                        <details class="checksums-details">
+                            <summary><i class="fa-solid fa-fingerprint"></i> ¿Llegó íntegra la descarga? Comprueba la firma SHA256</summary>
+                            <div class="checksums-body">
+                                <p>
+                                    Al ser ficheros grandes (~2.9 GB), una mala conexión puede corromper la descarga. Descarga <a href="SHA256SUMS.txt">SHA256SUMS.txt</a> en la misma carpeta que el <code>.zip</code> y comprueba la integridad:
+                                </p>
+                                <p><strong>En Linux:</strong></p>
+                                <pre><code>sha256sum --ignore-missing -c SHA256SUMS.txt</code></pre>
+                                <p><strong>En macOS:</strong></p>
+                                <pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS.txt</code></pre>
+                                <p><strong>En Windows (PowerShell):</strong></p>
+                                <pre><code>Get-FileHash refugios-base-16G-es.img.zip -Algorithm SHA256</code></pre>
+                                <p style="margin-bottom: 0;">
+                                    Debe devolver <code>OK</code> o coincidir exactamente con el hash del archivo de sumas.
+                                </p>
+                            </div>
+                        </details>
+
+                        <p style="text-align: center; margin-top: 1.8rem; margin-bottom: 0; color: var(--text-muted); font-size: 0.92rem;">
+                            Las instrucciones paso a paso, los requisitos y las guías completas están en 
+                            <a href="https://github.com/Ganso/refugiOS/" target="_blank" style="color: #38bdf8; text-decoration: underline;">GitHub</a>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- VERSIÓN EN INGLÉS -->
+        <!-- =================================================================== -->
+        <div id="view-en" class="lang-view">
+            <!-- Banner llamativo de cambio a español en el cuerpo -->
+            <div class="container body-lang-banner-wrap">
+                <div class="body-lang-banner">
+                    <span class="body-lang-text">🌐 ¿Prefieres leer la página en español?</span>
+                    <button type="button" class="body-lang-action-btn" id="banner-btn-es">
+                        <span>🇪🇸 Pulsa aquí para Español</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
-            <p class="text-muted mt-4 mb-0">
-                Hay más capturas de todas las aplicaciones, en español y en inglés,
-                <a href="https://github.com/Ganso/refugiOS/blob/main/media/screenshots/README.md" target="_blank">en el repositorio</a>.
-            </p>
-        </div>
-    </section>
 
-    <section class="project-section bg-light" id="descargas">
-        <div class="container text-center">
-            <h2 class="mb-4">Descarga la imagen</h2>
-            <p class="lead col-md-8 mx-auto mb-5 text-muted">
-                Descarga la imagen en tu idioma, descomprime el <code>.zip</code> y graba el fichero
-                <code>.img</code> resultante en un pendrive. Al arrancar, el asistente del escritorio
-                se encarga del resto.
-            </p>
-            <div class="d-grid gap-3 col-md-7 col-lg-5 mx-auto mb-4">
-                <a href="refugios-base-16G-es.img.zip" class="btn btn-download btn-lg btn-custom py-3">
-                    <i class="fa-solid fa-download"></i> Español
-                </a>
-                <a href="refugios-base-16G-en.img.zip" class="btn btn-download btn-lg btn-custom py-3">
-                    <i class="fa-solid fa-download"></i> English
-                </a>
-            </div>
-            <details class="checksums col-md-9 col-lg-8 mx-auto text-start mb-4">
-                <summary><i class="fa-solid fa-fingerprint"></i> ¿Llegó entera la descarga? Compruébalo</summary>
-                <p>
-                    Son varios gigabytes: con una conexión inestable el fichero puede llegar incompleto y
-                    el pendrive no arrancar, sin más pista del motivo. Descarga
-                    <a href="SHA256SUMS.txt">SHA256SUMS.txt</a> (unos pocos bytes) en la misma carpeta que
-                    el <code>.zip</code> y comprueba que coincide.
-                </p>
-                <p>En Linux:</p>
-<pre><code>sha256sum --ignore-missing -c SHA256SUMS.txt</code></pre>
-                <p>En macOS:</p>
-<pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS.txt</code></pre>
-                <p>En Windows, desde PowerShell (compara el resultado con la línea del fichero):</p>
-<pre><code>Get-FileHash refugios-base-16G-es.img.zip -Algorithm SHA256</code></pre>
-                <p>
-                    Debe responder <code>OK</code> (o mostrar el mismo código). Si no coincide, vuelve a
-                    descargar el <code>.zip</code>: no lo grabes. Y si al descomprimirlo el programa avisa
-                    de un error, la descarga tampoco está completa.
-                </p>
-            </details>
-            <p class="text-muted">
-                Las instrucciones paso a paso, los requisitos y las guías completas están en
-                <a href="https://github.com/Ganso/refugiOS/" target="_blank">GitHub</a>.
-            </p>
-        </div>
-    </section>
+            <!-- Hero EN -->
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-logo-wrapper">
+                        <div class="logo-glow"></div>
+                        <img src="refugiOS.png" alt="refugiOS logo" class="hero-logo">
+                    </div>
 
-    <section class="project-section" id="english">
-        <div class="container text-center">
-            <h2 class="mb-4">In English</h2>
-            <p class="lead col-md-8 mx-auto mb-4">
-                <strong>refugiOS</strong> is a portable operating system that boots from a USB drive on any
-                computer and works <strong>with no Internet connection</strong>. Once set up it carries a copy
-                of Wikipedia, maps of the whole world, an AI assistant running on your own machine and
-                encrypted vaults for your documents, depending on no server and no cloud service.
-                Prepare it at home today, use it the day there is no network.
-            </p>
-            <div class="d-grid gap-3 col-md-6 col-lg-4 mx-auto">
-                <a href="https://github.com/Ganso/refugiOS/blob/main/README.en.md" target="_blank" class="btn btn-github btn-lg btn-custom py-3">
-                    <i class="fa-brands fa-github"></i> Documentation
-                </a>
-            </div>
-        </div>
-    </section>
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span>AUTONOMOUS PORTABLE SYSTEM · OFFLINE FIRST</span>
+                    </div>
 
-    <footer class="bg-dark text-white text-center py-5">
+                    <h1 class="hero-title">refugiOS</h1>
+                    <p class="hero-bio">
+                        Your <em>digital refuge</em> and <em>survival library</em>.<br>
+                        Boots from a USB flash drive on any computer and runs 100% without an Internet connection.
+                    </p>
+
+                    <div class="hero-cta">
+                        <a href="#descargas" class="btn btn-download">
+                            <i class="fa-solid fa-download"></i> Download image
+                        </a>
+                        <a href="https://github.com/Ganso/refugiOS/blob/main/README.en.md" target="_blank" class="btn btn-github">
+                            <i class="fa-brands fa-github"></i> Code & Documentation
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Description & Features EN -->
+            <section class="section-wrap">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">Prepare it today at home with peace of mind</h2>
+                        <p class="section-desc">
+                            <strong>refugiOS</strong> is not a typical Linux distribution. It does not install on your hard drive or replace your operating system. It lives on a USB drive and boots on any PC or Raspberry Pi, working completely autonomously without installing anything on the host computer.
+                        </p>
+                        <p class="section-desc" style="margin-top: 1rem;">
+                            The concept is simple: <em>prepare it today at home with a good Internet connection, so you have it ready the day there is no network</em>. It carries a complete copy of Wikipedia, worldwide street mapping, an on-device local AI assistant, and encrypted personal vaults.
+                        </p>
+                    </div>
+
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <h3 class="feature-heading">Knowledge</h3>
+                            <p class="feature-text">Full encyclopedia, technical survival guides, and medical manuals accessible without an Internet connection.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <h3 class="feature-heading">Mapping</h3>
+                            <p class="feature-text">Worldwide offline vector street maps and search capability without mobile network coverage.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <h3 class="feature-heading">Local AI</h3>
+                            <p class="feature-text">Integrated private artificial intelligence running entirely on your machine, requiring no remote cloud.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon-box">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <h3 class="feature-heading">Encrypted Vaults</h3>
+                            <p class="feature-text">Strong encryption to protect personal records, critical credentials, and vital family documents.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Capturas EN -->
+            <section class="section-wrap" style="padding-top: 1rem;">
+                <div class="container">
+                    <div class="section-header" style="margin-bottom: 2rem;">
+                        <h2 class="section-title">System Overview</h2>
+                        <p class="section-desc">Designed around a clean, responsive desktop ready to perform on standard hardware.</p>
+                    </div>
+
+                    <div class="shots-grid">
+                        <div class="shot-card">
+                            <a href="shots/escritorio.jpg" target="_blank" class="shot-img-wrap">
+                                <img src="shots/escritorio.jpg" alt="refugiOS desktop with dedicated module launchers" loading="lazy">
+                            </a>
+                            <div class="shot-caption">Clean desktop with dedicated module launchers</div>
+                        </div>
+
+                        <div class="shot-card">
+                            <a href="shots/wikipedia.jpg" target="_blank" class="shot-img-wrap">
+                                <img src="shots/wikipedia.jpg" alt="Kiwix encyclopedia running offline" loading="lazy">
+                            </a>
+                            <div class="shot-caption">Full encyclopedia, browsed completely offline</div>
+                        </div>
+
+                        <div class="shot-card">
+                            <a href="shots/mapas.jpg" target="_blank" class="shot-img-wrap">
+                                <img src="shots/mapas.jpg" alt="Worldwide offline maps with full street-level detail" loading="lazy">
+                            </a>
+                            <div class="shot-caption">Worldwide maps with detailed street data</div>
+                        </div>
+                    </div>
+
+                    <p style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.95rem;">
+                        Extended gallery with more than 40 screenshots in English and Spanish available on
+                        <a href="https://github.com/Ganso/refugiOS/blob/main/media/screenshots/README.md" target="_blank" style="color: #38bdf8; text-decoration: underline;">the official repository</a>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Downloads EN -->
+            <section class="section-wrap" id="descargas-en">
+                <div class="container">
+                    <div class="download-box">
+                        <div class="section-header" style="margin-bottom: 1.5rem;">
+                            <h2 class="section-title">Download Ready-to-Boot USB Image</h2>
+                            <p class="section-desc">
+                                Download the image in your language, unzip the <code>.zip</code> file, and flash the resulting <code>.img</code> onto a USB drive (using balenaEtcher, Rufus, or <code>dd</code>). When you boot from the USB, the welcome assistant will guide your setup.
+                            </p>
+                        </div>
+
+                        <div class="download-buttons">
+                            <a href="refugios-base-16G-en.img.zip" class="btn-iso">
+                                <i class="fa-solid fa-download"></i> English Image (2.9 GB)
+                            </a>
+                            <a href="refugios-base-16G-es.img.zip" class="btn-iso">
+                                <i class="fa-solid fa-download"></i> Imagen en Español (2.9 GB)
+                            </a>
+                        </div>
+
+                        <details class="checksums-details">
+                            <summary><i class="fa-solid fa-fingerprint"></i> Did the download arrive intact? Verify the SHA256 checksum</summary>
+                            <div class="checksums-body">
+                                <p>
+                                    As these are large images (~2.9 GB), unstable connections may corrupt the file. Download <a href="SHA256SUMS.txt">SHA256SUMS.txt</a> into the same folder and verify the checksum before flashing:
+                                </p>
+                                <p><strong>On Linux:</strong></p>
+                                <pre><code>sha256sum --ignore-missing -c SHA256SUMS.txt</code></pre>
+                                <p><strong>On macOS:</strong></p>
+                                <pre><code>shasum -a 256 --ignore-missing -c SHA256SUMS.txt</code></pre>
+                                <p><strong>On Windows (PowerShell):</strong></p>
+                                <pre><code>Get-FileHash refugios-base-16G-en.img.zip -Algorithm SHA256</code></pre>
+                                <p style="margin-bottom: 0;">
+                                    It must return <code>OK</code> or match the corresponding entry in the checksums file.
+                                </p>
+                            </div>
+                        </details>
+
+                        <p style="text-align: center; margin-top: 1.8rem; margin-bottom: 0; color: var(--text-muted); font-size: 0.92rem;">
+                            Step-by-step guides, system requirements, and comprehensive docs are available on 
+                            <a href="https://github.com/Ganso/refugiOS/blob/main/README.en.md" target="_blank" style="color: #38bdf8; text-decoration: underline;">GitHub</a>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
         <div class="container">
-            <p class="mb-2 text-white-50">
-                Logotipo de
+            <p style="margin-bottom: 0.8rem;">
+                <span id="footer-logo-text">Logotipo e identidad visual por</span>
                 <a href="https://x.com/PlayOnRetro" target="_blank" class="link-playonretro">
                     <i class="fa-solid fa-pen-nib"></i> Felipe Monge «PlayOnRetro»
                 </a>
             </p>
-            <p class="mb-0 text-white-50">
-                2026 Javi Prieto (<a href="https://ganso.org" class="text-white-50">ganso.org</a>) &middot;
-                Software libre bajo licencia AGPL-3.0
+            <p style="margin-bottom: 0;">
+                2026 Javi Prieto (<a href="https://ganso.org" class="link-ganso">ganso.org</a>) &middot;
+                <span id="footer-license-text">Software libre bajo licencia</span> 
+                <a href="https://github.com/Ganso/refugiOS/blob/main/LICENSE" target="_blank" style="color: var(--text-secondary); text-decoration: underline;">AGPL-3.0</a>
             </p>
         </div>
     </footer>
+
+    <!-- Carga del script de idiomas desde fichero externo 'self' conforme a CSP -->
+    <script src="lang.js"></script>
 
 </body>
 </html>
