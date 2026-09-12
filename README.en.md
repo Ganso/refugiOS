@@ -282,6 +282,18 @@ The **[media/](media/README.md)** folder gathers all the project's graphic mater
 
 ---
 
+## Star History
+
+<a href="https://www.star-history.com/?repos=ganso%2Frefugios&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=ganso/refugios&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=ganso/refugios&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=ganso/refugios&type=date&legend=top-left" />
+ </picture>
+</a>
+
+---
+
 ## Acknowledgements and Sources
 
 Special thanks to [Felipe Monge "PlayOnRetro"](https://x.com/PlayOnRetro) for the logo design.
