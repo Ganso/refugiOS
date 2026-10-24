@@ -200,7 +200,17 @@ MAP_PRESETS = [
 
 # Offline translator: Firefox's neural translation models, bundled in the Flatpak
 TRANSLATOR_ID = "dev.ters.LocalTranslate"
-TRANSLATOR_SIZE_MB = 2700
+
+# Disk space, in MB, measured on the 0.27 base image and in a full installation
+# under QEMU (October 2026). Organic Maps and the translator share the KDE, GL
+# and codecs Flatpak runtimes, which must only be counted once.
+BASE_PACKAGES_MB = 200        # phase 1 measured 163 MB, apt lists included
+KIWIX_APP_MB = 160            # Kiwix Desktop AppImage
+EXTRAS_MB = 1250              # LibreOffice, VLC, Syncthing, Evince: apt says 1234 MB
+NVIDIA_MB = 550               # driver and firmware with the DKMS module built: 516 MB
+QT_RUNTIMES_MB = 1650         # Flatpak runtimes shared by Organic Maps and the translator
+ORGANIC_MAPS_APP_MB = 500     # the app alone (487 MB); with runtimes it measured 2122 MB
+TRANSLATOR_APP_MB = 2750      # LocalTranslate with its models (2.7 GB installed)
 
 # Spell checking and hyphenation for LibreOffice, gedit and the browser
 SPELLING_PACKAGES = {
@@ -1329,6 +1339,32 @@ def default_wiki_index(free_space_mb, lang):
             best = i
     return best
 
+def flatpak_app_installed(app_id):
+    return bool(shutil.which("flatpak")) and subprocess.call(
+        f"flatpak info {app_id} >/dev/null 2>&1", shell=True) == 0
+
+def kiwix_installed(env):
+    apps = env.apps_dir
+    if os.path.isdir(apps) and any(re.match(r'kiwix-desktop_x86_64_.*\.appimage$', f) for f in os.listdir(apps)):
+        return True
+    return bool(shutil.which("kiwix-desktop")) or flatpak_app_installed("org.kiwix.desktop")
+
+def pending_map_mb(presets):
+    """
+    Size still to download for the chosen map presets: the real size of the
+    regions missing on disk when Organic Maps is installed, else the preset estimate.
+    """
+    tree = organic_maps_countries()
+    if tree is None:
+        return sum(p['size_mb'] for p in presets)
+    dest_dir = os.path.join(organic_maps_data_dir(), str(tree['v']))
+    missing = 0
+    for leaf in map_regions_for(presets, tree):
+        path = os.path.join(dest_dir, leaf['id'] + ".mwm")
+        if not (is_download_complete(path) and os.path.getsize(path) == leaf.get('s')):
+            missing += leaf.get('s', 0)
+    return size_mb(missing)
+
 def visible_catalog(lang):
     return [e for e in LIBRARY_CATALOG if lang in e.get('only_langs', [lang])]
 
@@ -1643,6 +1679,12 @@ def remove_old_map_versions(current):
             log_info(i18n.T('old_version_removed').format(f"Organic Maps {version}"))
     return freed
 
+def entry_title(entry):
+    """Short name of a catalog entry: its title, or its menu label without the description."""
+    if 'title_key' in entry:
+        return i18n.T(entry['title_key'])
+    return i18n.T(entry['label_key']).split(' [')[0]
+
 def collect_updates(env, lang):
     """
     Everything installed on this device that has a newer published version.
@@ -1664,8 +1706,7 @@ def collect_updates(env, lang):
             continue
         label_key = 'update_book_label' if same_book else 'update_book_language_label'
         updates.append({
-            "label": i18n.T(label_key).format(i18n.T(entry.get('title_key', entry['label_key'])),
-                                              zim_date(local), zim_date(remote), remote),
+            "label": i18n.T(label_key).format(entry_title(entry), zim_date(local), zim_date(remote), remote),
             "size_mb": size_mb(remote_file_size(mirrors[0] + remote)) or entry_size_mb(entry, lang),
             "old_mb": file_size_mb(os.path.join(env.know_dir, local)),
             "apply": lambda r=remote, m=mirrors, l=local: update_book(env, r, m, l),
@@ -2059,12 +2100,13 @@ def main():
 
     use_torrent = simple_question(d, i18n.T('p2p_menu_title'), i18n.T('p2p_menu_prompt'), default_yes=False)
     
-    estimated_mb = 300
+    estimated_mb = BASE_PACKAGES_MB
     if install_extras:
-        estimated_mb += 1300
+        estimated_mb += EXTRAS_MB
     if install_nvidia:
-        estimated_mb += 1200
-    estimated_mb += 160
+        estimated_mb += NVIDIA_MB
+    if not kiwix_installed(env):
+        estimated_mb += KIWIX_APP_MB
 
     if wiki_selected is not None and wiki_selected > 0:
         opt = wiki_opts[wiki_selected]
@@ -2075,13 +2117,16 @@ def main():
         if not opt.get('installed'):
             estimated_mb += entry_size_mb(opt['entry'], lang)
 
+    maps_installed = flatpak_app_installed(ORGANIC_MAPS_ID)
+    if (install_maps and not maps_installed) or (install_translator and not translator_installed):
+        if not (maps_installed or translator_installed):
+            estimated_mb += QT_RUNTIMES_MB
     if install_maps:
-        if not shutil.which("flatpak") or subprocess.call(f"flatpak info {ORGANIC_MAPS_ID} >/dev/null 2>&1", shell=True) != 0:
-            estimated_mb += 2100
-        estimated_mb += sum(p['size_mb'] for p in maps_selected)
-
+        if not maps_installed:
+            estimated_mb += ORGANIC_MAPS_APP_MB
+        estimated_mb += pending_map_mb(maps_selected)
     if install_translator and not translator_installed:
-        estimated_mb += TRANSLATOR_SIZE_MB
+        estimated_mb += TRANSLATOR_APP_MB
 
     if ai_selected:
         if not os.path.exists(os.path.join(env.base, 'AI', 'llamafile')):
@@ -2091,13 +2136,11 @@ def main():
             if not opt.get('installed'):
                 estimated_mb += opt.get('size_mb', 0)
 
-    estimated_gb = round(estimated_mb / 1024, 2)
     warning_msg = ""
     if sys_info.free_space_mb < estimated_mb * 1.2:
-        free_gb = round(sys_info.free_space_mb / 1024, 2)
-        warning_msg = i18n.T('space_warning_msg').format(free_gb, estimated_gb)
+        warning_msg = i18n.T('space_warning_msg').format(format_size(sys_info.free_space_mb), format_size(estimated_mb))
 
-    confirm_text = f"{i18n.T('confirm_install_prompt')}\n\n{i18n.T('estimated_space_msg').format(estimated_gb)}{warning_msg}"
+    confirm_text = f"{i18n.T('confirm_install_prompt')}\n\n{i18n.T('estimated_space_msg').format(format_size(estimated_mb))}{warning_msg}"
     
     if not simple_question(d, i18n.T('confirm_install_title'), confirm_text, default_yes=True):
         log_err(i18n.T('install_aborted'))

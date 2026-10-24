@@ -895,5 +895,42 @@ class TestRunUpdate(UpdaterCase):
         self.assertEqual(self.run_with([], 5000), 0)
 
 
+class TestSpaceEstimates(UpdaterCase):
+    """Las estimaciones descuentan lo que ya esta en disco."""
+
+    def test_maps_already_downloaded_are_not_counted_again(self):
+        tree = {"v": 260527, "g": [{"id": "Andorra", "s": 5 * 1024 * 1024}, {"id": "Spain", "g": [
+            {"id": "Spain_Madrid", "s": 100 * 1024 * 1024}]}]}
+        install.organic_maps_countries = lambda: tree
+        saved_home = os.environ["HOME"]
+        os.environ["HOME"] = self.home
+        try:
+            presets = [{"countries": ["Andorra", "Spain"], "size_mb": 999}]
+            self.assertEqual(install.pending_map_mb(presets), 105)
+            d = os.path.join(install.organic_maps_data_dir(), "260527")
+            os.makedirs(d)
+            with open(os.path.join(d, "Andorra.mwm"), "wb") as f:
+                f.write(b"\0" * 5 * 1024 * 1024)
+            self.assertEqual(install.pending_map_mb(presets), 100)
+            install.organic_maps_countries = lambda: None
+            self.assertEqual(install.pending_map_mb(presets), 999, "sin Organic Maps se usa la estimacion del preset")
+        finally:
+            os.environ["HOME"] = saved_home
+
+    def test_installed_kiwix_is_detected(self):
+        saved = install.flatpak_app_installed
+        install.flatpak_app_installed = lambda app: False
+        try:
+            self.assertFalse(install.kiwix_installed(self.env))
+            open(os.path.join(self.env.apps_dir, "kiwix-desktop_x86_64_2.5.1.appimage"), "w").close()
+            self.assertTrue(install.kiwix_installed(self.env))
+        finally:
+            install.flatpak_app_installed = saved
+
+    def test_update_titles_are_short(self):
+        entry = {"label_key": "wiki_lite_label"}
+        self.assertNotIn("[", install.entry_title(entry))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
