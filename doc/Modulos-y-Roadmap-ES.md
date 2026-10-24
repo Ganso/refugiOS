@@ -52,7 +52,7 @@ Sistema de almacenamiento seguro y cifrado para datos sensibles.
 
 ### 5. Traductor sin conexión ([LocalTranslate](https://terslang.github.io/LocalTranslate/))
 *   **Contenidos:** Traducción de textos entre más de 40 idiomas con los modelos neuronales de traducción de Firefox, que vienen dentro de la propia aplicación: no hay que descargar nada más.
-*   **Instalación:** Opcional desde el instalador (~1,7 GB, comparte componentes con Organic Maps). Crea el icono **Traductor** en el escritorio.
+*   **Instalación:** Opcional desde el instalador (~2,7 GB, más ~1,6 GB de componentes que comparte con Organic Maps si este no está instalado). Crea el icono **Traductor** en el escritorio.
 *   **Complementos:** Las guías de conversación de Wikiviajes y el Wikcionario (en la biblioteca) ayudan con la pronunciación y el vocabulario.
 
 ### 6. Comprobar mi refugiOS

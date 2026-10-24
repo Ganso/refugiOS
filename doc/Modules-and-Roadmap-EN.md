@@ -51,7 +51,7 @@ Secure and encrypted storage system for sensitive data.
 
 ### 5. Offline Translator ([LocalTranslate](https://terslang.github.io/LocalTranslate/))
 *   **Contents:** Translation of texts between more than 40 languages with Firefox's neural translation models, bundled inside the application: nothing else needs downloading.
-*   **Installation:** Optional from the installer (~1.7 GB, shares components with Organic Maps). Creates the **Translator** desktop icon.
+*   **Installation:** Optional from the installer (~2.7 GB, plus ~1.6 GB of components shared with Organic Maps if that is not installed). Creates the **Translator** desktop icon.
 *   **Companions:** The Wikivoyage phrasebooks and Wiktionary (in the library) help with pronunciation and vocabulary.
 
 ### 6. Check my refugiOS
