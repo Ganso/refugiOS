@@ -1872,6 +1872,24 @@ Terminal=false
 
     ensure_install_icon(env, sys_info)
 
+    # Offline self-check of everything installed (books, AI, maps, vaults)
+    check_script = fetch_script("refugios-check.py")
+    if check_script and os.path.isfile(check_script):
+        check_desktop = os.path.join(env.desktop, "Check_refugiOS.desktop")
+        with open(check_desktop, "w") as f:
+            f.write(f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name={i18n.T('check_desktop_name')}
+Comment={i18n.T('check_desktop_comment')}
+Exec=xfce4-terminal -e "python3 {check_script}"
+Icon=emblem-default
+Terminal=false
+""")
+        certify_icon(check_desktop)
+    else:
+        log_err(i18n.T('check_script_missing'), fatal=False)
+
     size_logger.log_section("Fase 6: Bóveda de Seguridad")
 
 

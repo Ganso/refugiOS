@@ -252,7 +252,7 @@ class TestTranslationKeys(unittest.TestCase):
         import i18n
 
         used = set()
-        for name in ("install.py", "scripts/refugios-vault.py"):
+        for name in ("install.py", "scripts/refugios-vault.py", "scripts/refugios-check.py"):
             with open(os.path.join(REPO_DIR, name), encoding="utf-8") as f:
                 used |= set(re.findall(r"i18n\.T\(\s*['\"]([a-zA-Z0-9_]+)['\"]", f.read()))
 
@@ -540,6 +540,71 @@ class TestMapRegions(RoutedServerCase):
         self.assertFalse(ok)
         self.assertEqual(len(install.FAILED_ITEMS), failed_before + 1)
         del install.FAILED_ITEMS[failed_before:]
+
+
+class TestSelfCheck(unittest.TestCase):
+    """refugios-check.py: detecta descargas cortadas, ficheros danados y enlaces rotos sin conexion."""
+
+    def run_check(self, home, *args):
+        import subprocess
+        env = dict(os.environ, HOME=home, PATH="/usr/bin:/bin")
+        with open(os.path.join(home, ".refugios_lang"), "w") as f:
+            f.write("es")
+        return subprocess.run([sys.executable, os.path.join(REPO_DIR, "scripts", "refugios-check.py"),
+                               "--no-dialog", *args], env=env, capture_output=True, text=True,
+                              stdin=subprocess.DEVNULL)
+
+    def make_home(self):
+        home = tempfile.mkdtemp()
+        know = os.path.join(home, "refugiOS", "Knowledge", "versions")
+        os.makedirs(know)
+        os.makedirs(os.path.join(home, "refugiOS", "Apps"))
+        open(os.path.join(home, "refugiOS", "Apps", "kiwix-desktop_x86_64_2.5.1.appimage"), "w").close()
+        good = os.path.join(know, "zimgit-water_en_2024-08.zim")
+        with open(good, "wb") as f:
+            f.write(PAYLOAD)
+        install.write_checksum_file(good, PAYLOAD_SHA)
+        return home, know
+
+    def test_healthy_device_passes(self):
+        home, know = self.make_home()
+        r = self.run_check(home, "--full")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("verificado", r.stdout)
+        self.assertTrue(os.path.isfile(os.path.join(home, "refugiOS", "check-report.txt")))
+
+    def test_damage_is_reported(self):
+        home, know = self.make_home()
+        # Descarga interrumpida
+        cut = os.path.join(know, "phet_es_all_2026-08.zim")
+        open(cut, "w").write("x")
+        open(cut + ".aria2", "w").close()
+        # Fichero alterado tras la descarga
+        with open(os.path.join(know, "zimgit-water_en_2024-08.zim"), "r+b") as f:
+            f.write(b"\0" * 16)
+        # Enlace estable huerfano
+        os.symlink(os.path.join(know, "no-existe.zim"), os.path.join(home, "refugiOS", "Knowledge", "wikimed.zim"))
+        # Boveda que no es un contenedor LUKS
+        os.makedirs(os.path.join(home, "refugiOS", "Vaults"))
+        open(os.path.join(home, "refugiOS", "Vaults", "papeles.img"), "wb").write(b"\0" * 4096)
+
+        quick = self.run_check(home, "--quick")
+        self.assertNotEqual(quick.returncode, 0)
+        self.assertIn("incompleto", quick.stdout)
+        self.assertIn("wikimed.zim", quick.stdout)
+        self.assertIn("papeles", quick.stdout)
+        self.assertNotIn("dañado (no coincide", quick.stdout, "la rapida no debe leer ficheros enteros")
+
+        full = self.run_check(home, "--full")
+        self.assertIn("zimgit-water_en_2024-08.zim: el fichero está dañado", full.stdout)
+
+    def test_luks_vault_recognised(self):
+        home, _ = self.make_home()
+        os.makedirs(os.path.join(home, "refugiOS", "Vaults"))
+        with open(os.path.join(home, "refugiOS", "Vaults", "fotos.img"), "wb") as f:
+            f.write(b"LUKS\xba\xbe" + b"\0" * 4090)
+        r = self.run_check(home, "--quick")
+        self.assertIn("'fotos': contenedor cifrado intacto", r.stdout)
 
 
 if __name__ == "__main__":
