@@ -761,6 +761,41 @@ def fix_flatpak_permissions():
         except Exception as e:
             log_info(f"Notice: Could not verify/apply AppArmor patch: {e}")
 
+def is_autologin_user():
+    """True when LightDM logs this user in automatically (the refugiOS image)."""
+    user = os.environ.get("USER") or os.environ.get("LOGNAME") or ""
+    conf_dir = "/etc/lightdm/lightdm.conf.d"
+    paths = ["/etc/lightdm/lightdm.conf"]
+    if os.path.isdir(conf_dir):
+        paths += [os.path.join(conf_dir, f) for f in sorted(os.listdir(conf_dir))]
+    for path in paths:
+        try:
+            with open(path) as f:
+                if re.search(rf'^\s*autologin-user\s*=\s*{re.escape(user)}\s*$', f.read(), re.MULTILINE):
+                    return bool(user)
+        except OSError:
+            continue
+    return False
+
+def disable_autologin_screen_lock():
+    """
+    light-locker locks the session when the screen blanks. For an autologin
+    user without password, LightDM's unlock greeter cannot return to the
+    desktop, so after a few idle minutes the device looks logged out. Images
+    built before this fix ship it: switch it off for this user only. Computers
+    where the user logs in with a password keep their lock.
+    """
+    if not is_autologin_user():
+        return
+    autostart = os.path.join(os.path.expanduser("~"), ".config", "autostart")
+    os.makedirs(autostart, exist_ok=True)
+    with open(os.path.join(autostart, "light-locker.desktop"), "w") as f:
+        f.write("[Desktop Entry]\nType=Application\nName=light-locker\nHidden=true\n")
+    run_cmd("pkill -u \"$USER\" -x light-locker", quiet=True, check=False)
+    if shutil.which("xfconf-query"):
+        run_cmd("xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/lock-screen-suspend-hibernate "
+                "-n -t bool -s false", quiet=True)
+
 def fix_rpi_pcmanfm_warnings():
     """
     Disables PCManFM warning for non-executable file shells (Raspberry Pi OS).
@@ -1653,6 +1688,7 @@ def main():
 
     # System compatibility patches
     fix_flatpak_permissions()
+    disable_autologin_screen_lock()
     if sys_info.is_rpi:
         fix_rpi_pcmanfm_warnings()
 

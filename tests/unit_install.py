@@ -607,5 +607,35 @@ class TestSelfCheck(unittest.TestCase):
         self.assertIn("'fotos': contenedor cifrado intacto", r.stdout)
 
 
+class TestAutologinScreenLock(unittest.TestCase):
+    """Con autologin y sin contrasena, el bloqueo de pantalla deja al usuario fuera."""
+
+    def setUp(self):
+        self.home = tempfile.mkdtemp()
+        self.saved = (os.environ.get("HOME"), os.environ.get("USER"), install.is_autologin_user, install.run_cmd)
+        os.environ["HOME"] = self.home
+        os.environ["USER"] = "refugios"
+        install.run_cmd = lambda *a, **k: True
+
+    def tearDown(self):
+        home, user, install.is_autologin_user, install.run_cmd = self.saved
+        os.environ["HOME"] = home
+        if user is None:
+            os.environ.pop("USER", None)
+        else:
+            os.environ["USER"] = user
+
+    def test_autologin_user_gets_lock_disabled(self):
+        install.is_autologin_user = lambda: True
+        install.disable_autologin_screen_lock()
+        path = os.path.join(self.home, ".config", "autostart", "light-locker.desktop")
+        self.assertIn("Hidden=true", open(path).read())
+
+    def test_password_users_keep_their_lock(self):
+        install.is_autologin_user = lambda: False
+        install.disable_autologin_screen_lock()
+        self.assertFalse(os.path.exists(os.path.join(self.home, ".config", "autostart")))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
