@@ -170,7 +170,8 @@ LIBRARY_CATALOG = [
 
 # Offline maps for Organic Maps. Each preset is a list of top-level country ids
 # from the countries.txt bundled with the app; every region below them is
-# downloaded. Sizes are approximate MB, for the space estimate only.
+# downloaded. Sizes are the real total of those regions in map data 260714 plus
+# 3% for growth between data versions, in MB.
 MAP_EUROPE = [
     "Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina",
     "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia",
@@ -184,17 +185,17 @@ MAP_EUROPE = [
 ]
 
 MAP_PRESETS = [
-    {"id": "map_spain", "label_key": "map_spain", "countries": ["Spain", "Andorra", "Gibraltar"], "size_mb": 1800},
-    {"id": "map_portugal", "label_key": "map_portugal", "countries": ["Portugal"], "size_mb": 470},
-    {"id": "map_europe", "label_key": "map_europe", "countries": MAP_EUROPE, "size_mb": 32000},
-    {"id": "map_mexico", "label_key": "map_mexico", "countries": ["Mexico"], "size_mb": 730},
-    {"id": "map_colombia", "label_key": "map_colombia", "countries": ["Colombia"], "size_mb": 320},
-    {"id": "map_argentina", "label_key": "map_argentina", "countries": ["Argentina"], "size_mb": 800},
-    {"id": "map_chile", "label_key": "map_chile", "countries": ["Chile"], "size_mb": 440},
-    {"id": "map_peru", "label_key": "map_peru", "countries": ["Peru"], "size_mb": 280},
+    {"id": "map_spain", "label_key": "map_spain", "countries": ["Spain", "Andorra", "Gibraltar"], "size_mb": 1750},
+    {"id": "map_portugal", "label_key": "map_portugal", "countries": ["Portugal"], "size_mb": 455},
+    {"id": "map_europe", "label_key": "map_europe", "countries": MAP_EUROPE, "size_mb": 30700},
+    {"id": "map_mexico", "label_key": "map_mexico", "countries": ["Mexico"], "size_mb": 710},
+    {"id": "map_colombia", "label_key": "map_colombia", "countries": ["Colombia"], "size_mb": 315},
+    {"id": "map_argentina", "label_key": "map_argentina", "countries": ["Argentina"], "size_mb": 780},
+    {"id": "map_chile", "label_key": "map_chile", "countries": ["Chile"], "size_mb": 430},
+    {"id": "map_peru", "label_key": "map_peru", "countries": ["Peru"], "size_mb": 270},
     {"id": "map_venezuela", "label_key": "map_venezuela", "countries": ["Venezuela"], "size_mb": 130},
-    {"id": "map_brazil", "label_key": "map_brazil", "countries": ["Brazil"], "size_mb": 2300},
-    {"id": "map_usa", "label_key": "map_usa", "countries": ["United States of America"], "size_mb": 15200},
+    {"id": "map_brazil", "label_key": "map_brazil", "countries": ["Brazil"], "size_mb": 2250},
+    {"id": "map_usa", "label_key": "map_usa", "countries": ["United States of America"], "size_mb": 14900},
 ]
 
 # Offline translator: Firefox's neural translation models, bundled in the Flatpak
@@ -211,7 +212,8 @@ ORGANIC_MAPS_ID = "app.organicmaps.desktop"
 ORGANIC_MAPS_META = "https://meta.omaps.app/maps"
 ORGANIC_MAPS_FALLBACK_SERVERS = ["https://cdn-us1.organicmaps.app/"]
 
-# Artificial Intelligence Models (GGUF)
+# Artificial Intelligence Models (GGUF). Sizes are the real file sizes in MB.
+LLAMAFILE_SIZE_MB = 360
 AI_MODEL_CONFIG = [
     {
         "id": "ia_min",
@@ -2004,7 +2006,7 @@ def main():
     ai_opts = []
     for m in AI_MODEL_CONFIG:
         opt = {
-            "label": i18n.T(m['label_key']),
+            "label": f"{i18n.T(m['label_key'])} ({format_size(m['size_mb'])})",
             "filename": m['filename'],
             "url": m['url'],
             "symlink": m['symlink'],
@@ -2082,8 +2084,8 @@ def main():
         estimated_mb += TRANSLATOR_SIZE_MB
 
     if ai_selected:
-        if not os.path.exists(os.path.join(env.ai_dir, 'llamafile')):
-            estimated_mb += 300
+        if not os.path.exists(os.path.join(env.base, 'AI', 'llamafile')):
+            estimated_mb += LLAMAFILE_SIZE_MB
         for idx in ai_selected:
             opt = ai_opts[idx]
             if not opt.get('installed'):
