@@ -47,6 +47,10 @@ if [ "$DEV_MODE" == "1" ]; then
     fi
     cp "$LOCAL_SCRIPTS/i18n.py" "$I18N_PY"
     cp "$LOCAL_SCRIPTS/install.py" "$PYTHON_SCRIPT"
+    # install.py runs from its copy in ~/refugiOS: tell it where the checkout is,
+    # or it cannot see the local scripts/ and media/ and fetches the published ones
+    REFUGIOS_SRC_DIR="$(cd "$LOCAL_SCRIPTS" && pwd)"
+    export REFUGIOS_SRC_DIR
 else
     # Download localization system
     log_info "Fetching latest localization system..."

@@ -32,7 +32,7 @@ prepare_fake_repo() {
     mkdir -p "$dir/scripts"
     cp "$REPO_DIR/install.sh" "$dir/"
     cp "$REPO_DIR/scripts/i18n.sh" "$dir/scripts/"
-    printf '# %s\nprint("instalador local ejecutado")\n' "$MARKER" > "$dir/install.py"
+    printf '# %s\nimport os\nprint("instalador local ejecutado")\nprint("SRC_DIR=" + os.environ.get("REFUGIOS_SRC_DIR", ""))\n' "$MARKER" > "$dir/install.py"
     printf '# %s\nREFUGIOS_LANG="es"\ndef T(k):\n    return k\n' "$MARKER" > "$dir/i18n.py"
 }
 
@@ -64,6 +64,9 @@ check $? "C3: i18n.py local sobrevive"
 
 grep -q "Developer Mode" "$WORK/run1.log"
 check $? "C3: el modo desarrollador se anuncia explicitamente"
+
+grep -qx "SRC_DIR=$WORK/repo" "$WORK/run1.log"
+check $? "C3: install.py recibe la ruta de la copia local (si no, descarga los scripts publicados)"
 
 # Segunda ejecucion: los cambios locales posteriores deben seguir ganando
 echo "# SEGUNDA_VERSION_LOCAL" >> "$WORK/repo/install.py"

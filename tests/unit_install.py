@@ -244,6 +244,28 @@ class TestDeveloperModeScripts(unittest.TestCase):
                         "Developer Mode no llega a los scripts")
 
 
+class TestSourceDir(unittest.TestCase):
+    """install.sh ejecuta una copia de install.py: la ruta del repositorio llega por entorno."""
+
+    def test_env_wins_when_it_is_a_checkout(self):
+        saved = os.environ.get("REFUGIOS_SRC_DIR")
+        try:
+            os.environ["REFUGIOS_SRC_DIR"] = REPO_DIR
+            self.assertEqual(install.source_dir(), REPO_DIR)
+            os.environ["REFUGIOS_SRC_DIR"] = tempfile.mkdtemp()
+            self.assertEqual(install.source_dir(), os.path.dirname(os.path.realpath(install.__file__)))
+        finally:
+            if saved is None:
+                os.environ.pop("REFUGIOS_SRC_DIR", None)
+            else:
+                os.environ["REFUGIOS_SRC_DIR"] = saved
+
+    def test_fetch_script_uses_it(self):
+        source = open(os.path.join(REPO_DIR, "install.py"), encoding="utf-8").read()
+        body = source.split("def fetch_script(")[1].split("\n    if install_maps")[0]
+        self.assertIn("source_dir()", body)
+
+
 class TestTranslationKeys(unittest.TestCase):
     """Ninguna clave usada puede quedar sin traducir: el usuario veria la clave cruda."""
 

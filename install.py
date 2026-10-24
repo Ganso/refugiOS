@@ -404,6 +404,17 @@ def glibc_version():
     except (ValueError, OSError, IndexError, AttributeError):
         return None
 
+def source_dir():
+    """
+    Directory of the repository checkout the installer comes from. install.sh
+    copies install.py to ~/refugiOS before running it, so in Developer Mode the
+    checkout is passed in REFUGIOS_SRC_DIR; otherwise it is this file's folder.
+    """
+    src = os.environ.get("REFUGIOS_SRC_DIR")
+    if src and os.path.isfile(os.path.join(src, "install.py")):
+        return src
+    return os.path.dirname(os.path.realpath(__file__))
+
 def get_cmd_output(cmd):
     """
     Executes a command in the terminal and returns the resulting stdout text.
@@ -562,7 +573,7 @@ def set_wallpaper(sys_info):
     os.makedirs(perm_wallpaper_dir, exist_ok=True)
     perm_wallpaper_path = os.path.join(perm_wallpaper_dir, "fondo.png")
     
-    installer_dir = os.path.dirname(os.path.realpath(__file__))
+    installer_dir = source_dir()
     # 'logo/' is where the artwork lived before 0.23; kept so a checkout of an
     # older revision still finds the wallpaper
     local_candidates = [
@@ -1753,8 +1764,7 @@ def main():
     
     def fetch_script(s_name):
         d_path = os.path.join(env.scripts_dir, s_name)
-        local_dir = os.path.dirname(os.path.realpath(__file__))
-        local_s = os.path.join(local_dir, "scripts", s_name)
+        local_s = os.path.join(source_dir(), "scripts", s_name)
 
         # Developer Mode: running from a checkout of the repository, the local scripts
         # take precedence. Otherwise the published version would silently replace them
