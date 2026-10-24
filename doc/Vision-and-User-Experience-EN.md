@@ -28,7 +28,7 @@ The process of creating the device is simple and designed so that anyone can do 
 4.  **Guided Configuration:** A simple menu will appear asking:
     *   Your preferred language.
     *   What content you want to download (full Wikipedia, medical manuals, etc.) according to your USB's capacity.
-    *   What maps of which regions of the world you need.
+    *   Which maps you need: the installer offers a selection of common countries and regions, and any other can be downloaded later from Organic Maps.
 5.  **Your Personal Vault:** The system will help you create a secure folder with a password so you can store your photos, passports, medical prescriptions, and important documents.
 
 ---
@@ -42,7 +42,7 @@ When a real problem occurs, refugiOS is designed to be fast, simple, and without
 3.  **Clear and Direct Icons:** On the desktop, you'll see large buttons for what you need:
     *   **"Medical Encyclopedia":** To know how to treat a wound or identify a disease (via [Wikipedia](https://en.wikipedia.org/)/[WikiMed](https://www.kiwix.org/)).
     *   **"Maps":** To find water sources, shelters, or hospitals without using the Internet or sending your position to anyone (via [Organic Maps](https://organicmaps.app/)).
-    *   **"AI Assistant":** An assistant you can ask complex questions (e.g., "How to purify water?") and it will answer using only the power of that computer (via [Llamafile](https://github.com/Mozilla-Ocho/llamafile) and the [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct) model).
+    *   **"AI Assistant":** An assistant you can ask complex questions (e.g., "How to purify water?") and it will answer using only the power of that computer (via [Llamafile](https://github.com/Mozilla-Ocho/llamafile) and open models such as [Qwen3](https://huggingface.co/Qwen) or [Gemma 4](https://huggingface.co/google), chosen according to the computer's memory).
     *   **"My Documents":** You enter your password and your personal files appear to identify yourself or ask for help.
 
 refugiOS is, quite simply, your digital life insurance when the connected world stops working.

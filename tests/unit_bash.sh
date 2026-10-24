@@ -85,6 +85,20 @@ grep -q "NO_EJECUTABLE" <<<"$OUT"
 [ $? -ne 0 ]
 check $? "descarta el AppImage sin permiso de ejecucion"
 
+# Issue #10: con una glibc antigua el AppImage no arranca; si hay Flatpak, va primero
+mkdir -p "$WORK/oldglibc"
+printf '#!/bin/bash\necho "glibc 2.31"\n' > "$WORK/oldglibc/getconf"
+printf '#!/bin/bash\ncase "$1" in\n    list) echo "Kiwix org.kiwix.desktop 2.5.1 stable system" ;;\n    run) echo "FLATPAK_LANZADO $*" ;;\nesac\n' > "$WORK/oldglibc/flatpak"
+chmod +x "$WORK/oldglibc/getconf" "$WORK/oldglibc/flatpak"
+OUT=$(PATH="$WORK/oldglibc:$WORK/bin:/usr/bin:/bin" bash "$REPO_DIR/scripts/refugios-kiwix.sh" "$WORK/prueba.zim" 2>&1)
+grep -q "FLATPAK_LANZADO run --filesystem=" <<<"$OUT"
+check $? "issue #10: con glibc 2.31 se usa el Flatpak y no el AppImage (obtenido: $OUT)"
+
+printf '#!/bin/bash\necho "glibc 2.41"\n' > "$WORK/oldglibc/getconf"
+OUT=$(PATH="$WORK/oldglibc:$WORK/bin:/usr/bin:/bin" bash "$REPO_DIR/scripts/refugios-kiwix.sh" "$WORK/prueba.zim" 2>&1)
+grep -q "LANZADO:2.10.0" <<<"$OUT"
+check $? "con una glibc moderna se sigue prefiriendo el AppImage (obtenido: $OUT)"
+
 # ============================================================================
 # C13/C14/C15 - refugios-ai-selector.sh
 # ============================================================================
@@ -128,6 +142,11 @@ check $? "C15: se avisa al usuario con un mensaje de dialog"
 PORT=18080
 cat > "$AI_DIR/llamafile" <<EOF
 #!/bin/bash
+# Motor reciente: anuncia --webui-config-file en su ayuda
+for a in "\$@"; do
+    [ "\$a" == "--help" ] && { echo "  --webui-config-file FNAME"; exit 0; }
+done
+echo "ARGS: \$*" > "$WORK/llamafile_args.log"
 # Simula la carga lenta de un modelo grande: 8 segundos antes de servir
 sleep 8
 exec python3 -m http.server $PORT --bind 127.0.0.1
@@ -155,6 +174,14 @@ if [ -s "$BROWSER_LOG" ]; then
     [ "$ELAPSED" -ge 7 ]
     check $? "C14: espera a que el servidor responda antes de abrir (${ELAPSED}s, el modelo tarda 8s)"
 fi
+
+# Mensaje de sistema por defecto: se pasa al motor y esta en el idioma del usuario
+grep -q -- "--webui-config-file $AI_DIR/webui-config.json" "$WORK/llamafile_args.log" 2>/dev/null
+check $? "el motor recibe el fichero de configuracion de la interfaz web"
+jq -e '.systemMessage | test("refugiOS")' "$AI_DIR/webui-config.json" >/dev/null 2>&1
+check $? "la configuracion lleva el mensaje de sistema de refugiOS"
+grep -q -- "--port $PORT" "$WORK/llamafile_args.log" 2>/dev/null
+check $? "el motor escucha en el puerto que luego se abre en el navegador"
 
 # C13: al terminar el selector no puede quedar el motor de IA en memoria
 kill "$SELECTOR_PID" 2>/dev/null

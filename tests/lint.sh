@@ -19,7 +19,7 @@ SH_FILES=(
     scripts/refugios-maps.sh
     scripts/test_boot.sh
 )
-PY_FILES=(install.py i18n.py scripts/refugios-vault.py)
+PY_FILES=(install.py i18n.py scripts/refugios-vault.py scripts/refugios-check.py scripts/publish_images.py)
 
 echo "=> Sintaxis Bash (bash -n)"
 for f in "${SH_FILES[@]}"; do

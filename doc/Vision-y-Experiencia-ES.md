@@ -28,7 +28,7 @@ El proceso de creación del dispositivo es sencillo y está pensado para que cua
 4.  **Configuración guiada:** Aparecerá un menú sencillo que te preguntará:
     *   Tu idioma preferido.
     *   Qué contenidos quieres descargar (Wikipedia completa, manuales médicos, etc.) según el espacio de tu USB.
-    *   Qué mapas de qué regiones del mundo necesitas.
+    *   Qué mapas necesitas: el instalador ofrece una selección de países y regiones habituales, y cualquier otra se puede descargar después desde Organic Maps.
 5.  **Tu Bóveda Personal:** El sistema te ayudará a crear una carpeta segura con contraseña para que guardes tus fotos, pasaportes, recetas médicas y documentos importantes.
 
 ---
@@ -42,7 +42,7 @@ Cuando ocurre un problema real, refugiOS está diseñado para ser rápido, senci
 3.  **Iconos claros y directos:** En el escritorio verás botones grandes para lo que necesites:
     *   **"Enciclopedia Médica":** Para saber cómo tratar una herida o identificar una enfermedad (vía [Wikipedia](https://es.wikipedia.org/)/[WikiMed](https://www.kiwix.org/)).
     *   **"Mapas":** Para encontrar fuentes de agua, refugios u hospitales sin usar Internet ni enviar tu posición a nadie (vía [Organic Maps](https://organicmaps.app/)).
-    *   **"Asistente IA":** Un asistente al que puedes preguntarle cosas complejas (ej: "¿Cómo purificar agua?") y te responderá usando solo la potencia de ese ordenador (vía [Llamafile](https://github.com/Mozilla-Ocho/llamafile) y el modelo [Phi-4-mini](https://huggingface.co/microsoft/Phi-4-mini-instruct)).
+    *   **"Asistente IA":** Un asistente al que puedes preguntarle cosas complejas (ej: "¿Cómo purificar agua?") y te responderá usando solo la potencia de ese ordenador (vía [Llamafile](https://github.com/Mozilla-Ocho/llamafile) y modelos abiertos como [Qwen3](https://huggingface.co/Qwen) o [Gemma 4](https://huggingface.co/google), elegidos según la memoria del equipo).
     *   **"Mis Documentos":** Pones tu contraseña y aparecen tus archivos personales para identificarte o pedir ayuda.
 
 refugiOS es, sencillamente, tu seguro de vida digital cuando el mundo conectado deja de funcionar.

@@ -25,8 +25,8 @@ The choice of storage is critical on Raspberry Pi, as cheap microSD cards degrad
 
 *   **Golden Recommendation:** An **SSD with USB adapter** or an **SSD mounted on an NVMe HAT** will give the best experience. Cheap microSD cards wear out in a few months of intensive use.
 *   **Capacity:**
-    *   **16 GB (Minimum):** Base system + WikiMed + Minimal AI. No space for Wikipedia.
-    *   **32 GB (Balanced):** All of the above + Light Wikipedia.
+    *   **16 GB (Minimum):** Base system + WikiMed + Wikipedia Lite + Minimal AI.
+    *   **32 GB (Balanced):** All of the above + Wikipedia Essentials (top articles in full).
     *   **64 GB (Standard):** The ideal point. Includes full Wikipedia (text) and basic AI model.
     *   **128 GB or more:** Allows WikiHow, Wikipedia with images, and multiple AI models.
 
@@ -107,7 +107,7 @@ If the system started in English and you need the Spanish keyboard:
 
 ## 6. Performance Notes
 
-*   **RAM Memory:** With only 1 GB (Raspberry Pi 3B+), the minimal AI model (Qwen2.5-0.5B) is recommended. The basic model (Phi-4-mini) may work but with active swap and noticeable slowness.
+*   **RAM Memory:** With only 1 GB (Raspberry Pi 3B+), the minimal AI model (Qwen3-0.6B) is recommended. The basic model (Gemma-4-E4B) needs about 6 GB of memory and is not viable below an 8 GB Raspberry Pi.
 *   **Swap:** To use larger AI models, you can expand the swap:
     ```bash
     sudo dphys-swapfile swapoff
@@ -121,6 +121,6 @@ If the system started in English and you need the Spanish keyboard:
 
 ## 7. Offline Knowledge (ZIM)
 
-The process for downloading and installing knowledge bases (Wikipedia, WikiMed, WikiHow) is identical to XUbuntu. See the [XUbuntu Installation Guide](Xubuntu-Installation-EN.md) for content selection details.
+The process for downloading and installing knowledge bases (Wikipedia and the health, survival, practical knowledge and language library) is identical to XUbuntu. See the [XUbuntu Installation Guide](Xubuntu-Installation-EN.md) for content selection details.
 
 Upon completion, your Raspberry Pi will run **refugiOS** **completely autonomously**, without Internet, with encyclopedic knowledge, offline maps, and local artificial intelligence.

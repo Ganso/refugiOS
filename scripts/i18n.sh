@@ -89,6 +89,8 @@ t_en_ai_server_died="ERROR: the AI engine stopped while loading the model. Try a
 t_es_ai_server_died="ERROR: el motor de IA se ha detenido al cargar el modelo. Prueba con un modelo más pequeño."
 t_en_ai_server_timeout="ERROR: the AI engine did not become ready in time. Try a smaller model."
 t_es_ai_server_timeout="ERROR: el motor de IA no ha llegado a estar listo a tiempo. Prueba con un modelo más pequeño."
+t_en_ai_system_prompt="You are the assistant of refugiOS, a computer working without Internet, meant for emergencies and places without connection. Always answer in English, clearly, briefly and practically, with numbered steps when they help. In medical or safety matters give the urgent steps first and remind the user to seek professional help as soon as possible. Do not make up facts: if you are not sure, say so. You have no access to the Internet nor to news after your training."
+t_es_ai_system_prompt="Eres el asistente de refugiOS, un ordenador que funciona sin Internet, pensado para emergencias y lugares sin conexión. Responde siempre en español, de forma clara, breve y práctica, con pasos numerados cuando ayuden. En temas médicos o de seguridad da primero los pasos urgentes y recuerda buscar ayuda profesional en cuanto sea posible. No inventes datos: si no estás seguro, dilo. No tienes acceso a Internet ni a noticias posteriores a tu entrenamiento."
 t_en_ai_purge_notice="Server Notice: Proceeding to purge the task. Please close this final black window to stop AI process consumption on your computer."
 t_es_ai_purge_notice="Aviso de Servidor: Procediendo a purgar la tarea. Cierra por favor esta ventana negra final para erradicar el consumo del proceso IA de tu ordenador."
 

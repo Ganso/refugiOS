@@ -3,7 +3,7 @@
 refugiOS includes a selection of tools designed to work entirely without an Internet connection. Below are the modules currently available and those we plan to add soon.
 
 > [!IMPORTANT]
-> **Internationalization (i18n):** Currently, both the installer and documentation are available **only in Spanish**. Translation to English will be undertaken soon and, later, to other languages depending on community interest.
+> **Internationalization (i18n):** The installer, the launchers and the documentation are available in **Spanish and English**. More languages will follow depending on community interest.
 >
 > **Documentation Migration:** We are in the process of migrating all technical and user documentation to the **GitHub Wiki** format to facilitate consultation and collaboration.
 
@@ -15,14 +15,20 @@ These components are installed automatically or through the welcome wizard:
 
 ### 1. Offline Library and Encyclopedias ([Kiwix](https://www.kiwix.org/))
 Access to massive databases using the ZIM format.
-*   **Contents:** [Wikipedia](https://en.wikipedia.org/) (General), [WikiMed](https://www.kiwix.org/en/get-kiwix/download-content/) (Medicine), [WikiHow](https://wikihow.com/) (Manuals).
-*   **Wikipedia in three tiers:** The installer allows choosing between Wikipedia Lite (~73 MB, top articles without images), Wikipedia NoPics (~9.5 GB, complete text without images), or **Wikipedia Total with images and multimedia** (~38 GB).
-*   **Note on WikiHow:** WikiHow is now available for download via multiple mirrors (Debian CD image server, NetCologne, and MBL Library). The installer tries each mirror in order to ensure maximum reliability.
-*   **Language:** 🌐 **Multilingual.** The installer downloads the files specifically in the language you choose (en, es, fr, etc.).
+*   **Wikipedia in five tiers:** Lite (top articles, summarised), Essentials (top articles in full, no images), Essentials with images, NoPics (all articles, no images) and **Total with images and multimedia**. In English they take ~290 MB, ~2.6 GB, ~6.5 GB, ~49 GB and ~119 GB; the Spanish ones are much smaller (~34 GB the complete one). The installer preselects the largest one that comfortably fits on your drive.
+*   **Library by category:** Besides Wikipedia, the installer offers a library organised in four menus, with freely available content published by Kiwix:
+    *   **Health and medicine:** [WikiMed](https://www.kiwix.org/) (Wikipedia's medical articles), [WikEM](https://wikem.org/) (emergency medicine) and first aid and field medicine manuals.
+    *   **Emergencies and survival:** Post-disaster guides, drinking water, food preparation, knots, Q&A on outdoor survival and [WikiHow](https://wikihow.com/).
+    *   **Practical knowledge and repairs:** [iFixit](https://www.ifixit.com/), [Appropedia](https://www.appropedia.org/) (appropriate technology), [Energypedia](https://energypedia.info/) (solar and off-grid energy), gardening, home repairs, vehicle mechanics and amateur radio.
+    *   **Language, books and education:** [Wiktionary](https://en.wiktionary.org/) (dictionary), [Wikivoyage](https://en.wikivoyage.org/) (with phrasebooks for other languages), Wikibooks, Wikisource and the [PhET](https://phet.colorado.edu/) science simulations.
+*   **Desktop launchers:** Wikipedia, WikiMed and WikiHow get their own desktop icon; the other books are gathered in the **refugiOS Library** folder on the desktop, so it does not fill up with icons.
+*   **Verified downloads:** Every file is downloaded through the Kiwix *metalink*, which spreads the download over several mirrors and checks every piece; if that fails, each mirror is tried directly and finally BitTorrent. The result is checked against the published SHA-256, and an interrupted download is never taken as installed: running the installer again resumes it.
+*   **Language:** 🌐 **Multilingual.** The installer downloads the files in the language you choose and falls back to English when a book does not exist in it. Books that only exist in English are marked as such in the menu.
 
 ### 2. Maps and Navigation ([Organic Maps](https://organicmaps.app/))
 Detailed vector maps with offline search and routing.
 *   **Contents:** Maps of cities, trails, water sources, and hospitals.
+*   **Maps ready from the installer:** The installer itself offers common regions (Spain, Portugal, the whole of Europe, Mexico, Colombia, Argentina, Chile, Peru, Venezuela, Brazil or the United States), downloaded and verified straight into the Organic Maps folder. Any other region can be downloaded later from the application itself, while there is a connection.
 *   **Language:** 🌐 **Multilingual.** The interface and map names adapt to your region.
 
 ### 3. Artificial Intelligence Assistant ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
@@ -33,6 +39,7 @@ Private smart assistant that works 100% on your local computer. Available in fiv
 *   🔴 **Advanced:** [Qwen3-14B](https://huggingface.co/unsloth/Qwen3-14B-GGUF) (14B, Q4_K_M) — ~8.6 GB. For powerful PCs with 16 GB of RAM.
 *   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. For workstations with 32 GB of RAM.
 *   **Smart Selector:** When launching the assistant, a script detects total RAM and GPU VRAM (NVIDIA/AMD), reserves a strict 2 GB safety margin for the OS (prevents USB swap), and shows an interactive menu with only installed models, automatically preselecting the most powerful one the hardware can run.
+*   **Emergency context:** The chat interface starts with a system message in your language asking for clear, short and practical answers, putting urgent steps first in medical or safety matters and reminding that the assistant has no Internet access.
 *   **Language:** 🌐 **Multilingual.** All models understand and respond in more than 20 languages.
 
 ### 4. Cryptographic Vaults (LUKS)
@@ -42,14 +49,25 @@ Secure and encrypted storage system for sensitive data.
 *   **Automation:** Intelligent USB drive detection for size suggestions and automated data import.
 
 
-### 5. Standard Work Tools
+### 5. Offline Translator ([LocalTranslate](https://terslang.github.io/LocalTranslate/))
+*   **Contents:** Translation of texts between more than 40 languages with Firefox's neural translation models, bundled inside the application: nothing else needs downloading.
+*   **Installation:** Optional from the installer (~1.7 GB, shares components with Organic Maps). Creates the **Translator** desktop icon.
+*   **Companions:** The Wikivoyage phrasebooks and Wiktionary (in the library) help with pronunciation and vocabulary.
+
+### 6. Check my refugiOS
+*   **What it does:** A desktop icon checks, without any connection, that everything installed is complete and intact: interrupted downloads, damaged files, broken shortcuts, AI models that do not fit in the computer's memory, missing maps and damaged vaults. It ends with a report, also saved to `~/refugiOS/check-report.txt`.
+*   **Two modes:** The quick check takes a few seconds; the full check also recomputes the checksum of every file and can take a while on a slow drive.
+*   **When to use it:** After the installation, before putting the device away, and after cloning it to another drive.
+
+### 7. Standard Work Tools
 Essential programs for daily life, adapted for maximum compatibility.
 *   **Office and Multimedia:** [LibreOffice](https://www.libreoffice.org/), [VLC](https://www.videolan.org/), [Evince](https://wiki.gnome.org/Apps/Evince) (PDF).
 *   **System and Navigation:** [Epiphany Browser](https://wiki.gnome.org/Apps/Web) (Lightweight browser), [Gedit](https://wiki.gnome.org/Apps/Gedit) (Text editor), [XFCE Terminal](https://docs.xfce.org/apps/terminal/start).
 *   **Synchronization:** [Syncthing](https://syncthing.net/) (sharing files between devices without need for cloud or Internet).
+*   **Spelling:** The spelling, hyphenation and thesaurus dictionaries of the chosen language are installed, used by LibreOffice and the text editor.
 *   **Language:** 🌐 **Multilingual.** All applications are installed with the selected local language support.
 
-### 6. Hardware Support
+### 8. Hardware Support
 *   **Standard PC:** Optimized for x86_64 architectures (Intel/AMD) through AppImages and Flatpaks.
 *   **Raspberry Pi:** 🍓 **Official Support.** The installer automatically detects Raspberry Pi devices and uses native ARM packages to guarantee performance.
 
@@ -66,9 +84,9 @@ We are working to integrate these powerful tools in upcoming versions:
 *   **[Kolibri](https://learningequality.org/kolibri/) Platform:** A complete educational library with videos and exercises for schools in remote areas.
 
 ### 3. Literature and Technical Libraries
-*   **[Project Gutenberg](https://www.gutenberg.org/):** Access to more than 70,000 classic public domain books.
+*   **[Project Gutenberg](https://www.gutenberg.org/):** ✅ **Now available** in Spanish. The complete English collection is over 200 GB and is pending to be offered by subject.
 *   **[Survivor Library](http://www.survivorlibrary.com/):** Massive collection of manuals on pre-industrial techniques (agriculture, forge, basic chemistry).
-*   **[Other Libraries for Kiwix](https://download.kiwix.org/zim/):** Dictionaries, physics, mathematics, education, travel, etc.
+*   **[Other Libraries for Kiwix](https://download.kiwix.org/zim/):** ✅ **Now available:** dictionary, travel guides, textbooks, repairs, energy and survival (see above). More will be added.
 
 ### 4. Advanced Analysis with IA
 *   **[AnythingLLM](https://useanything.com/) for PDF Analysis:** Tool to "chat" with your own local PDF documents.

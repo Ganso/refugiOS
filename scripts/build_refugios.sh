@@ -360,6 +360,21 @@ cat << 'XFCE_SCREENLOCK' > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-scree
 XFCE_SCREENLOCK
 chmod 644 /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml
 
+# light-locker locks the session when the screen blanks, independently of
+# xfce4-screensaver. With autologin and no password the unlock greeter cannot
+# take the user back to the desktop: after ten idle minutes the machine looks
+# logged out. Remove it, and stop the power manager from locking on suspend.
+apt-get purge -y light-locker || true
+cat << 'XFCE_POWERLOCK' > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-power-manager" version="1.0">
+  <property name="xfce4-power-manager" type="empty">
+    <property name="lock-screen-suspend-hibernate" type="bool" value="false"/>
+  </property>
+</channel>
+XFCE_POWERLOCK
+chmod 644 /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
+
 # Inyectar Script de Autoexpansión Universal (NVMe/eMMC/SATA/loop)
 cat << 'EXPAND_SCRIPT' > /usr/local/bin/refugios-expand.sh
 #!/bin/bash

@@ -173,9 +173,11 @@ Consulta la **[Guía de Virtualización](doc/Guia-Virtualizacion-y-Pendrive-ES.m
 
 *   **⚡ Arranca en cualquier PC:** Conectas el USB, enciendes y tu refugio digital funciona. No installs nada en el ordenador anfitrión.
 *   **🍓 Soporte nativo para Raspberry Pi:** Instalación certificada en Raspberry Pi 3B+.
-*   **📚 Conocimiento Universal Offline:** Copias completas de la Wikipedia, WikiMed, enciclopedias de supervivencia y guías de oficios.
+*   **📚 Conocimiento Universal Offline:** Wikipedia, enciclopedia médica, guías de emergencia y supervivencia, reparaciones, energía, diccionario y libros, organizados por categorías.
 *   **🤖 Inteligencia Artificial Privada:** Asistente que funciona 100% en local, sin Internet.
-*   **🗺️ Mapas y Navegación GPS:** Mapas offline de todo el mundo con Organic Maps.
+*   **🗺️ Mapas y Navegación GPS:** Mapas offline de todo el mundo con Organic Maps, con los países más habituales listos desde el instalador.
+*   **Traductor sin conexión:** Más de 40 idiomas con los modelos neuronales de Firefox.
+*   **Comprobación sin conexión:** Un icono revisa que libros, IA, mapas y bóvedas están completos e intactos antes de necesitarlos.
 *   **🔒 Bóveda de Archivos Segura:** Cifrado profesional LUKS para proteger documentos sensibles.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en español o inglés.
 

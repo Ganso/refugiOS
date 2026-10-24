@@ -5,6 +5,34 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Sin publicar]
+
+### Añadido
+- **Biblioteca organizada por categorías:** Además de la Wikipedia, el instalador ofrece cuatro menús de contenidos de acceso libre publicados por Kiwix: *Salud y medicina* (WikiMed, WikEM, manuales de primeros auxilios), *Emergencias y supervivencia* (guías postdesastre, agua potable, alimentos, nudos, ScoutWiki, supervivencia al aire libre, WikiHow), *Conocimiento práctico y reparaciones* (iFixit, Appropedia, Energypedia, huerto, reparaciones domésticas, mecánica, radioafición) e *Idioma, libros y educación* (Wikcionario, Wikiviajes, Wikilibros, Wikisource, Proyecto Gutenberg en español, PhET). Cada menú llega con una preselección adaptada al espacio libre, y los libros que solo existen en inglés se marcan como tales. Los secundarios se agrupan en la carpeta *Biblioteca refugiOS* del escritorio para no llenarlo de iconos.
+- **Dos niveles intermedios de Wikipedia:** *Esencial* (artículos principales completos, ~1,1 GB) y *Esencial con imágenes* (~3,8 GB), que encajan en pendrives de 16 y 32 GB. Entre la versión ligera y la completa sin imágenes había un salto de 200 MB a 12 GB.
+- **Mapas listos desde el instalador:** Tras aceptar Organic Maps se puede elegir España, Portugal, Europa entera, México, Colombia, Argentina, Chile, Perú, Venezuela, Brasil o Estados Unidos. Las regiones se descargan directamente en la carpeta donde las busca Organic Maps, para la versión de datos que espera la aplicación instalada, y se comprueban contra el tamaño y la suma SHA-1 de su propio catálogo. El resto de regiones se siguen descargando desde la aplicación.
+- **Descargas verificadas:** Los ZIM se descargan mediante el *metalink* de Kiwix (varios mirrors a la vez y comprobación de cada fragmento) y, si falla, de cada mirror y por BitTorrent, contrastando el resultado con la suma SHA-256 publicada. Los modelos de IA se contrastan con la suma SHA-256 que publica Hugging Face. La suma esperada queda guardada junto a cada fichero (`.sha256`).
+
+- **Traductor sin conexión:** El instalador ofrece LocalTranslate, que traduce entre más de 40 idiomas con los modelos neuronales de Firefox incluidos en la propia aplicación, y crea el icono *Traductor* en el escritorio. Responde a la petición del issue #13.
+- **Comprobar mi refugiOS:** Nuevo icono del escritorio (`scripts/refugios-check.py`) que revisa sin conexión que libros, modelos y motor de IA, mapas, traductor y bóvedas están completos e intactos, y avisa de descargas interrumpidas, ficheros dañados, accesos rotos, modelos que no caben en la memoria del equipo o Organic Maps sin mapas. La comprobación completa recalcula además las sumas guardadas junto a cada fichero. El informe queda en `~/refugiOS/check-report.txt`.
+- **Contexto para el asistente de IA:** La interfaz de chat arranca con un mensaje de sistema en el idioma del usuario que pide respuestas claras, breves y prácticas, da prioridad a los pasos urgentes en temas médicos o de seguridad y recuerda que no hay acceso a Internet.
+- **Diccionarios ortográficos garantizados:** Se instalan explícitamente los diccionarios ortográficos, de separación silábica y de sinónimos del idioma elegido; `check-language-support` solo existe en Ubuntu y en Debian no se instalaba nada.
+
+### Corregido
+- **Descargas interrumpidas dadas por instaladas:** Un ZIM o un modelo de IA cortado a medias se quedaba en disco con su fichero de control `.aria2`, y en la siguiente ejecución el instalador lo daba por descargado y creaba los accesos sobre un fichero truncado. Ahora un fichero con control `.aria2` se considera incompleto y se reanuda.
+- **El enlace de un modelo de IA podía apuntar al fichero equivocado:** La búsqueda por prefijo del nombre del modelo también encontraba su `.aria2`, y el enlace estable podía acabar apuntando a él. Ahora se busca el nombre exacto.
+- **Fallos de descarga de modelos de IA silenciados:** Si la descarga de un modelo fallaba, no se avisaba y se enlazaba igualmente. Ahora se informa en el resumen final.
+- **La preferencia P2P se ignoraba:** El instalador preguntaba si priorizar BitTorrent pero nunca usaba la respuesta. Ahora la descarga por BitTorrent va primero cuando se elige.
+- **Tamaños incorrectos según el idioma:** La Wikipedia completa en inglés ocupa unos 120 GB, no los 38 GB que se anunciaban, y WikiMed en inglés 1,7 GB en lugar de 620 MB. Los tamaños son ahora por idioma, y la Wikipedia preseleccionada es la mayor que cabe holgadamente en la unidad.
+- **Textos del instalador en el idioma anterior:** Las etiquetas de los menús de Wikipedia y de modelos de IA se traducían al cargar el instalador, antes de elegir idioma, y salían en el idioma anterior si se cambiaba.
+- **Kiwix no arrancaba en sistemas con glibc antigua (issue #10):** El AppImage reciente de Kiwix necesita glibc 2.35 o superior y en Debian 11 moría al arrancar. El instalador instala ahí el Flatpak, y el lanzador lo prefiere al AppImage cuando la glibc del sistema es demasiado antigua.
+- **La sesión parecía cerrarse tras diez minutos de inactividad:** `light-locker` bloqueaba la sesión al apagarse la pantalla, y con autologin y sin contraseña la pantalla de desbloqueo de LightDM no devolvía al escritorio. La imagen ya no incluye `light-locker`, y el instalador lo desactiva para el usuario de autologin en las imágenes ya publicadas; quien inicia sesión con contraseña conserva su bloqueo.
+- **El motor de IA ignoraba el puerto configurado:** `REFUGIOS_AI_PORT` cambiaba la dirección que se abría en el navegador pero no el puerto en el que escuchaba el servidor.
+- **Mirror de WikiHow retirado:** El servidor de Debian ya no ofrece WikiHow; se ha sustituido por el archivo oficial de Kiwix.
+
+### Cambiado
+- **Documentación al día:** Se han corregido las referencias a modelos de IA retirados (Phi-4-mini, Qwen2.5), la afirmación de que el instalador solo existía en español, los tamaños de la Wikipedia y la tabla de capacidades de las guías de elección de medio y de Raspberry Pi.
+
 ## [0.26] - 2026-09-10
 
 ### Corregido
