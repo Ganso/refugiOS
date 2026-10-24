@@ -394,6 +394,16 @@ def version_key(name):
     """
     return [int(part) for part in re.findall(r'\d+', name)]
 
+KIWIX_APPIMAGE_MIN_GLIBC = (2, 35)
+
+def glibc_version():
+    """(major, minor) of the system glibc, or None if it cannot be told."""
+    try:
+        version = os.confstr('CS_GNU_LIBC_VERSION').split()[1]
+        return tuple(int(x) for x in version.split('.')[:2])
+    except (ValueError, OSError, IndexError, AttributeError):
+        return None
+
 def get_cmd_output(cmd):
     """
     Executes a command in the terminal and returns the resulting stdout text.
@@ -1667,6 +1677,13 @@ def main():
             kiwix_appimage_url = f"https://download.kiwix.org/release/kiwix-desktop/{kiwix_appimage_name}"
     except Exception as e:
         print(f"\033[1;33m[!] {i18n.T('warning')}:\033[0m Error fetching Kiwix AppImage: {e}")
+
+    # Recent Kiwix AppImages need a newer glibc than Debian 11 and similar
+    # distributions have (issue #10): there, go straight to the Flatpak
+    glibc = glibc_version()
+    if kiwix_appimage_url and glibc and glibc < KIWIX_APPIMAGE_MIN_GLIBC:
+        log_info(i18n.T('kiwix_old_glibc').format(".".join(map(str, glibc))))
+        kiwix_appimage_url = None
 
     kiwix_path = install_package(env, "Knowledge Library (Kiwix Desktop)", sys_info.is_rpi, 
         appimage_url=kiwix_appimage_url, 
