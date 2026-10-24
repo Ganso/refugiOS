@@ -197,6 +197,16 @@ MAP_PRESETS = [
     {"id": "map_usa", "label_key": "map_usa", "countries": ["United States of America"], "size_mb": 15200},
 ]
 
+# Offline translator: Firefox's neural translation models, bundled in the Flatpak
+TRANSLATOR_ID = "dev.ters.LocalTranslate"
+TRANSLATOR_SIZE_MB = 2700
+
+# Spell checking and hyphenation for LibreOffice, gedit and the browser
+SPELLING_PACKAGES = {
+    "es": "hunspell-es hyphen-es mythes-es",
+    "en": "hunspell-en-us hyphen-en-us mythes-en-us",
+}
+
 ORGANIC_MAPS_ID = "app.organicmaps.desktop"
 ORGANIC_MAPS_META = "https://meta.omaps.app/maps"
 ORGANIC_MAPS_FALLBACK_SERVERS = ["https://cdn-us1.organicmaps.app/"]
@@ -1190,7 +1200,9 @@ def download_zim(know_dir, zim_name, mirrors, prefer_torrent=False):
     common = (f"--continue=true --auto-file-renaming=false --timeout=15 --connect-timeout=10 "
               f"--max-tries=5 --summary-interval=0 --dir=\"{know_dir}\"")
 
-    attempts = [("metalink", f"aria2c -x 8 -s 8 {common} --follow-metalink=mem "
+    # A small split size lets aria2 spread even small books over several
+    # mirrors, so one slow mirror cannot stall the download
+    attempts = [("metalink", f"aria2c -x 8 -s 8 --min-split-size=2M {common} --follow-metalink=mem "
                              f"--metalink-preferred-protocol=https \"{primary}.meta4\"")]
     for m in mirrors:
         attempts.append(("direct", f"aria2c -x 8 -s 8 {common} -o \"{zim_name}\" \"{m}{zim_name}\""))
@@ -1519,6 +1531,10 @@ def main():
 
     install_extras = simple_question(d, i18n.T('extras_menu_title'), i18n.T('extras_menu_prompt'), default_yes=True)
 
+    translator_installed = subprocess.call(f"flatpak info {TRANSLATOR_ID} >/dev/null 2>&1", shell=True) == 0
+    install_translator = simple_question(d, i18n.T('translator_menu_title'), i18n.T('translator_menu_prompt'),
+                                         default_yes=sys_info.free_space_mb >= 30000 or translator_installed)
+
     ai_selected = multi_select_menu(d, i18n.T('ia_menu_title'), ai_opts, def_ai)
 
     install_nvidia = False
@@ -1552,6 +1568,9 @@ def main():
         if not shutil.which("flatpak") or subprocess.call(f"flatpak info {ORGANIC_MAPS_ID} >/dev/null 2>&1", shell=True) != 0:
             estimated_mb += 2100
         estimated_mb += sum(p['size_mb'] for p in maps_selected)
+
+    if install_translator and not translator_installed:
+        estimated_mb += TRANSLATOR_SIZE_MB
 
     if ai_selected:
         if not os.path.exists(os.path.join(env.ai_dir, 'llamafile')):
@@ -1617,6 +1636,10 @@ def main():
         run_cmd(f"check-language-support -l {sys_info.lang} 2>/dev/null | xargs sudo apt-get install -y", quiet=True)
     else:
         run_cmd(f"sudo apt-get install -y hunspell-{sys_info.lang} hyphen-{sys_info.lang} 2>/dev/null || true", quiet=True)
+    # check-language-support only exists on Ubuntu, and package names differ
+    # between languages: install the dictionaries explicitly
+    if sys_info.lang in SPELLING_PACKAGES:
+        run_cmd(f"sudo apt-get install -y {SPELLING_PACKAGES[sys_info.lang]}", quiet=True)
 
     # System compatibility patches
     fix_flatpak_permissions()
@@ -1726,6 +1749,23 @@ Terminal=false
         log_info(i18n.T('skip_maps_log'))
 
     size_logger.log_section("Fase 4: Mapas Offline (Organic Maps)")
+
+    # Phase 4b: Offline translator
+    if install_translator:
+        if install_package(env, "Offline Translator (LocalTranslate)", sys_info.is_rpi, flatpak_id=TRANSLATOR_ID):
+            translator_desktop = os.path.join(env.desktop, "Translator.desktop")
+            with open(translator_desktop, "w") as f:
+                f.write(f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name={i18n.T('translator_desktop_name')}
+Comment={i18n.T('translator_desktop_comment')}
+Exec=flatpak run {TRANSLATOR_ID}
+Icon={TRANSLATOR_ID}
+Terminal=false
+""")
+            certify_icon(translator_desktop)
+        size_logger.log_section("Fase 4b: Traductor offline")
 
     # Phase 5: AI Motor (Llamafile)
     script_path = fetch_script("refugios-ai-selector.sh")
