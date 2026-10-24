@@ -3,7 +3,7 @@
 refugiOS includes a selection of tools designed to work entirely without an Internet connection. Below are the modules currently available and those we plan to add soon.
 
 > [!IMPORTANT]
-> **Internationalization (i18n):** Currently, both the installer and documentation are available **only in Spanish**. Translation to English will be undertaken soon and, later, to other languages depending on community interest.
+> **Internationalization (i18n):** The installer, the launchers and the documentation are available in **Spanish and English**. More languages will follow depending on community interest.
 >
 > **Documentation Migration:** We are in the process of migrating all technical and user documentation to the **GitHub Wiki** format to facilitate consultation and collaboration.
 
@@ -15,14 +15,20 @@ These components are installed automatically or through the welcome wizard:
 
 ### 1. Offline Library and Encyclopedias ([Kiwix](https://www.kiwix.org/))
 Access to massive databases using the ZIM format.
-*   **Contents:** [Wikipedia](https://en.wikipedia.org/) (General), [WikiMed](https://www.kiwix.org/en/get-kiwix/download-content/) (Medicine), [WikiHow](https://wikihow.com/) (Manuals).
-*   **Wikipedia in three tiers:** The installer allows choosing between Wikipedia Lite (~73 MB, top articles without images), Wikipedia NoPics (~9.5 GB, complete text without images), or **Wikipedia Total with images and multimedia** (~38 GB).
-*   **Note on WikiHow:** WikiHow is now available for download via multiple mirrors (Debian CD image server, NetCologne, and MBL Library). The installer tries each mirror in order to ensure maximum reliability.
-*   **Language:** 🌐 **Multilingual.** The installer downloads the files specifically in the language you choose (en, es, fr, etc.).
+*   **Wikipedia in five tiers:** Lite (top articles, summarised), Essentials (top articles in full, no images), Essentials with images, NoPics (all articles, no images) and **Total with images and multimedia**. In English they take ~290 MB, ~2.6 GB, ~6.5 GB, ~49 GB and ~119 GB; the Spanish ones are much smaller (~34 GB the complete one). The installer preselects the largest one that comfortably fits on your drive.
+*   **Library by category:** Besides Wikipedia, the installer offers a library organised in four menus, with freely available content published by Kiwix:
+    *   **Health and medicine:** [WikiMed](https://www.kiwix.org/) (Wikipedia's medical articles), [WikEM](https://wikem.org/) (emergency medicine) and first aid and field medicine manuals.
+    *   **Emergencies and survival:** Post-disaster guides, drinking water, food preparation, knots, Q&A on outdoor survival and [WikiHow](https://wikihow.com/).
+    *   **Practical knowledge and repairs:** [iFixit](https://www.ifixit.com/), [Appropedia](https://www.appropedia.org/) (appropriate technology), [Energypedia](https://energypedia.info/) (solar and off-grid energy), gardening, home repairs, vehicle mechanics and amateur radio.
+    *   **Language, books and education:** [Wiktionary](https://en.wiktionary.org/) (dictionary), [Wikivoyage](https://en.wikivoyage.org/) (with phrasebooks for other languages), Wikibooks, Wikisource and the [PhET](https://phet.colorado.edu/) science simulations.
+*   **Desktop launchers:** Wikipedia, WikiMed and WikiHow get their own desktop icon; the other books are gathered in the **refugiOS Library** folder on the desktop, so it does not fill up with icons.
+*   **Verified downloads:** Every file is downloaded through the Kiwix *metalink*, which spreads the download over several mirrors and checks every piece; if that fails, each mirror is tried directly and finally BitTorrent. The result is checked against the published SHA-256, and an interrupted download is never taken as installed: running the installer again resumes it.
+*   **Language:** 🌐 **Multilingual.** The installer downloads the files in the language you choose and falls back to English when a book does not exist in it. Books that only exist in English are marked as such in the menu.
 
 ### 2. Maps and Navigation ([Organic Maps](https://organicmaps.app/))
 Detailed vector maps with offline search and routing.
 *   **Contents:** Maps of cities, trails, water sources, and hospitals.
+*   **Maps ready from the installer:** The installer itself offers common regions (Spain, Portugal, the whole of Europe, Mexico, Colombia, Argentina, Chile, Peru, Venezuela, Brazil or the United States), downloaded and verified straight into the Organic Maps folder. Any other region can be downloaded later from the application itself, while there is a connection.
 *   **Language:** 🌐 **Multilingual.** The interface and map names adapt to your region.
 
 ### 3. Artificial Intelligence Assistant ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
@@ -66,9 +72,9 @@ We are working to integrate these powerful tools in upcoming versions:
 *   **[Kolibri](https://learningequality.org/kolibri/) Platform:** A complete educational library with videos and exercises for schools in remote areas.
 
 ### 3. Literature and Technical Libraries
-*   **[Project Gutenberg](https://www.gutenberg.org/):** Access to more than 70,000 classic public domain books.
+*   **[Project Gutenberg](https://www.gutenberg.org/):** ✅ **Now available** in Spanish. The complete English collection is over 200 GB and is pending to be offered by subject.
 *   **[Survivor Library](http://www.survivorlibrary.com/):** Massive collection of manuals on pre-industrial techniques (agriculture, forge, basic chemistry).
-*   **[Other Libraries for Kiwix](https://download.kiwix.org/zim/):** Dictionaries, physics, mathematics, education, travel, etc.
+*   **[Other Libraries for Kiwix](https://download.kiwix.org/zim/):** ✅ **Now available:** dictionary, travel guides, textbooks, repairs, energy and survival (see above). More will be added.
 
 ### 4. Advanced Analysis with IA
 *   **[AnythingLLM](https://useanything.com/) for PDF Analysis:** Tool to "chat" with your own local PDF documents.

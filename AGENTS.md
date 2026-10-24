@@ -124,7 +124,13 @@ commit them.
 `sync_resources()` in `install.py` symlinks the best (latest) versioned file in each
 `versions/` dir to a stable name at the parent level (e.g. `Knowledge/wikipedia.zim`,
 `AI/llamafile`, `AI/<tier>-model.gguf`). Desktop launchers reference the stable
-symlinks.
+symlinks. Wikipedia, WikiMed and WikiHow get a launcher on the desktop itself; every
+other book gets its launcher in a desktop folder named after the i18n key
+`library_folder` ("Biblioteca refugiOS" / "refugiOS Library").
+
+Offline maps live where the Organic Maps Flatpak reads them:
+`~/.var/app/app.organicmaps.desktop/data/OMaps/<data version>/<Region>.mwm` (newer
+releases rename `OMaps` to `OrganicMaps`; the installer uses whichever exists).
 
 Desktop directory is auto-detected as `~/Desktop` or `~/Escritorio` (Spanish locale).
 
@@ -186,15 +192,33 @@ The core of the project. A `dialog`-based TUI wizard (~1490 lines). Must run as 
 **normal user** (NOT root); uses `sudo` internally.
 
 ### Imports
-`os, sys, subprocess, urllib.request, json, shutil, re, time, random` (stdlib) +
+`os, sys, subprocess, urllib.request/error/parse, json, hashlib, base64, shutil, re,
+time, random` (stdlib) +
 `i18n` (local) + `dialog` (`python3-dialog`, required).
 
 ### Configuration dicts (top of file — edit these to change content offerings)
-- **`WIKIPEDIA_CONFIG`** — 3 ZIM tiers: `wiki_lite` (~73 MB top articles, no images),
-  `wiki_nopics` (~11.5 GB full text), `wiki_total` (~38 GB with images). Fields: `id`,
-  `name`, `label`, `type`, `search_url`, `priority`, `size_mb`.
-- **`OTHER_WIKIS_CONFIG`** — `wikimed` (~620 MB) and `wikihow` (~20 GB, multiple
-  mirrors). Fields include `symlink`, `search_urls` (list).
+Entries hold **i18n keys** (`label_key`, `title_key`), never translated text: the
+module is imported before the user picks a language.
+
+- **`WIKIPEDIA_CONFIG`** — 5 tiers, smallest first: `wiki_lite` (`top_mini`),
+  `wiki_top_nopic`, `wiki_top_maxi`, `wiki_nopics` (`all_nopic`), `wiki_total`
+  (`all_maxi`). The preselected tier is the largest whose size fits in
+  `WIKI_SPACE_SHARE` (35%) of the free space (`default_wiki_index`).
+- **`LIBRARY_CATALOG`** + **`LIBRARY_GROUPS`** — every other ZIM, shown as one checklist
+  per group (`health`, `survival`, `practical`, `culture`). Fields: `id`, `group`,
+  `label_key`, `title_key`, `stem` (file name without the `_YYYY-MM.zim` date; a
+  `{lang}` placeholder means multilingual with English fallback, no placeholder means
+  a single-language book that is tagged "[in English]" for other users), `urls`
+  (mirror directories, primary first), `size_mb` (int, or `{lang: mb}`), optional
+  `symlink` (stable name, default `<id>.zim`), `desktop` (launcher on the desktop
+  instead of the library folder), `only_langs` (hide for other languages) and
+  `presets` (storage modes that preselect it; a book over `BOOK_SPACE_SHARE` (10%) of
+  the free space is never preselected). **To offer a new book, add one entry here plus
+  its two i18n keys in both languages** — nothing else changes.
+- **`MAP_PRESETS`** — Organic Maps regions offered by the installer. `countries` are
+  top-level ids of the app's `countries.txt`; every region below them is downloaded.
+  Check new ids against the real file (it is in the Flatpak, under
+  `files/share/organicmaps/data/countries.txt`).
 - **`AI_MODEL_CONFIG`** — 5 LLM GGUF models, all from `huggingface.co/unsloth`:
   | id | model | size | symlink |
   |---|---|---|---|
@@ -260,11 +284,12 @@ The core of the project. A `dialog`-based TUI wizard (~1490 lines). Must run as 
 4. Language selection (persistent via `i18n.save_lang`).
 5. System diagnosis dialog.
 6. Storage-mode presets: lite (<30 GB), standard (30–70 GB), rich (>70 GB) → default
-   Wikipedia tier, other wikis, AI models.
+   library preselections and AI models (Wikipedia is sized by free space instead).
 7. Rewrite-mode question (force re-download).
 8. Detect already-installed components (scan `versions/` dirs).
-9. Questionnaires: Wikipedia (single), other wikis (multi), maps (yes/no), extras
-   (yes/no), AI models (multi), P2P preference (yes/no).
+9. Questionnaires: Wikipedia (single), one library checklist per group, maps
+   (yes/no) + map regions (multi), extras (yes/no), AI models (multi), P2P preference
+   (yes/no).
 10. Space estimation + critical-space warning + confirmation.
 11. `DEBUG=1` → dry-run exit (no changes, no downloads).
 12. **Execution phases:**
@@ -272,9 +297,10 @@ The core of the project. A `dialog`-based TUI wizard (~1490 lines). Must run as 
       patch, RPi PCManFM patch).
     - **Phase 2:** Kiwix Desktop (AppImage via scraped download.kiwix.org → Flatpak →
       APT).
-    - **Phase 3:** Knowledge bases / ZIMs (Wikipedia tier + other wikis; mirror
-      cascade → BitTorrent fallback).
-    - **Phase 4:** Organic Maps (Flatpak) + `refugios-maps.sh` launcher.
+    - **Phase 3:** Knowledge bases / ZIMs (`install_zim` for the Wikipedia tier and
+      each library book; see the download cascade below).
+    - **Phase 4:** Organic Maps (Flatpak) + chosen map regions (`install_map_regions`)
+      + `refugios-maps.sh` launcher.
     - **Phase 5:** AI engine (Llamafile from GitHub releases) + selected GGUF models +
       `refugios-ai-selector.sh` launcher.
     - **Phase 6:** Vault (`refugios-vault.py` + `i18n.py` deployed) + desktop icon.
@@ -348,9 +374,22 @@ Launches Organic Maps (Flatpak). Detects RPi 1/2/3/Zero via
   - If all 3 fail → `log_err(..., fatal=False)` appends to `FAILED_ITEMS` and
     continues. **The installer never hard-stops on a single package failure.**
 
-**ZIM download cascade** (separate): multiple `search_urls` in order → English fallback
-if requested language missing → BitTorrent (`.torrent`) fallback → logged as failed
-(`fatal=False`).
+**ZIM download cascade** (`download_zim`, separate): the file is resolved in the
+user's language, else English, from the first mirror listing that has it; then Kiwix
+`.meta4` metalink (aria2 spreads it over mirrors and checks piece hashes) → each mirror
+directly, checked against the published `.sha256` → BitTorrent (`.torrent`) → logged as
+failed (`fatal=False`). With the P2P preference, BitTorrent goes first. The expected
+hash is written next to the file as `<file>.sha256`.
+
+**Integrity rules** (do not break them):
+- A file with an `.aria2` control file beside it is an interrupted download: never
+  count it as installed nor link it (`is_download_complete`).
+- Match model files by **exact name**, never by prefix: a prefix also matches the
+  `.aria2` and `.sha256` files next to them.
+- GGUF models are checked against the SHA-256 Hugging Face returns in the
+  `X-Linked-Etag` header of the (not followed) redirect (`fetch_hf_sha256`).
+- Map regions are checked against the size and `sha1_base64` that the app's own
+  `countries.txt` lists, and downloaded for its data version `v`.
 
 ---
 

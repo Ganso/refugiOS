@@ -25,8 +25,8 @@ La elección del almacenamiento es crítica en Raspberry Pi, ya que las tarjetas
 
 *   **Recomendación de Oro:** Un **SSD con adaptador USB** o un **SSD montado en HAT NVMe** dará la mejor experiencia. Las tarjetas microSD baratas se desgastan en pocos meses de uso intensivo.
 *   **Capacidad:**
-    *   **16 GB (Mínimo):** Sistema base + WikiMed + IA mínima. Sin espacio para Wikipedia.
-    *   **32 GB (Equilibrado):** Todo lo anterior + Wikipedia Ligera.
+    *   **16 GB (Mínimo):** Sistema base + WikiMed + Wikipedia ligera + IA mínima.
+    *   **32 GB (Equilibrado):** Todo lo anterior + Wikipedia esencial (artículos principales completos).
     *   **64 GB (Estándar):** El punto ideal. Incluye Wikipedia completa (texto) y modelo IA básico.
     *   **128 GB o más:** Permite WikiHow, Wikipedia con imágenes y múltiples modelos de IA.
 
@@ -107,7 +107,7 @@ Si el sistema arrancó en inglés y necesitas el teclado en español:
 
 ## 6. Notas sobre rendimiento
 
-*   **Memoria RAM:** Con solo 1 GB (Raspberry Pi 3B+), se recomienda el modelo de IA mínimo (Qwen2.5-0.5B). El modelo básico (Phi-4-mini) puede funcionar pero con swap activo y lentitud notable.
+*   **Memoria RAM:** Con solo 1 GB (Raspberry Pi 3B+), se recomienda el modelo de IA mínimo (Qwen3-0.6B). El modelo básico (Gemma-4-E4B) necesita unos 6 GB de memoria y no es viable sin una Raspberry Pi de 8 GB.
 *   **Swap:** Para usar modelos de IA más grandes, puedes ampliar el swap:
     ```bash
     sudo dphys-swapfile swapoff
@@ -121,6 +121,6 @@ Si el sistema arrancó en inglés y necesitas el teclado en español:
 
 ## 7. Conocimiento Offline (ZIM)
 
-El proceso de descarga e instalación de bases de conocimiento (Wikipedia, WikiMed, WikiHow) es idéntico al de XUbuntu. Consulta la [Guía de instalación en XUbuntu](Instalacion-Xubuntu-ES) para los detalles de selección de contenidos.
+El proceso de descarga e instalación de bases de conocimiento (Wikipedia y la biblioteca de salud, supervivencia, conocimiento práctico e idioma) es idéntico al de XUbuntu. Consulta la [Guía de instalación en XUbuntu](Instalacion-Xubuntu-ES) para los detalles de selección de contenidos.
 
 Al finalizar, tu Raspberry Pi ejecutará **refugiOS** de forma **totalmente autónoma**, sin Internet, con conocimiento enciclopédico, mapas offline e inteligencia artificial local.

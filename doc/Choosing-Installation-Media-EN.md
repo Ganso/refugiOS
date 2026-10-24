@@ -29,10 +29,10 @@ The device size determines what content you can store:
 
 | Capacity | Possible Content | Use Profile |
 | :--- | :--- | :--- |
-| **16 GB (Minimum)** | Base system + WikiMed + Basic Maps + Light AI. No space for Wikipedia. | Basic emergency unit |
-| **32 GB (Balanced)** | All of the above + Wikipedia without images. No room for full Wikipedia. | Functional backup |
-| **64 GB (Standard)** | Full Wikipedia with images + Phi-4-mini AI + WikiMed + Maps. Limited room for more. | Recommended daily use |
-| **128 GB or more** | All the above + WikiHow + multiple AI models. Sufficient to install all current options in the configurator along with maps of a wide area in Organic Maps (practically a whole continent). Downloading all world maps alone could take up approximately 80 GB. | Advanced station |
+| **16 GB (Minimum)** | Base system + Wikipedia Essentials (no images) + WikiMed + emergency guides + maps of one country + Minimal AI. | Basic emergency unit |
+| **32 GB (Balanced)** | All of the above + Wikipedia Essentials with images + dictionary + Basic AI. | Functional backup |
+| **64 GB (Standard)** | Complete Wikipedia without images (~49 GB in English, ~12 GB in Spanish) + Basic AI (Gemma 4 E4B) + health and survival library + maps. Limited room for more. | Recommended daily use |
+| **128 GB or more** | All the above + WikiHow + multiple AI models. Sufficient to install all current options in the configurator along with maps of a wide area in Organic Maps (practically a whole continent). Downloading all world maps alone could take up approximately 80 GB, and the complete English Wikipedia with images about 120 GB. | Advanced station |
 
 ---
 
