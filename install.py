@@ -20,7 +20,11 @@ import os
 import sys
 import subprocess
 import urllib.request
+import urllib.error
+import urllib.parse
 import json
+import hashlib
+import base64
 import shutil
 import re
 import time
@@ -49,66 +53,159 @@ except ImportError:
 # ==============================================================================
 
 # Knowledge Databases (ZIM)
+# Entries hold i18n keys, not translated text: the user may switch language
+# after this module has been imported. A "{lang}" placeholder in a stem is
+# replaced by the user's language, falling back to English when the book does
+# not exist in it. Stems without the placeholder are single-language books.
+# Sizes are approximate MB per language, used for the space estimate.
+KIWIX_ZIM = "https://download.kiwix.org/zim/"
+
 WIKIPEDIA_CONFIG = [
-    {
-        "id": "wiki_lite",
-        "name": "wikipedia",
-        "label": i18n.T('wiki_lite_label'),
-        "type": "top_mini",
-        "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "priority": 1,
-        "size_mb": 200
-    },
-    {
-        "id": "wiki_nopics",
-        "name": "wikipedia",
-        "label": i18n.T('wiki_nopics_label'),
-        "type": "all_nopic",
-        "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "priority": 2,
-        "size_mb": 11500
-    },
-    {
-        "id": "wiki_total",
-        "name": "wikipedia",
-        "label": i18n.T('wiki_total_label'),
-        "type": "all_maxi",
-        "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "priority": 3,
-        "size_mb": 38912
-    }
+    {"id": "wiki_lite", "label_key": "wiki_lite_label", "stem": "wikipedia_{lang}_top_mini",
+     "urls": [KIWIX_ZIM + "wikipedia/"], "priority": 1, "size_mb": {"es": 210, "en": 290}},
+    {"id": "wiki_top_nopic", "label_key": "wiki_top_nopic_label", "stem": "wikipedia_{lang}_top_nopic",
+     "urls": [KIWIX_ZIM + "wikipedia/"], "priority": 2, "size_mb": {"es": 1150, "en": 2700}},
+    {"id": "wiki_top_maxi", "label_key": "wiki_top_maxi_label", "stem": "wikipedia_{lang}_top_maxi",
+     "urls": [KIWIX_ZIM + "wikipedia/"], "priority": 3, "size_mb": {"es": 3900, "en": 6700}},
+    {"id": "wiki_nopics", "label_key": "wiki_nopics_label", "stem": "wikipedia_{lang}_all_nopic",
+     "urls": [KIWIX_ZIM + "wikipedia/"], "priority": 4, "size_mb": {"es": 12300, "en": 50200}},
+    {"id": "wiki_total", "label_key": "wiki_total_label", "stem": "wikipedia_{lang}_all_maxi",
+     "urls": [KIWIX_ZIM + "wikipedia/"], "priority": 5, "size_mb": {"es": 34800, "en": 121900}},
 ]
 
-OTHER_WIKIS_CONFIG = [
-    {
-        "id": "wikimed",
-        "name": "wikimed",
-        "label": i18n.T('wikimed_label'),
-        "type": "maxi",
-        "search_url": "https://download.kiwix.org/zim/wikipedia/",
-        "symlink": "wikimed.zim",
-        "size_mb": 620
-    },
-    {
-        "id": "wikihow",
-        "name": "wikihow",
-        "label": i18n.T('wikihow_label'),
-        "type": "maxi",
-        "search_urls": [
-            "https://cdimage.debian.org/mirror/kiwix.org/archive/zim/wikihow/",
-            "https://mirror.netcologne.de/kiwix/zim/wikihow/",
-            "https://mirror-sites-ca.mblibrary.info/mirror-sites/download.kiwix.org/archive/zim/wikihow/"
-        ],
-        "symlink": "wikihow.zim",
-        "size_mb": 20480
-    }
+# Menu groups for the rest of the library, shown as one checklist each
+LIBRARY_GROUPS = [
+    {"id": "health", "title_key": "lib_group_health"},
+    {"id": "survival", "title_key": "lib_group_survival"},
+    {"id": "practical", "title_key": "lib_group_practical"},
+    {"id": "culture", "title_key": "lib_group_culture"},
 ]
+
+# "desktop": True puts the launcher on the desktop itself; the rest go into
+# the library folder so the desktop stays readable.
+# "only_langs" hides a book from users of other languages.
+# "presets" lists the storage modes (lite/standard/rich) that preselect it.
+LIBRARY_CATALOG = [
+    # Health
+    {"id": "wikimed", "group": "health", "label_key": "lib_wikimed", "title_key": "lib_wikimed_title",
+     "stem": "wikipedia_{lang}_medicine_maxi", "urls": [KIWIX_ZIM + "wikipedia/"],
+     "size_mb": {"es": 450, "en": 1750}, "symlink": "wikimed.zim", "desktop": True,
+     "presets": ["lite", "standard", "rich"]},
+    {"id": "wikem", "group": "health", "label_key": "lib_wikem", "title_key": "lib_wikem_title",
+     "stem": "wikem_en_all_maxi", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 260, "presets": ["standard", "rich"]},
+    {"id": "zimgit_medicine", "group": "health", "label_key": "lib_zimgit_medicine", "title_key": "lib_zimgit_medicine_title",
+     "stem": "zimgit-medicine_en", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 70, "presets": ["lite", "standard", "rich"]},
+    # Emergencies and survival
+    {"id": "post_disaster", "group": "survival", "label_key": "lib_post_disaster", "title_key": "lib_post_disaster_title",
+     "stem": "zimgit-post-disaster_en", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 620, "presets": ["standard", "rich"]},
+    {"id": "water", "group": "survival", "label_key": "lib_water", "title_key": "lib_water_title",
+     "stem": "zimgit-water_en", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 20, "presets": ["lite", "standard", "rich"]},
+    {"id": "food", "group": "survival", "label_key": "lib_food", "title_key": "lib_food_title",
+     "stem": "zimgit-food-preparation_en", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 95, "presets": ["lite", "standard", "rich"]},
+    {"id": "knots", "group": "survival", "label_key": "lib_knots", "title_key": "lib_knots_title",
+     "stem": "zimgit-knots_en", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 30, "presets": ["lite", "standard", "rich"]},
+    {"id": "scoutwiki", "group": "survival", "label_key": "lib_scoutwiki", "title_key": "lib_scoutwiki_title",
+     "stem": "scoutwiki.org_es_all_maxi", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 20, "only_langs": ["es"], "presets": ["lite", "standard", "rich"]},
+    {"id": "outdoors", "group": "survival", "label_key": "lib_outdoors", "title_key": "lib_outdoors_title",
+     "stem": "outdoors.stackexchange.com_en_all", "urls": [KIWIX_ZIM + "stack_exchange/"],
+     "size_mb": 140, "presets": ["standard", "rich"]},
+    {"id": "wikihow", "group": "survival", "label_key": "lib_wikihow", "title_key": "lib_wikihow_title",
+     "stem": "wikihow_{lang}_maxi",
+     "urls": [
+         "https://download.kiwix.org/archive/zim/wikihow/",
+         "https://mirror-sites-ca.mblibrary.info/mirror-sites/download.kiwix.org/archive/zim/wikihow/",
+         "https://mirror.netcologne.de/kiwix/zim/wikihow/",
+     ],
+     "size_mb": {"es": 25600, "en": 49200}, "symlink": "wikihow.zim", "desktop": True,
+     "presets": ["rich"]},
+    # Practical knowledge
+    {"id": "ifixit", "group": "practical", "label_key": "lib_ifixit", "title_key": "lib_ifixit_title",
+     "stem": "ifixit_{lang}_all", "urls": [KIWIX_ZIM + "ifixit/"],
+     "size_mb": 3500, "presets": ["rich"]},
+    {"id": "appropedia", "group": "practical", "label_key": "lib_appropedia", "title_key": "lib_appropedia_title",
+     "stem": "appropedia_en_all_maxi", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 560, "presets": ["rich"]},
+    {"id": "energypedia", "group": "practical", "label_key": "lib_energypedia", "title_key": "lib_energypedia_title",
+     "stem": "energypedia_en_all_maxi", "urls": [KIWIX_ZIM + "other/"],
+     "size_mb": 770, "presets": ["rich"]},
+    {"id": "gardening", "group": "practical", "label_key": "lib_gardening", "title_key": "lib_gardening_title",
+     "stem": "gardening.stackexchange.com_en_all", "urls": [KIWIX_ZIM + "stack_exchange/"],
+     "size_mb": 900, "presets": ["rich"]},
+    {"id": "diy", "group": "practical", "label_key": "lib_diy", "title_key": "lib_diy_title",
+     "stem": "diy.stackexchange.com_en_all", "urls": [KIWIX_ZIM + "stack_exchange/"],
+     "size_mb": 1950, "presets": []},
+    {"id": "mechanics", "group": "practical", "label_key": "lib_mechanics", "title_key": "lib_mechanics_title",
+     "stem": "mechanics.stackexchange.com_en_all", "urls": [KIWIX_ZIM + "stack_exchange/"],
+     "size_mb": 330, "presets": []},
+    {"id": "ham", "group": "practical", "label_key": "lib_ham", "title_key": "lib_ham_title",
+     "stem": "ham.stackexchange.com_en_all", "urls": [KIWIX_ZIM + "stack_exchange/"],
+     "size_mb": 75, "presets": ["standard", "rich"]},
+    # Language, culture and education
+    {"id": "wiktionary", "group": "culture", "label_key": "lib_wiktionary", "title_key": "lib_wiktionary_title",
+     "stem": "wiktionary_{lang}_all_nopic", "urls": [KIWIX_ZIM + "wiktionary/"],
+     "size_mb": {"es": 640, "en": 8700}, "presets": ["standard", "rich"]},
+    {"id": "wikivoyage", "group": "culture", "label_key": "lib_wikivoyage", "title_key": "lib_wikivoyage_title",
+     "stem": "wikivoyage_{lang}_all_maxi", "urls": [KIWIX_ZIM + "wikivoyage/"],
+     "size_mb": {"es": 140, "en": 1050}, "presets": ["lite", "standard", "rich"]},
+    {"id": "wikibooks", "group": "culture", "label_key": "lib_wikibooks", "title_key": "lib_wikibooks_title",
+     "stem": "wikibooks_{lang}_all_maxi", "urls": [KIWIX_ZIM + "wikibooks/"],
+     "size_mb": {"es": 340, "en": 5900}, "presets": ["rich"]},
+    {"id": "wikisource", "group": "culture", "label_key": "lib_wikisource", "title_key": "lib_wikisource_title",
+     "stem": "wikisource_{lang}_all_nopic", "urls": [KIWIX_ZIM + "wikisource/"],
+     "size_mb": {"es": 390, "en": 3700}, "presets": ["rich"]},
+    {"id": "gutenberg", "group": "culture", "label_key": "lib_gutenberg", "title_key": "lib_gutenberg_title",
+     "stem": "gutenberg_es_all", "urls": [KIWIX_ZIM + "gutenberg/"],
+     "size_mb": 1750, "only_langs": ["es"], "presets": ["rich"]},
+    {"id": "phet", "group": "culture", "label_key": "lib_phet", "title_key": "lib_phet_title",
+     "stem": "phet_{lang}_all", "urls": [KIWIX_ZIM + "phet/"],
+     "size_mb": 110, "presets": ["standard", "rich"]},
+]
+
+# Offline maps for Organic Maps. Each preset is a list of top-level country ids
+# from the countries.txt bundled with the app; every region below them is
+# downloaded. Sizes are approximate MB, for the space estimate only.
+MAP_EUROPE = [
+    "Albania", "Andorra", "Austria", "Belarus", "Belgium", "Bosnia and Herzegovina",
+    "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia",
+    "Faroe Islands", "Finland", "France", "Germany", "Gibraltar", "Greece",
+    "Guernsey", "Hungary", "Iceland", "Ireland", "Isle of Man", "Italy", "Jersey",
+    "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Malta",
+    "Moldova", "Monaco", "Montenegro", "Netherlands", "Norway", "Poland",
+    "Portugal", "Republic of Kosovo", "Romania", "San Marino", "Serbia",
+    "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Ukraine",
+    "United Kingdom",
+]
+
+MAP_PRESETS = [
+    {"id": "map_spain", "label_key": "map_spain", "countries": ["Spain", "Andorra", "Gibraltar"], "size_mb": 1800},
+    {"id": "map_portugal", "label_key": "map_portugal", "countries": ["Portugal"], "size_mb": 470},
+    {"id": "map_europe", "label_key": "map_europe", "countries": MAP_EUROPE, "size_mb": 32000},
+    {"id": "map_mexico", "label_key": "map_mexico", "countries": ["Mexico"], "size_mb": 730},
+    {"id": "map_colombia", "label_key": "map_colombia", "countries": ["Colombia"], "size_mb": 320},
+    {"id": "map_argentina", "label_key": "map_argentina", "countries": ["Argentina"], "size_mb": 800},
+    {"id": "map_chile", "label_key": "map_chile", "countries": ["Chile"], "size_mb": 440},
+    {"id": "map_peru", "label_key": "map_peru", "countries": ["Peru"], "size_mb": 280},
+    {"id": "map_venezuela", "label_key": "map_venezuela", "countries": ["Venezuela"], "size_mb": 130},
+    {"id": "map_brazil", "label_key": "map_brazil", "countries": ["Brazil"], "size_mb": 2300},
+    {"id": "map_usa", "label_key": "map_usa", "countries": ["United States of America"], "size_mb": 15200},
+]
+
+ORGANIC_MAPS_ID = "app.organicmaps.desktop"
+ORGANIC_MAPS_META = "https://meta.omaps.app/maps"
+ORGANIC_MAPS_FALLBACK_SERVERS = ["https://cdn-us1.organicmaps.app/"]
 
 # Artificial Intelligence Models (GGUF)
 AI_MODEL_CONFIG = [
     {
         "id": "ia_min",
-        "label": i18n.T('ia_min_label'),
+        "label_key": "ia_min_label",
         "filename": "Qwen3-0.6B-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf",
         "symlink": "minimal-model.gguf",
@@ -116,7 +213,7 @@ AI_MODEL_CONFIG = [
     },
     {
         "id": "ia_base",
-        "label": i18n.T('ia_base_label'),
+        "label_key": "ia_base_label",
         "filename": "gemma-4-E4B-it-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/main/gemma-4-E4B-it-Q4_K_M.gguf",
         "symlink": "basic-model.gguf",
@@ -124,7 +221,7 @@ AI_MODEL_CONFIG = [
     },
     {
         "id": "ia_med",
-        "label": i18n.T('ia_med_label'),
+        "label_key": "ia_med_label",
         "filename": "Qwen3-8B-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf",
         "symlink": "intermediate-model.gguf",
@@ -132,7 +229,7 @@ AI_MODEL_CONFIG = [
     },
     {
         "id": "ia_max",
-        "label": i18n.T('ia_max_label'),
+        "label_key": "ia_max_label",
         "filename": "Qwen3-14B-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q4_K_M.gguf",
         "symlink": "advanced-model.gguf",
@@ -140,7 +237,7 @@ AI_MODEL_CONFIG = [
     },
     {
         "id": "ia_ultra",
-        "label": i18n.T('ia_ultra_label'),
+        "label_key": "ia_ultra_label",
         "filename": "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
         "symlink": "ultra-model.gguf",
@@ -777,88 +874,70 @@ def sync_resources(env, sys_info, exec_path):
     
     if not os.path.exists(env.know_dir): return
 
-    # 1. Wikipedia (Choosing the highest priority version found)
-    wikis = sorted(WIKIPEDIA_CONFIG, key=lambda x: x.get('priority', 0), reverse=True)
-    for w in wikis:
-        regex = rf"wikipedia_{sys_info.lang}_{w['type']}_[0-9-]*\.zim"
-        matches = [f for f in os.listdir(env.know_dir) if re.match(regex, f)]
-        if matches:
-            best_wiki_file = sorted(matches)[-1]
-            target = os.path.join(env.know_dir, best_wiki_file)
-            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Knowledge', 'wikipedia.zim')}'", quiet=True)
-            break
-    
-    # 2. Other ZIMs (WikiMed, WikiHow...)
-    for c in OTHER_WIKIS_CONFIG:
-        if not c.get('symlink'): continue
-        prefix = "wikipedia" if c['name'] == 'wikimed' else c['name']
-        m_name = "_medicine" if c['name'] == 'wikimed' else ""
-        regex = rf"{prefix}_{sys_info.lang}{m_name}_{c['type']}_[0-9-]*\.zim"
-        
-        matches = [f for f in os.listdir(env.know_dir) if re.match(regex, f)]
-        if matches:
-            best = sorted(matches)[-1]
-            target = os.path.join(env.know_dir, best)
-            run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'Knowledge', c['symlink'])}'", quiet=True)
-
-    # 3. Launchers for Knowledge Bases
+    lang = sys_info.lang
     kiwix_script = os.path.join(env.scripts_dir, 'refugios-kiwix.sh')
-    valid_kb_desktops = set()  # Names of valid .desktop files that should exist
+    knowledge = os.path.join(env.base, 'Knowledge')
+    library_dir = os.path.join(env.desktop, i18n.T('library_folder'))
+    valid_launchers = set()
 
-    # Wikipedia: only ONE icon for the best available version
-    wiki_sym_path = os.path.join(env.base, 'Knowledge', 'wikipedia.zim')
-    if os.path.exists(wiki_sym_path):
-        desktop_name = "Knowledge_wikipedia.desktop"
-        valid_kb_desktops.add(desktop_name)
-        desktop_file = os.path.join(env.desktop, desktop_name)
-        with open(desktop_file, 'w') as f:
+    def write_launcher(path, name, comment, zim_link):
+        with open(path, 'w') as f:
             f.write(f"""[Desktop Entry]
 Version=1.0
 Type=Application
-Name=Wikipedia
-Comment={i18n.T('wikipedia_comment')}
-Exec=bash "{kiwix_script}" "{wiki_sym_path}"
+Name={name}
+Comment={comment}
+Exec=bash "{kiwix_script}" "{zim_link}"
 Icon=accessories-dictionary
 Terminal=false
 """)
-        certify_icon(desktop_file)
+        certify_icon(path)
+        valid_launchers.add(path)
 
-    # Rest of ZIMs (WikiMed, WikiHow): one icon per resource
-    for c in OTHER_WIKIS_CONFIG:
-        if not c.get('symlink'): continue
-        sym_path = os.path.join(env.base, 'Knowledge', c['symlink'])
-        if os.path.exists(sym_path):
-            desktop_name = f"Knowledge_{c['id']}.desktop"
-            valid_kb_desktops.add(desktop_name)
-            desktop_file = os.path.join(env.desktop, desktop_name)
-            with open(desktop_file, 'w') as f:
-                f.write(f"""[Desktop Entry]
-Version=1.0
-Type=Application
-Name={c['name'].capitalize()}
-Comment={i18n.T('generic_zim_comment')}
-Exec=bash "{kiwix_script}" "{sym_path}"
-Icon=accessories-dictionary
-Terminal=false
-""")
-            certify_icon(desktop_file)
+    # 1. Wikipedia: only ONE icon, for the highest priority version found
+    for w in sorted(WIKIPEDIA_CONFIG, key=lambda x: x.get('priority', 0), reverse=True):
+        best = find_local_zim(env.know_dir, w, lang)
+        if best:
+            link = os.path.join(knowledge, 'wikipedia.zim')
+            run_cmd(f"ln -sf '{os.path.join(env.know_dir, best)}' '{link}'", quiet=True)
+            write_launcher(os.path.join(env.desktop, "Knowledge_wikipedia.desktop"),
+                           "Wikipedia", i18n.T('wikipedia_comment'), link)
+            break
 
-    # Remove obsolete Knowledge icons (old versions or removed resources)
-    for fname in os.listdir(env.desktop):
-        if fname.startswith('Knowledge_') and fname.endswith('.desktop'):
-            if fname not in valid_kb_desktops:
-                stale = os.path.join(env.desktop, fname)
-                os.remove(stale)
+    # 2. Rest of the library: the main books on the desktop, the others in a folder
+    for entry in LIBRARY_CATALOG:
+        best = find_local_zim(env.know_dir, entry, lang)
+        if not best:
+            continue
+        link = os.path.join(knowledge, entry.get('symlink', f"{entry['id']}.zim"))
+        run_cmd(f"ln -sf '{os.path.join(env.know_dir, best)}' '{link}'", quiet=True)
+        folder = env.desktop if entry.get('desktop') else library_dir
+        os.makedirs(folder, exist_ok=True)
+        write_launcher(os.path.join(folder, f"Knowledge_{entry['id']}.desktop"),
+                       i18n.T(entry['title_key']), i18n.T('generic_zim_comment'), link)
+
+    # 3. Remove obsolete Knowledge icons (old versions, removed resources, or the
+    #    library folder of the other language)
+    folders = [env.desktop] + [os.path.join(env.desktop, i18n.TRANSLATIONS[l]['library_folder'])
+                               for l in i18n.TRANSLATIONS]
+    for folder in folders:
+        if not os.path.isdir(folder):
+            continue
+        for fname in os.listdir(folder):
+            path = os.path.join(folder, fname)
+            if fname.startswith('Knowledge_') and fname.endswith('.desktop') and path not in valid_launchers:
+                os.remove(path)
                 log_info(i18n.T('obsolete_icon').format(fname))
+        if folder != env.desktop and not os.listdir(folder):
+            os.rmdir(folder)
 
     # 4. AI Models
     if not os.path.exists(env.ai_dir): return
     for m in AI_MODEL_CONFIG:
-        pattern = m['filename'].replace('.', r'\.')
-        matches = [f for f in os.listdir(env.ai_dir) if re.match(pattern, f)]
-        if matches:
-            best = sorted(matches)[-1]
-            target = os.path.join(env.ai_dir, best)
+        # Exact name only: a prefix match would also pick up the .aria2 control
+        # file of an interrupted download, or the .sha256 file next to the model
+        target = os.path.join(env.ai_dir, m['filename'])
+        if is_download_complete(target):
             run_cmd(f"ln -sf '{target}' '{os.path.join(env.base, 'AI', m['symlink'])}'", quiet=True)
 
 def ensure_dirs(env):
@@ -946,6 +1025,343 @@ def fetch_url(url):
         return resp.read().decode('utf-8')
 
 # ==============================================================================
+# SECTION 6: VERIFIED DOWNLOADS, KNOWLEDGE LIBRARY AND MAPS
+# ==============================================================================
+
+_LISTING_CACHE = {}
+
+def fetch_listing(url):
+    """Directory listing of a mirror, fetched once per run."""
+    if url not in _LISTING_CACHE:
+        _LISTING_CACHE[url] = fetch_url(url)
+    return _LISTING_CACHE[url]
+
+def is_download_complete(path):
+    """A file with an aria2 control file next to it is an interrupted download."""
+    return os.path.isfile(path) and not os.path.exists(path + ".aria2")
+
+def sha256_of(path):
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(4 * 1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+def sha1_base64_of(path):
+    h = hashlib.sha1()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(4 * 1024 * 1024), b''):
+            h.update(chunk)
+    return base64.b64encode(h.digest()).decode()
+
+def write_checksum_file(path, digest):
+    """Stores the expected SHA-256 next to the file, so it can be checked offline later."""
+    try:
+        with open(path + ".sha256", "w") as f:
+            f.write(f"{digest}  {os.path.basename(path)}\n")
+    except OSError:
+        pass
+
+def verify_sha256(path, expected):
+    """Hashes the file and compares it; on success records the checksum file."""
+    if not expected:
+        return True
+    log_info(i18n.T('verifying_file').format(os.path.basename(path)))
+    if sha256_of(path) != expected.lower():
+        return False
+    write_checksum_file(path, expected.lower())
+    return True
+
+def fetch_kiwix_sha256(file_url):
+    """Kiwix publishes '<file>.sha256' next to every ZIM."""
+    try:
+        m = re.match(r'\s*([0-9a-fA-F]{64})', fetch_url(file_url + ".sha256"))
+        return m.group(1).lower() if m else None
+    except Exception:
+        return None
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+def fetch_hf_sha256(file_url):
+    """
+    Hugging Face answers a 'resolve' URL with a redirect whose X-Linked-Etag
+    header is the SHA-256 of the LFS file. The redirect is not followed: the
+    CDN it points to does not repeat the header.
+    """
+    req = urllib.request.Request(file_url, method="HEAD", headers={'User-Agent': 'Mozilla/5.0'})
+    opener = urllib.request.build_opener(_NoRedirect)
+    try:
+        headers = opener.open(req, timeout=FETCH_TIMEOUT).headers
+    except urllib.error.HTTPError as e:
+        headers = e.headers
+    except Exception:
+        return None
+    etag = (headers.get('X-Linked-Etag') or '').strip()
+    if etag.startswith('W/'):
+        etag = etag[2:]
+    etag = etag.strip('"').lower()
+    return etag if re.fullmatch(r'[0-9a-f]{64}', etag) else None
+
+def entry_size_mb(entry, lang):
+    size = entry.get('size_mb', 0)
+    if isinstance(size, dict):
+        return size.get(lang, size.get('en', 0))
+    return size
+
+def format_size(mb):
+    if mb >= 10240:
+        text = f"~{round(mb / 1024)} GB"
+    elif mb >= 1024:
+        text = f"~{mb / 1024:.1f} GB"
+    else:
+        text = f"~{mb} MB"
+    return text.replace('.', ',') if i18n.REFUGIOS_LANG == 'es' else text
+
+def zim_stems(entry, lang):
+    """Candidate file stems for a catalog entry, preferred language first."""
+    stem = entry['stem']
+    if '{lang}' not in stem:
+        return [stem]
+    stems = [stem.format(lang=lang)]
+    if lang != 'en':
+        stems.append(stem.format(lang='en'))
+    return stems
+
+def zim_regex(stem):
+    return re.compile(re.escape(stem) + r'_\d{4}-\d{2}[a-z]?\.zim$')
+
+def zim_language_tag(entry, lang):
+    """Marks books that will not be in the user's language."""
+    if '{lang}' in entry['stem'] or f"_{lang}_" in entry['stem']:
+        return ""
+    return f" {i18n.T('lib_english_tag')}"
+
+def catalog_label(entry, lang):
+    return f"{i18n.T(entry['label_key'])}{zim_language_tag(entry, lang)} ({format_size(entry_size_mb(entry, lang))})"
+
+def find_local_zim(know_dir, entry, lang):
+    """Newest complete local file for a catalog entry, or None."""
+    if not os.path.isdir(know_dir):
+        return None
+    files = os.listdir(know_dir)
+    for stem in zim_stems(entry, lang):
+        rx = zim_regex(stem)
+        matches = sorted(f for f in files
+                         if rx.match(f) and is_download_complete(os.path.join(know_dir, f)))
+        if matches:
+            return matches[-1]
+    return None
+
+def find_remote_zim(entry, lang):
+    """
+    Newest published file for a catalog entry, as (file name, mirrors).
+    The mirrors are every listed base URL that carries that exact file.
+    """
+    listings = []
+    for url in entry['urls']:
+        try:
+            listings.append((url, fetch_listing(url)))
+        except Exception:
+            continue
+    for i, stem in enumerate(zim_stems(entry, lang)):
+        if i > 0:
+            log_info(i18n.T('zim_fallback').format(lang, entry['id']))
+        rx = re.compile(r'href="(' + re.escape(stem) + r'_\d{4}-\d{2}[a-z]?\.zim)"')
+        for url, html in listings:
+            matches = rx.findall(html)
+            if matches:
+                name = sorted(matches)[-1]
+                mirrors = [url] + [u for u, h in listings if u != url and f'href="{name}"' in h]
+                return name, mirrors
+    return None, []
+
+def download_zim(know_dir, zim_name, mirrors, prefer_torrent=False):
+    """
+    Downloads a ZIM trying, in order: the Kiwix metalink (mirror selection and
+    piece-by-piece hash checking done by aria2), each mirror directly (checked
+    against the published SHA-256 afterwards), and BitTorrent. With
+    prefer_torrent the BitTorrent attempt goes first.
+    """
+    dest = os.path.join(know_dir, zim_name)
+    primary = mirrors[0] + zim_name
+    expected = fetch_kiwix_sha256(primary)
+    common = (f"--continue=true --auto-file-renaming=false --timeout=15 --connect-timeout=10 "
+              f"--max-tries=5 --summary-interval=0 --dir=\"{know_dir}\"")
+
+    attempts = [("metalink", f"aria2c -x 8 -s 8 {common} --follow-metalink=mem "
+                             f"--metalink-preferred-protocol=https \"{primary}.meta4\"")]
+    for m in mirrors:
+        attempts.append(("direct", f"aria2c -x 8 -s 8 {common} -o \"{zim_name}\" \"{m}{zim_name}\""))
+    torrent = ("torrent", f"aria2c --seed-time=0 {common} --follow-torrent=mem \"{primary}.torrent\"")
+    if prefer_torrent:
+        attempts.insert(0, torrent)
+    else:
+        attempts.append(torrent)
+
+    previous = None
+    for method, cmd in attempts:
+        # A control file left by a different method cannot be trusted: drop it
+        # and let aria2 re-check what is already on disk instead.
+        if previous and previous != method and os.path.exists(dest):
+            try:
+                os.remove(dest + ".aria2")
+            except OSError:
+                pass
+            if method != "direct":
+                cmd += " --check-integrity=true"
+        previous = method
+        log_info(i18n.T('zim_download_method').format(method, zim_name))
+        if not run_cmd(cmd) or not is_download_complete(dest):
+            continue
+        if method == "direct" and expected:
+            if not verify_sha256(dest, expected):
+                log_info(i18n.T('checksum_mismatch').format(zim_name))
+                os.remove(dest)
+                continue
+        elif expected:
+            write_checksum_file(dest, expected)
+        return True
+    return False
+
+def install_zim(env, entry, lang, force_dl, prefer_torrent):
+    """Resolves, downloads and verifies one catalog entry. Never fatal."""
+    log_info(i18n.T('tracking_zim').format(entry['id'], entry['stem'].format(lang=lang)))
+    zim_name, mirrors = find_remote_zim(entry, lang)
+    if not zim_name:
+        log_err(i18n.T('zim_not_found').format(entry['id'], entry['stem'], lang), fatal=False)
+        return False
+    target = os.path.join(env.know_dir, zim_name)
+    if is_download_complete(target) and not force_dl:
+        log_info(i18n.T('zim_exists').format(zim_name))
+        return True
+    if force_dl and is_download_complete(target):
+        os.remove(target)
+    log_info(i18n.T('downloading_zim').format(zim_name))
+    if download_zim(env.know_dir, zim_name, mirrors, prefer_torrent):
+        log_success(i18n.T('zim_verified').format(zim_name))
+        return True
+    log_err(i18n.T('zim_all_methods_failed').format(zim_name), fatal=False)
+    return False
+
+WIKI_SPACE_SHARE = 0.35
+BOOK_SPACE_SHARE = 0.10
+
+def default_wiki_index(free_space_mb, lang):
+    """Menu index of the largest Wikipedia taking at most WIKI_SPACE_SHARE of the free space."""
+    best = 1
+    for i, c in enumerate(WIKIPEDIA_CONFIG, 1):
+        if entry_size_mb(c, lang) <= free_space_mb * WIKI_SPACE_SHARE:
+            best = i
+    return best
+
+def visible_catalog(lang):
+    return [e for e in LIBRARY_CATALOG if lang in e.get('only_langs', [lang])]
+
+def organic_maps_data_dir():
+    """Writable data dir of the Organic Maps Flatpak (renamed in newer releases)."""
+    base = os.path.join(os.path.expanduser("~"), ".var", "app", ORGANIC_MAPS_ID, "data")
+    newer = os.path.join(base, "OrganicMaps")
+    return newer if os.path.isdir(newer) else os.path.join(base, "OMaps")
+
+def organic_maps_countries():
+    """
+    countries.txt bundled with the installed app. Its "v" is the map data
+    version the app expects, and its tree lists every region with size and hash.
+    """
+    candidates = []
+    location = get_cmd_output(f"flatpak info --show-location {ORGANIC_MAPS_ID} 2>/dev/null")
+    if location:
+        candidates.append(os.path.join(location, "files", "share", "organicmaps", "data", "countries.txt"))
+    candidates.append("/usr/share/organicmaps/data/countries.txt")
+    for path in candidates:
+        try:
+            with open(path, encoding="utf-8") as f:
+                tree = json.load(f)
+            if tree.get('v') and tree.get('g'):
+                return tree
+        except (OSError, ValueError):
+            continue
+    return None
+
+def map_leaves(node):
+    if not node.get('g'):
+        return [node]
+    leaves = []
+    for child in node['g']:
+        leaves += map_leaves(child)
+    return leaves
+
+def map_regions_for(presets, tree):
+    """Every downloadable region under the countries of the chosen presets, without repeats."""
+    by_id = {c['id']: c for c in tree.get('g', [])}
+    regions = {}
+    for preset in presets:
+        for country in preset['countries']:
+            node = by_id.get(country)
+            if node is None:
+                log_info(i18n.T('map_country_missing').format(country))
+                continue
+            for leaf in map_leaves(node):
+                regions[leaf['id']] = leaf
+    return list(regions.values())
+
+def organic_maps_servers():
+    try:
+        servers = json.loads(fetch_url(ORGANIC_MAPS_META))
+        if isinstance(servers, list) and servers:
+            return servers + [s for s in ORGANIC_MAPS_FALLBACK_SERVERS if s not in servers]
+    except Exception:
+        pass
+    return list(ORGANIC_MAPS_FALLBACK_SERVERS)
+
+def map_region_ok(path, leaf):
+    if not is_download_complete(path):
+        return False
+    if leaf.get('s') and os.path.getsize(path) != leaf['s']:
+        return False
+    return not leaf.get('sha1_base64') or sha1_base64_of(path) == leaf['sha1_base64']
+
+def install_map_regions(presets):
+    """
+    Downloads the regions of the chosen presets straight into the folder where
+    Organic Maps looks for them, for the data version the installed app
+    expects, checking each file against the size and SHA-1 the app itself uses.
+    """
+    tree = organic_maps_countries()
+    if tree is None:
+        log_err(i18n.T('maps_data_missing'), fatal=False)
+        return False
+    version = str(tree['v'])
+    dest_dir = os.path.join(organic_maps_data_dir(), version)
+    os.makedirs(dest_dir, exist_ok=True)
+    regions = map_regions_for(presets, tree)
+    servers = organic_maps_servers()
+    failed = []
+    for i, leaf in enumerate(regions, 1):
+        name = leaf['id'] + ".mwm"
+        dest = os.path.join(dest_dir, name)
+        if map_region_ok(dest, leaf):
+            continue
+        log_info(i18n.T('map_downloading').format(i, len(regions), leaf['id']))
+        ok = False
+        for server in servers:
+            url = f"{server.rstrip('/')}/maps/{version}/{urllib.parse.quote(name)}"
+            if download_with_aria2(url, dest, timeout=3600) and map_region_ok(dest, leaf):
+                ok = True
+                break
+            if is_download_complete(dest):
+                os.remove(dest)
+        if not ok:
+            failed.append(leaf['id'])
+    if failed:
+        log_err(i18n.T('maps_regions_failed').format(len(failed), ", ".join(failed[:8])), fatal=False)
+        return False
+    log_success(i18n.T('maps_regions_ok').format(len(regions)))
+    return True
+
+# ==============================================================================
 # MASTER BLOCK: GENERAL CONTROLLER (main)
 # ==============================================================================
 def main():
@@ -1000,16 +1416,18 @@ def main():
     # Depending on disk space, offer lightweight or enriched configurations
     if sys_info.free_space_mb < 30000:
         log_info(i18n.T('lite_mode_msg'))
-        def_wiki = 1
-        def_other_wikis = [0]
+        storage_mode = "lite"
     elif sys_info.free_space_mb < 70000:
         log_info(i18n.T('standard_mode_msg'))
-        def_wiki = 2
-        def_other_wikis = [0]
+        storage_mode = "standard"
     else:
         log_info(i18n.T('rich_mode_msg'))
-        def_wiki = 3
-        def_other_wikis = [0, 1]
+        storage_mode = "rich"
+
+    # Preselect the largest Wikipedia that leaves room for everything else. Sizes
+    # differ a lot between languages (the full English one is over 100 GB), so a
+    # fixed tier per storage mode would not fit. Index 0 of the menu is "skip".
+    def_wiki = default_wiki_index(sys_info.free_space_mb, sys_info.lang)
 
     # Preselect AI models considering both disk space and available system RAM.
     # Models >= 8GB (ia_base, ia_med) require at least 6-8GB of physical RAM.
@@ -1033,62 +1451,47 @@ def main():
         desktop_dir = os.path.join(home_dir, "Escritorio")
     
     env = TargetEnv(base_dir, desktop_dir)
+    lang = sys_info.lang
 
-    # Detect Wikipedia versions
+    # Wikipedia versions
     wiki_opts = [{"label": i18n.T('wiki_skip_label'), "skip": True}]
     for c in WIKIPEDIA_CONFIG:
-        opt = {
-            "label": c['label'],
-            "name": c['name'],
-            "type": c['type'],
-            "id": c['id'],
-            "search_url": c.get('search_url'),
-            "search_urls": c.get('search_urls', []),
-            "priority": c.get('priority', 0),
-            "size_mb": c.get('size_mb', 0)
-        }
-        if os.path.exists(env.know_dir):
-            regex = rf"wikipedia_{sys_info.lang}_{c['type']}_[0-9-]*\.zim"
-            if any(re.match(regex, f) for f in os.listdir(env.know_dir)):
-                opt['installed'] = True
+        opt = {"label": catalog_label(c, lang), "entry": c}
+        if find_local_zim(env.know_dir, c, lang):
+            opt['installed'] = True
         wiki_opts.append(opt)
 
-    # Detect other wikis (WikiMed, WikiHow)
-    other_wiki_opts = []
-    for c in OTHER_WIKIS_CONFIG:
-        opt = {
-            "label": c['label'],
-            "name": c['name'],
-            "type": c['type'],
-            "id": c['id'],
-            "search_url": c.get('search_url'),
-            "search_urls": c.get('search_urls', []),
-            "symlink": c.get('symlink'),
-            "size_mb": c.get('size_mb', 0)
-        }
-        if os.path.exists(env.know_dir):
-            prefix = "wikipedia" if c['name'] == 'wikimed' else c['name']
-            m_name = "_medicine" if c['name'] == 'wikimed' else ""
-            pattern = rf"{prefix}_{sys_info.lang}{m_name}_{c['type']}_[0-9-]*\.zim"
-            if any(re.match(pattern, f) for f in os.listdir(env.know_dir)):
+    # Rest of the library, one checklist per group
+    library_menus = []
+    for group in LIBRARY_GROUPS:
+        entries = [e for e in visible_catalog(lang) if e['group'] == group['id']]
+        opts = []
+        defaults = []
+        for i, e in enumerate(entries):
+            opt = {"label": catalog_label(e, lang), "entry": e}
+            if find_local_zim(env.know_dir, e, lang):
                 opt['installed'] = True
-        other_wiki_opts.append(opt)
+            # A preset never preselects a book that would take a large share of
+            # the disk: sizes vary a lot between languages
+            if (storage_mode in e.get('presets', [])
+                    and entry_size_mb(e, lang) <= sys_info.free_space_mb * BOOK_SPACE_SHARE):
+                defaults.append(i)
+            opts.append(opt)
+        library_menus.append((group, opts, defaults))
 
-    # Detect AI Models
+    # AI Models
     ai_opts = []
     for m in AI_MODEL_CONFIG:
         opt = {
-            "label": m['label'],
+            "label": i18n.T(m['label_key']),
             "filename": m['filename'],
             "url": m['url'],
             "symlink": m['symlink'],
             "id": m['id'],
             "size_mb": m.get('size_mb', 0)
         }
-        if os.path.exists(env.ai_dir):
-            pattern = m['filename'].replace('.', r'\.')
-            if any(re.match(pattern, f) for f in os.listdir(env.ai_dir)):
-                opt['installed'] = True
+        if is_download_complete(os.path.join(env.ai_dir, m['filename'])):
+            opt['installed'] = True
         ai_opts.append(opt)
 
     # ==========================
@@ -1097,9 +1500,22 @@ def main():
 
     wiki_selected = single_select_menu(d, i18n.T('wiki_menu_title'), wiki_opts, def_wiki)
 
-    other_wikis_selected = multi_select_menu(d, i18n.T('other_wikis_menu_title'), other_wiki_opts, def_other_wikis)
+    library_selected = []
+    for group, opts, defaults in library_menus:
+        if not opts:
+            continue
+        for idx in multi_select_menu(d, i18n.T(group['title_key']), opts, defaults):
+            library_selected.append(opts[idx])
 
     install_maps = simple_question(d, i18n.T('maps_menu_title'), i18n.T('maps_menu_prompt'), default_yes=True)
+
+    maps_selected = []
+    if install_maps:
+        map_opts = [{"label": f"{i18n.T(p['label_key'])} ({format_size(p['size_mb'])})", "preset": p}
+                    for p in MAP_PRESETS]
+        default_map = [0] if lang == 'es' else []
+        maps_selected = [map_opts[i]['preset'] for i in
+                         multi_select_menu(d, i18n.T('maps_regions_title'), map_opts, default_map)]
 
     install_extras = simple_question(d, i18n.T('extras_menu_title'), i18n.T('extras_menu_prompt'), default_yes=True)
 
@@ -1126,16 +1542,16 @@ def main():
     if wiki_selected is not None and wiki_selected > 0:
         opt = wiki_opts[wiki_selected]
         if not opt.get('installed'):
-            estimated_mb += opt.get('size_mb', 0)
+            estimated_mb += entry_size_mb(opt['entry'], lang)
 
-    for idx in other_wikis_selected:
-        opt = other_wiki_opts[idx]
+    for opt in library_selected:
         if not opt.get('installed'):
-            estimated_mb += opt.get('size_mb', 0)
+            estimated_mb += entry_size_mb(opt['entry'], lang)
 
     if install_maps:
-        if not shutil.which("flatpak") or subprocess.call("flatpak info app.organicmaps.desktop >/dev/null 2>&1", shell=True) != 0:
+        if not shutil.which("flatpak") or subprocess.call(f"flatpak info {ORGANIC_MAPS_ID} >/dev/null 2>&1", shell=True) != 0:
             estimated_mb += 2100
+        estimated_mb += sum(p['size_mb'] for p in maps_selected)
 
     if ai_selected:
         if not os.path.exists(os.path.join(env.ai_dir, 'llamafile')):
@@ -1248,109 +1664,11 @@ def main():
 
     # 3a: Wikipedia (single selected version, or skip)
     if wiki_selected is not None and wiki_selected > 0:
-        opt = wiki_opts[wiki_selected]
-        if not opt.get('skip'):
-            log_info(i18n.T('tracking_zim').format(opt['name'], opt['type']))
+        install_zim(env, wiki_opts[wiki_selected]['entry'], lang, force_dl, use_torrent)
 
-            search_urls = opt.get('search_urls', [])
-            if opt.get('search_url'):
-                search_urls = [opt['search_url']] + search_urls
-            if not search_urls:
-                log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
-            else:
-                zim_name = None
-                zim_url = None
-
-                for base_url in search_urls:
-                    try:
-                        html = fetch_url(base_url)
-                        regex = rf'href="(wikipedia_{sys_info.lang}_{opt["type"]}_[0-9-]*\.zim)"'
-                        matches = re.findall(regex, html)
-                        if not matches and sys_info.lang != 'en':
-                            log_info(i18n.T('zim_fallback').format(sys_info.lang, opt['name']))
-                            regex_en = rf'href="(wikipedia_en_{opt["type"]}_[0-9-]*\.zim)"'
-                            matches = re.findall(regex_en, html)
-                        if matches:
-                            zim_name = sorted(matches)[-1]
-                            zim_url = base_url + zim_name
-                            break
-                    except:
-                        continue
-
-                if zim_name and zim_url:
-                    target_zim = os.path.join(env.know_dir, zim_name)
-                    if os.path.exists(target_zim) and not force_dl:
-                        log_info(i18n.T('zim_exists').format(zim_name))
-                    else:
-                        log_info(i18n.T('downloading_zim').format(zim_name))
-                        ok = False
-                        for base_url in search_urls:
-                            url = base_url + zim_name
-                            log_info(f"Trying direct download from: {url}")
-                            if run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{url}\""):
-                                ok = True
-                                break
-                        if not ok:
-                            log_info(i18n.T('zim_torrent_fallback').format(zim_name))
-                            ok = run_cmd(f"aria2c --seed-time=0 --continue=true --dir=\"{env.know_dir}\" \"{zim_url}.torrent\"")
-                            if not ok:
-                                log_err(i18n.T('zim_all_methods_failed').format(zim_name), fatal=False)
-                else:
-                    log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
-
-    # 3b: Other Wikis (WikiMed, WikiHow - multiple selection)
-    for idx in other_wikis_selected:
-        opt = other_wiki_opts[idx]
-        log_info(i18n.T('tracking_zim').format(opt['name'], opt['type']))
-
-        search_urls = opt.get('search_urls', [])
-        if opt.get('search_url'):
-            search_urls = [opt['search_url']] + search_urls
-        if not search_urls:
-            log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
-            continue
-
-        zim_name = None
-        zim_url = None
-        prefix = "wikipedia" if opt['name'] == 'wikimed' else opt['name']
-        m_name = "_medicine" if opt['name'] == 'wikimed' else ""
-
-        for base_url in search_urls:
-            try:
-                html = fetch_url(base_url)
-                regex = rf'href="({prefix}_{sys_info.lang}{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
-                matches = re.findall(regex, html)
-                if not matches and sys_info.lang != 'en':
-                    log_info(i18n.T('zim_fallback').format(sys_info.lang, opt['name']))
-                    regex_en = rf'href="({prefix}_en{m_name}_{opt["type"]}_[0-9-]*\.zim)"'
-                    matches = re.findall(regex_en, html)
-                if matches:
-                    zim_name = sorted(matches)[-1]
-                    zim_url = base_url + zim_name
-                    break
-            except:
-                continue
-
-        if zim_name and zim_url:
-            target_zim = os.path.join(env.know_dir, zim_name)
-            if os.path.exists(target_zim) and not force_dl:
-                log_info(i18n.T('zim_exists').format(zim_name))
-            else:
-                log_info(i18n.T('downloading_zim').format(zim_name))
-                ok = False
-                for base_url in search_urls:
-                    url = base_url + zim_name
-                    log_info(f"Trying direct download from: {url}")
-                    if run_cmd(f"aria2c -x 4 --continue=true --auto-file-renaming=false --dir=\"{env.know_dir}\" -o \"{zim_name}\" \"{url}\""):
-                        ok = True
-                        break
-                if not ok:
-                    log_info(i18n.T('zim_torrent_fallback').format(zim_name))
-                    ok = run_cmd(f"aria2c --seed-time=0 --continue=true --dir=\"{env.know_dir}\" \"{zim_url}.torrent\"")
-                    if not ok:
-                        log_err(i18n.T('zim_all_methods_failed').format(zim_name), fatal=False)
-        else:
-            log_err(i18n.T('zim_not_found').format(opt['name'], opt['type'], sys_info.lang), fatal=False)
+    # 3b: Rest of the library
+    for opt in library_selected:
+        install_zim(env, opt['entry'], lang, force_dl, use_torrent)
 
     size_logger.log_section("Fase 3: Bases de Conocimiento (ZIM)")
 
@@ -1385,6 +1703,9 @@ def main():
         
         if sys_info.is_rpi:
             run_cmd("sudo flatpak override --device=dri app.organicmaps.desktop", quiet=True)
+
+        if maps_selected:
+            install_map_regions(maps_selected)
         
         maps_script = fetch_script("refugios-maps.sh")
         if maps_script is None:
@@ -1433,9 +1754,18 @@ Terminal=false
             opt = ai_opts[idx]
             full_url = opt['url']
             m_path = os.path.join(env.ai_dir, opt['filename'])
-            if not os.path.exists(m_path) or force_dl:
-                log_info(f"Downloading file: {opt['filename']}...")
-                download_with_aria2(full_url, m_path, timeout=300)
+            if force_dl and is_download_complete(m_path):
+                os.remove(m_path)
+            if not is_download_complete(m_path):
+                log_info(i18n.T('downloading_model').format(opt['filename']))
+                expected = fetch_hf_sha256(full_url)
+                if not download_with_aria2(full_url, m_path, timeout=300):
+                    log_err(i18n.T('model_download_failed').format(opt['filename']), fatal=False)
+                    continue
+                if not verify_sha256(m_path, expected):
+                    log_err(i18n.T('checksum_mismatch').format(opt['filename']), fatal=False)
+                    os.remove(m_path)
+                    continue
             run_cmd(f"ln -sf '{m_path}' '{os.path.join(env.base, 'AI', opt['symlink'])}'")
 
         ai_assist_desktop = os.path.join(env.desktop, "AI_Assistant.desktop")
