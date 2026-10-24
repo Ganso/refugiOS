@@ -89,6 +89,14 @@ for a in /usr/local/bin/refugios-expand.sh \
         FALLOS=1
     fi
 done
+# light-locker bloquea la sesion de autologin y el usuario sin contrasena ya
+# no puede volver al escritorio: no debe estar en la imagen
+if [ -e /mnt/v/etc/xdg/autostart/light-locker.desktop ] || [ -e /mnt/v/usr/bin/light-locker ]; then
+    echo "   [FALLO] light-locker sigue instalado"
+    FALLOS=1
+else
+    echo "   [OK]   sin light-locker (no bloquea la sesion de autologin)"
+fi
 umount /mnt/v
 exit $FALLOS
 DENTRO
