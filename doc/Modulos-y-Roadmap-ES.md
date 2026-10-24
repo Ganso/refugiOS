@@ -39,6 +39,7 @@ Asistente inteligente privado que funciona 100% en tu ordenador local. Disponibl
 *   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/unsloth/Qwen3-14B-GGUF) (14B, Q4_K_M) — ~8.6 GB. Para PCs potentes con 16 GB de RAM.
 *   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. Para estaciones de trabajo con 32 GB de RAM.
 *   **Selector inteligente:** Al lanzar el asistente, un script detecta la RAM total y la VRAM de la GPU (NVIDIA/AMD), reserva un margen de seguridad estricto de 2 GB para el sistema operativo (evita swap a USB), y muestra un menú interactivo con solo los modelos instalados, preseleccionando automáticamente el más potente que el hardware puede ejecutar.
+*   **Contexto de emergencia:** La interfaz de chat arranca con un mensaje de sistema en tu idioma que pide respuestas claras, breves y prácticas, prioriza los pasos urgentes en temas médicos o de seguridad y recuerda que el asistente no tiene acceso a Internet.
 *   **Idioma:** 🌐 **Multilingüe.** Todos los modelos entienden y responden en más de 20 idiomas.
 
 ### 4. Bóvedas Criptográficas (LUKS)
@@ -49,14 +50,25 @@ Sistema de almacenamiento seguro y cifrado para datos sensibles.
 
 
 
-### 5. Herramientas de Trabajo Estándar
+### 5. Traductor sin conexión ([LocalTranslate](https://terslang.github.io/LocalTranslate/))
+*   **Contenidos:** Traducción de textos entre más de 40 idiomas con los modelos neuronales de traducción de Firefox, que vienen dentro de la propia aplicación: no hay que descargar nada más.
+*   **Instalación:** Opcional desde el instalador (~1,7 GB, comparte componentes con Organic Maps). Crea el icono **Traductor** en el escritorio.
+*   **Complementos:** Las guías de conversación de Wikiviajes y el Wikcionario (en la biblioteca) ayudan con la pronunciación y el vocabulario.
+
+### 6. Comprobar mi refugiOS
+*   **Qué hace:** Un icono del escritorio revisa, sin conexión, que todo lo instalado está completo e intacto: descargas interrumpidas, ficheros dañados, accesos rotos, modelos de IA que no caben en la memoria del equipo, mapas que faltan y bóvedas dañadas. Termina con un informe y lo guarda en `~/refugiOS/check-report.txt`.
+*   **Dos modos:** La comprobación rápida tarda unos segundos; la completa recalcula además las sumas de comprobación de cada fichero y puede tardar bastante en un pendrive lento.
+*   **Cuándo usarla:** Al terminar la instalación, antes de guardar el dispositivo y después de clonarlo a otra unidad.
+
+### 7. Herramientas de Trabajo Estándar
 Programas esenciales para el día a día, adaptados para la máxima compatibilidad.
 *   **Ofimática y Multimedia:** [LibreOffice](https://www.libreoffice.org/), [VLC](https://www.videolan.org/), [Evince](https://wiki.gnome.org/Apps/Evince) (PDF).
 *   **Sistema y Navegación:** [Epiphany Browser](https://wiki.gnome.org/Apps/Web) (Navegador ligero), [Gedit](https://wiki.gnome.org/Apps/Gedit) (Editor de texto), [XFCE Terminal](https://docs.xfce.org/apps/terminal/start).
 *   **Sincronización:** [Syncthing](https://syncthing.net/) (compartir archivos entre dispositivos sin necesidad de nube ni Internet).
+*   **Ortografía:** Se instalan los diccionarios ortográficos, de separación silábica y de sinónimos del idioma elegido, que usan LibreOffice y el editor de textos.
 *   **Idioma:** 🌐 **Multilingüe.** Todas las aplicaciones se instalan con el soporte de idioma local seleccionado.
 
-### 6. Soporte de Hardware
+### 8. Soporte de Hardware
 *   **PC Estándar:** Optimizado para arquitecturas x86_64 (Intel/AMD) mediante AppImages y Flatpaks.
 *   **Raspberry Pi:** 🍓 **Soporte Oficial.** El instalador detecta automáticamente dispositivos Raspberry Pi y utiliza paquetes nativos ARM para garantizar el rendimiento.
 

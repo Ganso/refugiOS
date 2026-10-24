@@ -39,6 +39,7 @@ Private smart assistant that works 100% on your local computer. Available in fiv
 *   🔴 **Advanced:** [Qwen3-14B](https://huggingface.co/unsloth/Qwen3-14B-GGUF) (14B, Q4_K_M) — ~8.6 GB. For powerful PCs with 16 GB of RAM.
 *   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. For workstations with 32 GB of RAM.
 *   **Smart Selector:** When launching the assistant, a script detects total RAM and GPU VRAM (NVIDIA/AMD), reserves a strict 2 GB safety margin for the OS (prevents USB swap), and shows an interactive menu with only installed models, automatically preselecting the most powerful one the hardware can run.
+*   **Emergency context:** The chat interface starts with a system message in your language asking for clear, short and practical answers, putting urgent steps first in medical or safety matters and reminding that the assistant has no Internet access.
 *   **Language:** 🌐 **Multilingual.** All models understand and respond in more than 20 languages.
 
 ### 4. Cryptographic Vaults (LUKS)
@@ -48,14 +49,25 @@ Secure and encrypted storage system for sensitive data.
 *   **Automation:** Intelligent USB drive detection for size suggestions and automated data import.
 
 
-### 5. Standard Work Tools
+### 5. Offline Translator ([LocalTranslate](https://terslang.github.io/LocalTranslate/))
+*   **Contents:** Translation of texts between more than 40 languages with Firefox's neural translation models, bundled inside the application: nothing else needs downloading.
+*   **Installation:** Optional from the installer (~1.7 GB, shares components with Organic Maps). Creates the **Translator** desktop icon.
+*   **Companions:** The Wikivoyage phrasebooks and Wiktionary (in the library) help with pronunciation and vocabulary.
+
+### 6. Check my refugiOS
+*   **What it does:** A desktop icon checks, without any connection, that everything installed is complete and intact: interrupted downloads, damaged files, broken shortcuts, AI models that do not fit in the computer's memory, missing maps and damaged vaults. It ends with a report, also saved to `~/refugiOS/check-report.txt`.
+*   **Two modes:** The quick check takes a few seconds; the full check also recomputes the checksum of every file and can take a while on a slow drive.
+*   **When to use it:** After the installation, before putting the device away, and after cloning it to another drive.
+
+### 7. Standard Work Tools
 Essential programs for daily life, adapted for maximum compatibility.
 *   **Office and Multimedia:** [LibreOffice](https://www.libreoffice.org/), [VLC](https://www.videolan.org/), [Evince](https://wiki.gnome.org/Apps/Evince) (PDF).
 *   **System and Navigation:** [Epiphany Browser](https://wiki.gnome.org/Apps/Web) (Lightweight browser), [Gedit](https://wiki.gnome.org/Apps/Gedit) (Text editor), [XFCE Terminal](https://docs.xfce.org/apps/terminal/start).
 *   **Synchronization:** [Syncthing](https://syncthing.net/) (sharing files between devices without need for cloud or Internet).
+*   **Spelling:** The spelling, hyphenation and thesaurus dictionaries of the chosen language are installed, used by LibreOffice and the text editor.
 *   **Language:** 🌐 **Multilingual.** All applications are installed with the selected local language support.
 
-### 6. Hardware Support
+### 8. Hardware Support
 *   **Standard PC:** Optimized for x86_64 architectures (Intel/AMD) through AppImages and Flatpaks.
 *   **Raspberry Pi:** 🍓 **Official Support.** The installer automatically detects Raspberry Pi devices and uses native ARM packages to guarantee performance.
 

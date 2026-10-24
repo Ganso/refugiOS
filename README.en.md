@@ -173,9 +173,11 @@ See the **[Virtualization Guide](doc/Virtualization-Guide-EN.md)** for complete 
 
 *   **⚡ Boots on any PC:** Plug in the USB, turn it on, and your digital refuge works. Nothing is installed on the host computer.
 *   **🍓 Native Raspberry Pi Support:** Certified installation on Raspberry Pi 3B+.
-*   **📚 Universal Offline Knowledge:** Complete copies of Wikipedia, WikiMed, survival encyclopedias, and trade guides.
+*   **📚 Universal Offline Knowledge:** Wikipedia, medical encyclopedia, emergency and survival guides, repairs, energy, dictionary and books, organised by category.
 *   **🤖 Private AI:** An assistant that works 100% locally, without Internet.
-*   **🗺️ Maps and GPS Navigation:** Offline maps of the entire world with Organic Maps.
+*   **🗺️ Maps and GPS Navigation:** Offline maps of the entire world with Organic Maps, with the most common countries ready from the installer.
+*   **Offline Translator:** More than 40 languages with Firefox's neural models.
+*   **Offline Self-Check:** One icon checks that books, AI, maps and vaults are complete and intact before you need them.
 *   **🔒 Secure File Vault:** Professional LUKS encryption to protect sensitive documents.
 *   **🌐 Adapted to Your Language:** The system automatically configures in English or Spanish.
 

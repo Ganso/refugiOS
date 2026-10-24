@@ -321,6 +321,16 @@ checks/installs deps (`python3 python3-dialog dialog aria2 pciutils wget curl ba
 rsync apt-utils flatpak`); runs `python3 install.py < /dev/tty` (forces interactive
 tty to fix `EOFError` from `curl|bash` pipes). `DEBUG=1` skips apt operations.
 
+### `scripts/refugios-check.py` — offline self-check
+Desktop launcher "Check refugiOS". Checks without any connection that books, AI
+models and engine, Organic Maps regions, translator and vaults are complete and intact
+(interrupted downloads, broken stable links, region sizes against the app's
+`countries.txt`, LUKS magic of vault files, free space). `--full` also recomputes the
+`<file>.sha256` the installer saved and the maps' SHA-1. `--quick|--full --no-dialog`
+prints the report to stdout (used by the tests); it is always saved to
+`~/refugiOS/check-report.txt`. Exit code 1 when anything failed.
+`MODEL_MIN_USABLE_MB` mirrors the thresholds of `refugios-ai-selector.sh`.
+
 ### `scripts/refugios-vault.py` (564 lines) — LUKS vault manager
 Interactive `dialog` TUI for create/open/close/delete encrypted LUKS containers.
 
@@ -742,7 +752,8 @@ It is gitignored and **must never be committed, printed, or pasted into a comman
 2. **Forgetting `i18n` keys in both languages.** Add new keys to `en` AND `es` dicts in
    `i18n.py`, and to `i18n.sh` if a bash script uses them. `T()` falls back to English
    then to the key itself, so a missing key shows the raw key name to the user.
-3. **Desync between `AI_MODEL_CONFIG` (install.py) and `register_model` calls
+3. **Desync between `AI_MODEL_CONFIG` (install.py), `MODEL_MIN_USABLE_MB`
+   (refugios-check.py) and `register_model` calls
    (refugios-ai-selector.sh).** Keep them in sync when adding/removing/renaming models.
 4. **Committing large binaries.** `*.img`, `*.zim`, `*.gguf`, `*.appimage` are
    gitignored — never `git add` them.
