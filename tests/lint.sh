@@ -17,6 +17,7 @@ SH_FILES=(
     scripts/refugios-ai-selector.sh
     scripts/refugios-kiwix.sh
     scripts/refugios-maps.sh
+    scripts/refugios-update.sh
     scripts/test_boot.sh
 )
 PY_FILES=(install.py i18n.py scripts/refugios-vault.py scripts/refugios-check.py scripts/publish_images.py)

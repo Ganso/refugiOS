@@ -1303,12 +1303,15 @@ def install_zim(env, entry, lang, force_dl, prefer_torrent):
     target = os.path.join(env.know_dir, zim_name)
     if is_download_complete(target) and not force_dl:
         log_info(i18n.T('zim_exists').format(zim_name))
+        if saved_sha256(target):
+            remove_older_zims(env.know_dir, zim_name)
         return True
     if force_dl and is_download_complete(target):
         os.remove(target)
     log_info(i18n.T('downloading_zim').format(zim_name))
     if download_zim(env.know_dir, zim_name, mirrors, prefer_torrent):
         log_success(i18n.T('zim_verified').format(zim_name))
+        remove_older_zims(env.know_dir, zim_name)
         return True
     log_err(i18n.T('zim_all_methods_failed').format(zim_name), fatal=False)
     return False
@@ -1401,10 +1404,13 @@ def install_map_regions(presets):
     if tree is None:
         log_err(i18n.T('maps_data_missing'), fatal=False)
         return False
+    return download_map_regions(tree, map_regions_for(presets, tree))
+
+def download_map_regions(tree, regions):
+    """Downloads and checks the given regions for the data version of tree."""
     version = str(tree['v'])
     dest_dir = os.path.join(organic_maps_data_dir(), version)
     os.makedirs(dest_dir, exist_ok=True)
-    regions = map_regions_for(presets, tree)
     servers = organic_maps_servers()
     failed = []
     for i, leaf in enumerate(regions, 1):
@@ -1430,6 +1436,449 @@ def install_map_regions(presets):
     return True
 
 # ==============================================================================
+# SECTION 7: UPDATER (install.py --update)
+# ==============================================================================
+# Every update follows the same rule: the new file is downloaded next to the
+# old one and verified against its published checksum; only then is the old
+# version removed. A failed or interrupted update leaves the device exactly as
+# it was, still usable offline.
+
+KIWIX_RELEASES = "https://download.kiwix.org/release/kiwix-desktop/"
+LLAMAFILE_RELEASE_API = "https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest"
+UPDATE_SPACE_MARGIN_MB = 500
+
+def remote_file_size(url):
+    """Content-Length of a URL after redirects, or 0 if unknown."""
+    req = urllib.request.Request(url, method="HEAD", headers={'User-Agent': 'Mozilla/5.0'})
+    try:
+        with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
+            return int(resp.headers.get('Content-Length') or 0)
+    except Exception:
+        return 0
+
+def size_mb(n_bytes):
+    return int(round(n_bytes / (1024 * 1024)))
+
+def file_size_mb(path):
+    try:
+        return size_mb(os.path.getsize(path))
+    except OSError:
+        return 0
+
+def zim_date(name):
+    m = re.search(r'_(\d{4}-\d{2}[a-z]?)\.zim$', name)
+    return m.group(1) if m else ""
+
+def zim_stem_of(name):
+    return re.sub(r'_\d{4}-\d{2}[a-z]?\.zim$', '', name)
+
+def remove_file_and_sidecars(path):
+    """Removes a downloaded file with its checksum and aria2 control files."""
+    freed = 0
+    for p in (path, path + ".sha256", path + ".aria2"):
+        try:
+            freed += os.path.getsize(p)
+            os.remove(p)
+        except OSError:
+            pass
+    return freed
+
+def remove_older_zims(know_dir, keep_name):
+    """Removes the other dated versions of the same book as keep_name."""
+    rx = zim_regex(zim_stem_of(keep_name))
+    freed = 0
+    for name in sorted(os.listdir(know_dir)):
+        if name != keep_name and rx.match(name):
+            freed += remove_file_and_sidecars(os.path.join(know_dir, name))
+            log_info(i18n.T('old_version_removed').format(name))
+    return freed
+
+def latest_kiwix_appimage():
+    """(file name, url) of the newest Kiwix Desktop AppImage, or (None, None)."""
+    try:
+        matches = re.findall(r'href="(kiwix-desktop_x86_64_[0-9.-]*\.appimage)"', fetch_url(KIWIX_RELEASES))
+    except Exception:
+        return None, None
+    if not matches:
+        return None, None
+    name = sorted(matches, key=version_key)[-1]
+    return name, KIWIX_RELEASES + name
+
+def fetch_kiwix_md5(file_url):
+    """Kiwix publishes '<file>.md5' next to every AppImage."""
+    try:
+        m = re.match(r'\s*([0-9a-fA-F]{32})', fetch_url(file_url + ".md5"))
+        return m.group(1).lower() if m else None
+    except Exception:
+        return None
+
+def md5_of(path):
+    h = hashlib.md5()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(4 * 1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+def latest_llamafile():
+    """
+    Newest llamafile engine on GitHub as a dict with name, url, size and the
+    SHA-256 GitHub publishes for every release asset, or None.
+    """
+    try:
+        req = urllib.request.Request(LLAMAFILE_RELEASE_API, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
+            release = json.loads(resp.read().decode())
+    except Exception:
+        return None
+    for asset in release.get('assets', []):
+        if re.match(r'llamafile-[0-9.]+$', asset.get('name', '')):
+            digest = asset.get('digest') or ''
+            return {
+                "name": asset['name'],
+                "url": asset['browser_download_url'],
+                "size": asset.get('size', 0),
+                "sha256": digest[7:].lower() if digest.startswith('sha256:') else None,
+            }
+    return None
+
+def install_llamafile(env, info):
+    """Downloads and verifies the llamafile engine and points AI/llamafile to it."""
+    path = os.path.join(env.ai_dir, info['name'])
+    if not is_download_complete(path):
+        if not download_with_aria2(info['url'], path, timeout=120):
+            return False
+        if not verify_sha256(path, info.get('sha256')):
+            log_err(i18n.T('checksum_mismatch').format(info['name']), fatal=False)
+            remove_file_and_sidecars(path)
+            return False
+    os.chmod(path, 0o755)
+    return run_cmd(f"ln -sf '{path}' '{os.path.join(env.base, 'AI', 'llamafile')}'", quiet=True)
+
+def fetch_hf_size(file_url):
+    """Size Hugging Face reports for a LFS file (X-Linked-Size), or 0."""
+    req = urllib.request.Request(file_url, method="HEAD", headers={'User-Agent': 'Mozilla/5.0'})
+    try:
+        headers = urllib.request.build_opener(_NoRedirect).open(req, timeout=FETCH_TIMEOUT).headers
+    except urllib.error.HTTPError as e:
+        headers = e.headers
+    except Exception:
+        return 0
+    try:
+        return int(headers.get('X-Linked-Size') or 0)
+    except ValueError:
+        return 0
+
+def saved_sha256(path):
+    try:
+        with open(path + ".sha256") as f:
+            m = re.match(r'\s*([0-9a-fA-F]{64})', f.read())
+        return m.group(1).lower() if m else None
+    except OSError:
+        return None
+
+def flatpak_updates():
+    """{application id: download size in MB} of the Flatpaks with a pending update."""
+    out = get_cmd_output("flatpak remote-ls --updates --columns=application,download-size 2>/dev/null")
+    updates = {}
+    for line in out.splitlines():
+        parts = line.split('\t')
+        if not parts or not parts[0].strip():
+            continue
+        mb = 0
+        if len(parts) > 1:
+            m = re.match(r'([0-9.,]+)\s*([kMG])B', parts[1].strip())
+            if m:
+                value = float(m.group(1).replace(',', '.'))
+                mb = int(value / 1024 if m.group(2) == 'k' else value * 1024 if m.group(2) == 'G' else value)
+        updates[parts[0].strip()] = mb
+    return updates
+
+def map_version_dirs():
+    """{data version: [region ids]} of every map folder of Organic Maps on disk."""
+    base = organic_maps_data_dir()
+    found = {}
+    if not os.path.isdir(base):
+        return found
+    for version in os.listdir(base):
+        vdir = os.path.join(base, version)
+        if version.isdigit() and os.path.isdir(vdir):
+            found[version] = sorted(f[:-4] for f in os.listdir(vdir)
+                                    if f.endswith('.mwm') and not f.startswith('World')
+                                    and is_download_complete(os.path.join(vdir, f)))
+    return found
+
+def map_regions_to_migrate(tree, on_disk):
+    """
+    Regions downloaded for an older data version that the current one still
+    lists, and are not yet in the current version folder.
+    """
+    current = str(tree['v'])
+    leaves = {}
+
+    def walk(node):
+        if node.get('g'):
+            for child in node['g']:
+                walk(child)
+        else:
+            leaves[node['id']] = node
+    walk(tree)
+    have = set(on_disk.get(current, []))
+    wanted = set()
+    for version, regions in on_disk.items():
+        if version != current:
+            wanted |= set(regions)
+    return [leaves[r] for r in sorted(wanted - have) if r in leaves]
+
+def remove_old_map_versions(current):
+    base = organic_maps_data_dir()
+    freed = 0
+    for version in os.listdir(base) if os.path.isdir(base) else []:
+        vdir = os.path.join(base, version)
+        if version.isdigit() and version != current and os.path.isdir(vdir):
+            for root, _, files in os.walk(vdir):
+                freed += sum(os.path.getsize(os.path.join(root, f)) for f in files)
+            shutil.rmtree(vdir, ignore_errors=True)
+            log_info(i18n.T('old_version_removed').format(f"Organic Maps {version}"))
+    return freed
+
+def collect_updates(env, lang):
+    """
+    Everything installed on this device that has a newer published version.
+    Each update is a dict with label, size_mb (to download), old_mb (freed when
+    it finishes) and apply, a callable returning True on success.
+    """
+    updates = []
+
+    # Books: every catalog entry with a local copy
+    for entry in WIKIPEDIA_CONFIG + LIBRARY_CATALOG:
+        local = find_local_zim(env.know_dir, entry, lang)
+        if not local:
+            continue
+        remote, mirrors = find_remote_zim(entry, lang)
+        if not remote or remote == local:
+            continue
+        same_book = zim_stem_of(remote) == zim_stem_of(local)
+        if same_book and zim_date(remote) <= zim_date(local):
+            continue
+        label_key = 'update_book_label' if same_book else 'update_book_language_label'
+        updates.append({
+            "label": i18n.T(label_key).format(i18n.T(entry.get('title_key', entry['label_key'])),
+                                              zim_date(local), zim_date(remote), remote),
+            "size_mb": size_mb(remote_file_size(mirrors[0] + remote)) or entry_size_mb(entry, lang),
+            "old_mb": file_size_mb(os.path.join(env.know_dir, local)),
+            "apply": lambda r=remote, m=mirrors, l=local: update_book(env, r, m, l),
+        })
+
+    # Kiwix Desktop AppImage
+    local_apps = sorted((f for f in os.listdir(env.apps_dir) if re.match(r'kiwix-desktop_x86_64_.*\.appimage$', f))
+                        if os.path.isdir(env.apps_dir) else [], key=version_key)
+    if local_apps:
+        name, url = latest_kiwix_appimage()
+        glibc = glibc_version()
+        if name and version_key(name) > version_key(local_apps[-1]) and not (glibc and glibc < KIWIX_APPIMAGE_MIN_GLIBC):
+            updates.append({
+                "label": i18n.T('update_kiwix_label').format(local_apps[-1], name),
+                "size_mb": size_mb(remote_file_size(url)) or 160,
+                "old_mb": sum(file_size_mb(os.path.join(env.apps_dir, f)) for f in local_apps),
+                "apply": lambda n=name, u=url: update_kiwix_appimage(env, n, u),
+            })
+
+    # AI engine
+    engine_link = os.path.join(env.base, "AI", "llamafile")
+    if os.path.exists(engine_link):
+        current = os.path.basename(os.path.realpath(engine_link))
+        info = latest_llamafile()
+        if info and info['name'] != current and version_key(info['name']) > version_key(current):
+            updates.append({
+                "label": i18n.T('update_llamafile_label').format(current, info['name']),
+                "size_mb": size_mb(info['size']),
+                "old_mb": file_size_mb(os.path.realpath(engine_link)),
+                "apply": lambda i=info, c=current: update_llamafile(env, i, c),
+            })
+
+    # AI models republished under the same name with different contents
+    for m in AI_MODEL_CONFIG:
+        path = os.path.join(env.ai_dir, m['filename'])
+        stored = saved_sha256(path) if is_download_complete(path) else None
+        if not stored:
+            continue
+        remote = fetch_hf_sha256(m['url'])
+        if remote and remote != stored:
+            updates.append({
+                "label": i18n.T('update_model_label').format(m['filename']),
+                "size_mb": size_mb(fetch_hf_size(m['url'])) or m.get('size_mb', 0),
+                "old_mb": file_size_mb(path),
+                "apply": lambda model=m, sha=remote: update_model(env, model, sha),
+            })
+
+    # Flatpak applications and the maps that depend on the Organic Maps version
+    pending = flatpak_updates()
+    for app_id, title_key in ((ORGANIC_MAPS_ID, 'maps_gps_name'), ("org.kiwix.desktop", 'update_kiwix_flatpak'),
+                              (TRANSLATOR_ID, 'translator_desktop_name')):
+        if app_id in pending:
+            updates.append({
+                "label": i18n.T('update_flatpak_label').format(i18n.T(title_key)),
+                "size_mb": pending[app_id],
+                "old_mb": 0,
+                "apply": lambda a=app_id: run_cmd(f"sudo flatpak update -y --noninteractive {a}", quiet=True),
+                "order": 1,
+            })
+    on_disk = map_version_dirs()
+    if on_disk:
+        migrate_mb = sum(file_size_mb(os.path.join(organic_maps_data_dir(), v, r + ".mwm"))
+                         for v, regions in on_disk.items() for r in regions)
+        stale = ORGANIC_MAPS_ID in pending or len(on_disk) > 1
+        tree = organic_maps_countries()
+        if tree and not stale:
+            stale = bool(map_regions_to_migrate(tree, on_disk))
+        if stale:
+            count = len({r for regions in on_disk.values() for r in regions})
+            updates.append({
+                "label": i18n.T('update_maps_label').format(count),
+                "size_mb": migrate_mb,
+                "old_mb": migrate_mb,
+                "apply": update_map_regions,
+                "order": 2,
+            })
+    updates.sort(key=lambda u: u.get("order", 0))
+    return updates
+
+def update_book(env, remote, mirrors, local):
+    if not download_zim(env.know_dir, remote, mirrors):
+        return False
+    remove_older_zims(env.know_dir, remote)
+    if local != remote and os.path.exists(os.path.join(env.know_dir, local)):
+        remove_file_and_sidecars(os.path.join(env.know_dir, local))
+        log_info(i18n.T('old_version_removed').format(local))
+    return True
+
+def update_kiwix_appimage(env, name, url):
+    path = os.path.join(env.apps_dir, name)
+    if not download_with_aria2(url, path, timeout=600):
+        return False
+    expected = fetch_kiwix_md5(url)
+    if expected and md5_of(path) != expected:
+        log_err(i18n.T('checksum_mismatch').format(name), fatal=False)
+        remove_file_and_sidecars(path)
+        return False
+    os.chmod(path, 0o755)
+    run_cmd(f"ln -sf '{path}' '{os.path.join(env.base, 'Apps', 'kiwix-desktop.appimage')}'", quiet=True)
+    for f in os.listdir(env.apps_dir):
+        if f != name and re.match(r'kiwix-desktop_x86_64_.*\.appimage$', f):
+            remove_file_and_sidecars(os.path.join(env.apps_dir, f))
+            log_info(i18n.T('old_version_removed').format(f))
+    return True
+
+def update_llamafile(env, info, current):
+    if not install_llamafile(env, info):
+        return False
+    old = os.path.join(env.ai_dir, current)
+    if current != info['name'] and os.path.exists(old):
+        remove_file_and_sidecars(old)
+        log_info(i18n.T('old_version_removed').format(current))
+    return True
+
+def update_model(env, model, expected):
+    """The new model is downloaded under a temporary name: the old one stays usable until it is replaced."""
+    path = os.path.join(env.ai_dir, model['filename'])
+    tmp = path + ".new"
+    if not download_with_aria2(model['url'], tmp, timeout=300):
+        return False
+    if sha256_of(tmp) != expected:
+        log_err(i18n.T('checksum_mismatch').format(model['filename']), fatal=False)
+        remove_file_and_sidecars(tmp)
+        return False
+    os.replace(tmp, path)
+    write_checksum_file(path, expected)
+    return True
+
+def update_map_regions():
+    """
+    Downloads, for the data version the (possibly just updated) app expects,
+    every region the user had for an older version; old folders are removed
+    only when all of them are in place, so the maps never stop working.
+    """
+    tree = organic_maps_countries()
+    if tree is None:
+        log_err(i18n.T('maps_data_missing'), fatal=False)
+        return False
+    if not download_map_regions(tree, map_regions_to_migrate(tree, map_version_dirs())):
+        return False
+    remove_old_map_versions(str(tree['v']))
+    return True
+
+def run_update(d, sys_info):
+    """Interactive updater: lists pending updates, applies the chosen ones safely."""
+    base_dir = os.path.join(os.environ['HOME'], "refugiOS")
+    desktop_dir = os.path.join(os.environ['HOME'], "Desktop")
+    if not os.path.isdir(desktop_dir):
+        desktop_dir = os.path.join(os.environ['HOME'], "Escritorio")
+    env = TargetEnv(base_dir, desktop_dir)
+    if not os.path.isdir(env.base):
+        d.msgbox(sanitize_for_dialog(i18n.T('update_not_installed')), title=i18n.T('update_title'))
+        return 1
+
+    os.system('clear')
+    log_info(i18n.T('update_checking'))
+    try:
+        fetch_url(KIWIX_ZIM)
+    except Exception:
+        d.msgbox(sanitize_for_dialog(i18n.T('update_no_connection')), title=i18n.T('update_title'))
+        return 1
+
+    updates = collect_updates(env, sys_info.lang)
+    if not updates:
+        d.msgbox(sanitize_for_dialog(i18n.T('update_none')), title=i18n.T('update_title'))
+        return 0
+
+    opts = [{"label": f"{u['label']} ({format_size(u['size_mb'])})"} for u in updates]
+    chosen = [updates[i] for i in multi_select_menu(d, i18n.T('update_menu_title'), opts, list(range(len(updates))))]
+    if not chosen:
+        return 0
+
+    # Every update keeps the old version until the new one is verified: the
+    # largest one sets the peak, the sum of differences the final balance
+    peak_mb = max(u['size_mb'] for u in chosen)
+    net_mb = sum(u['size_mb'] - u['old_mb'] for u in chosen)
+    free_mb = shutil.disk_usage(env.base).free // (1024 * 1024)
+    text = i18n.T('update_confirm').format(format_size(sum(u['size_mb'] for u in chosen)),
+                                           format_size(max(net_mb, 0)), format_size(free_mb))
+    if free_mb < max(peak_mb, net_mb) + UPDATE_SPACE_MARGIN_MB:
+        text += "\n\n" + i18n.T('update_space_warning')
+    if not simple_question(d, i18n.T('update_title'), text, default_yes=free_mb >= max(peak_mb, net_mb) + UPDATE_SPACE_MARGIN_MB):
+        return 0
+    os.system('clear')
+
+    failed = []
+    for i, u in enumerate(chosen, 1):
+        log_info(i18n.T('update_applying').format(i, len(chosen), u['label']))
+        free_mb = shutil.disk_usage(env.base).free // (1024 * 1024)
+        if free_mb < u['size_mb'] + UPDATE_SPACE_MARGIN_MB:
+            log_err(i18n.T('update_no_space_item').format(u['label']), fatal=False)
+            failed.append(u['label'])
+            continue
+        try:
+            ok = u['apply']()
+        except Exception as e:
+            log_err(f"{u['label']}: {e}", fatal=False)
+            ok = False
+        if ok:
+            log_success(u['label'])
+        else:
+            failed.append(u['label'])
+
+    exec_path = os.path.join(env.base, "Apps", "kiwix-desktop.appimage")
+    sync_resources(env, sys_info, exec_path if os.path.exists(exec_path) else "kiwix-desktop")
+    certify_all_desktop_icons(env.desktop)
+
+    if failed:
+        report = i18n.T('update_summary_errors') + "\n\n" + "\n".join(f" - {f}" for f in failed)
+        d.msgbox(sanitize_for_dialog(report), title=i18n.T('warning'))
+        return 1
+    d.msgbox(sanitize_for_dialog(i18n.T('update_summary_ok').format(len(chosen))), title=i18n.T('update_title'))
+    return 0
+
+# ==============================================================================
 # MASTER BLOCK: GENERAL CONTROLLER (main)
 # ==============================================================================
 def main():
@@ -1442,6 +1891,10 @@ def main():
 
     # 1. System Information Retrieval
     sys_info = SystemInfo()
+
+    # Update mode: no questionnaire, only what is already installed
+    if "--update" in sys.argv[1:]:
+        sys.exit(run_update(d, sys_info))
     
     # 2. Language Selection (Persistent)
     lang_options = [
@@ -1834,24 +2287,15 @@ Terminal=false
     script_path = fetch_script("refugios-ai-selector.sh")
     if ai_selected:
         log_info(i18n.T('installing_ai_engine_log'))
-        try:
-             req = urllib.request.Request("https://api.github.com/repos/Mozilla-Ocho/llamafile/releases/latest")
-             with urllib.request.urlopen(req) as r:
-                  release_data = json.loads(r.read().decode())
-             llama_url = None
-             for asset in release_data.get('assets', []):
-                  if re.match(r'llamafile-[0-9.]+$', asset['name']):
-                       llama_url = asset['browser_download_url']
-                       llama_name = asset['name']
-                       break
-             if llama_url:
-                  l_path = os.path.join(env.ai_dir, llama_name)
-                  if not os.path.exists(l_path) or force_dl:
-                       download_with_aria2(llama_url, l_path, timeout=120)
-                  os.chmod(l_path, 0o755)
-                  run_cmd(f"ln -sf '{l_path}' '{os.path.join(env.base, 'AI', 'llamafile')}'")
-        except:
-              log_err("Error connecting to GitHub for Llamafile.", fatal=False)
+        info = latest_llamafile()
+        if info is None:
+            log_err(i18n.T('llamafile_unavailable'), fatal=False)
+        else:
+            current = os.path.join(env.ai_dir, info['name'])
+            if force_dl and is_download_complete(current):
+                remove_file_and_sidecars(current)
+            if not install_llamafile(env, info):
+                log_err(i18n.T('model_download_failed').format(info['name']), fatal=False)
 
         for idx in ai_selected:
             opt = ai_opts[idx]
@@ -1952,6 +2396,24 @@ Terminal=false
         certify_icon(check_desktop)
     else:
         log_err(i18n.T('check_script_missing'), fatal=False)
+
+    # Updater: brings books, apps, engine and maps up to date while online
+    update_script = fetch_script("refugios-update.sh")
+    if update_script and os.path.isfile(update_script):
+        update_desktop = os.path.join(env.desktop, "Update_refugiOS.desktop")
+        with open(update_desktop, "w") as f:
+            f.write(f"""[Desktop Entry]
+Version=1.0
+Type=Application
+Name={i18n.T('update_desktop_name')}
+Comment={i18n.T('update_desktop_comment')}
+Exec=xfce4-terminal -e "bash {update_script}"
+Icon=system-software-update
+Terminal=false
+""")
+        certify_icon(update_desktop)
+    else:
+        log_err(i18n.T('update_script_missing'), fatal=False)
 
     size_logger.log_section("Fase 6: Bóveda de Seguridad")
 

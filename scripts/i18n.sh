@@ -123,6 +123,8 @@ t_en_no_connection_title="No Internet connection - refugiOS"
 t_es_no_connection_title="Sin conexión a Internet - refugiOS"
 t_en_no_connection_text="Could not connect to github.com.\n\nPlease connect to a WiFi or wired network before attempting the installation."
 t_es_no_connection_text="No se pudo conectar con github.com.\n\nPor favor, conéctate a una red WiFi o cableada antes de intentar la instalación."
+t_en_update_no_connection="No Internet connection. Updates need a connection: connect and try again."
+t_es_update_no_connection="No hay conexión a Internet. Las actualizaciones necesitan conexión: conéctate y vuelve a intentarlo."
 t_en_press_enter="Press ENTER to close..."
 t_es_press_enter="Presiona ENTER para cerrar..."
 

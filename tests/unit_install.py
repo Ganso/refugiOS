@@ -196,9 +196,11 @@ class FakeDialog:
             # La libreria dialog codifica en latin-1: esto reproduce el fallo real
             t.encode("latin-1")
 
+    checklist_all = False
+
     def checklist(self, text, choices=None, title=None, **kw):
         self._record(text, title, *[c[1] for c in choices or []])
-        return (self.OK, [])
+        return (self.OK, [c[0] for c in choices or []] if type(self).checklist_all else [])
 
     def menu(self, text, choices=None, title=None, **kw):
         self._record(text, title, *[c[1] for c in choices or []])
@@ -657,6 +659,240 @@ class TestAutologinScreenLock(unittest.TestCase):
         install.is_autologin_user = lambda: False
         install.disable_autologin_screen_lock()
         self.assertFalse(os.path.exists(os.path.join(self.home, ".config", "autostart")))
+
+
+class UpdaterCase(RoutedServerCase):
+    """Base: un refugiOS falso en un HOME temporal y los origenes remotos neutralizados."""
+
+    def setUp(self):
+        super().setUp()
+        self.home = tempfile.mkdtemp()
+        self.env = install.TargetEnv(os.path.join(self.home, "refugiOS"), os.path.join(self.home, "Desktop"))
+        install.ensure_dirs(self.env)
+        self.saved = {n: getattr(install, n) for n in (
+            "WIKIPEDIA_CONFIG", "LIBRARY_CATALOG", "latest_kiwix_appimage", "latest_llamafile",
+            "flatpak_updates", "map_version_dirs", "organic_maps_countries", "AI_MODEL_CONFIG")}
+        install.WIKIPEDIA_CONFIG = []
+        install.LIBRARY_CATALOG = []
+        install.AI_MODEL_CONFIG = []
+        install.latest_kiwix_appimage = lambda: (None, None)
+        install.latest_llamafile = lambda: None
+        install.flatpak_updates = lambda: {}
+        install.map_version_dirs = lambda: {}
+        install.organic_maps_countries = lambda: None
+        self.failed_before = len(install.FAILED_ITEMS)
+
+    def tearDown(self):
+        for n, v in self.saved.items():
+            setattr(install, n, v)
+        del install.FAILED_ITEMS[self.failed_before:]
+        super().tearDown()
+
+    def put(self, name, data=b"old"):
+        path = os.path.join(self.env.know_dir, name)
+        with open(path, "wb") as f:
+            f.write(data)
+        return path
+
+
+class TestOldVersionCleanup(UpdaterCase):
+    def test_only_other_editions_of_the_same_book_go(self):
+        self.put("phet_es_all_2026-01.zim")
+        self.put("phet_es_all_2026-01.zim.sha256", b"x")
+        self.put("phet_es_all_2026-08.zim")
+        self.put("phet_en_all_2026-01.zim")
+        self.put("wikivoyage_es_all_maxi_2026-01.zim")
+        install.remove_older_zims(self.env.know_dir, "phet_es_all_2026-08.zim")
+        self.assertEqual(sorted(os.listdir(self.env.know_dir)),
+                         ["phet_en_all_2026-01.zim", "phet_es_all_2026-08.zim",
+                          "wikivoyage_es_all_maxi_2026-01.zim"])
+
+
+class TestBookUpdates(UpdaterCase):
+    NEW = "phet_es_all_2026-08.zim"
+
+    def serve(self, sha):
+        listing = b'<a href="phet_es_all_2026-01.zim">x</a><a href="phet_es_all_2026-08.zim">x</a>'
+        RoutedHandler.routes = {
+            "/zim/": (200, {}, listing),
+            f"/zim/{self.NEW}": (200, {"Accept-Ranges": "bytes"}, PAYLOAD),
+            f"/zim/{self.NEW}.sha256": (200, {}, f"{sha}  {self.NEW}\n".encode()),
+        }
+        install.LIBRARY_CATALOG = [{"id": "phet", "label_key": "lib_phet", "title_key": "lib_phet_title",
+                                    "stem": "phet_{lang}_all", "urls": [self.base + "/zim/"], "size_mb": 110}]
+
+    def test_newer_edition_is_offered_with_its_real_size(self):
+        self.serve(PAYLOAD_SHA)
+        self.put("phet_es_all_2026-01.zim")
+        updates = install.collect_updates(self.env, "es")
+        self.assertEqual(len(updates), 1)
+        self.assertIn("2026-01 -> 2026-08", updates[0]['label'])
+        self.assertEqual(updates[0]['size_mb'], install.size_mb(len(PAYLOAD)))
+
+    def test_up_to_date_book_is_not_offered(self):
+        self.serve(PAYLOAD_SHA)
+        self.put(self.NEW)
+        self.assertEqual(install.collect_updates(self.env, "es"), [])
+
+    def test_book_in_the_users_language_replaces_the_english_fallback(self):
+        self.serve(PAYLOAD_SHA)
+        self.put("phet_en_all_2026-09.zim")
+        updates = install.collect_updates(self.env, "es")
+        self.assertEqual(len(updates), 1)
+        self.assertTrue(updates[0]['apply']())
+        self.assertEqual(os.listdir(self.env.know_dir).count("phet_en_all_2026-09.zim"), 0)
+        self.assertIn(self.NEW, os.listdir(self.env.know_dir))
+
+    def test_verified_update_replaces_the_old_edition(self):
+        self.serve(PAYLOAD_SHA)
+        self.put("phet_es_all_2026-01.zim")
+        self.assertTrue(install.collect_updates(self.env, "es")[0]['apply']())
+        files = os.listdir(self.env.know_dir)
+        self.assertIn(self.NEW, files)
+        self.assertNotIn("phet_es_all_2026-01.zim", files)
+
+    def test_failed_update_keeps_the_old_edition(self):
+        self.serve("0" * 64)
+        old = self.put("phet_es_all_2026-01.zim", b"contenido antiguo")
+        self.assertFalse(install.collect_updates(self.env, "es")[0]['apply']())
+        with open(old, "rb") as f:
+            self.assertEqual(f.read(), b"contenido antiguo", "se borro la edicion que funcionaba")
+        self.assertNotIn(self.NEW, os.listdir(self.env.know_dir))
+
+
+class TestEngineAndModelUpdates(UpdaterCase):
+    def test_model_with_new_revision(self):
+        model = {"filename": "m.gguf", "url": self.base + "/m.gguf", "size_mb": 3}
+        install.AI_MODEL_CONFIG = [model]
+        path = os.path.join(self.env.ai_dir, "m.gguf")
+        with open(path, "wb") as f:
+            f.write(b"revision vieja")
+        install.write_checksum_file(path, "1" * 64)
+        RoutedHandler.routes = {"/m.gguf": (302, {"Location": "/cdn/m.gguf", "X-Linked-Etag": f'"{PAYLOAD_SHA}"',
+                                                  "X-Linked-Size": str(len(PAYLOAD))}, b""),
+                                "/cdn/m.gguf": (200, {}, PAYLOAD)}
+        updates = install.collect_updates(self.env, "es")
+        self.assertEqual(len(updates), 1)
+        self.assertTrue(updates[0]['apply']())
+        self.assertEqual(install.sha256_of(path), PAYLOAD_SHA)
+        self.assertEqual(install.saved_sha256(path), PAYLOAD_SHA)
+        self.assertFalse(os.path.exists(path + ".new"))
+
+    def test_model_failing_verification_keeps_the_old_one(self):
+        model = {"filename": "m.gguf", "url": self.base + "/m.gguf"}
+        path = os.path.join(self.env.ai_dir, "m.gguf")
+        with open(path, "wb") as f:
+            f.write(b"revision vieja")
+        RoutedHandler.routes = {"/m.gguf": (200, {}, PAYLOAD)}
+        self.assertFalse(install.update_model(self.env, model, "2" * 64))
+        with open(path, "rb") as f:
+            self.assertEqual(f.read(), b"revision vieja")
+        self.assertFalse(os.path.exists(path + ".new"))
+
+    def test_engine_update_is_verified_and_relinked(self):
+        old = os.path.join(self.env.ai_dir, "llamafile-0.10.5")
+        open(old, "w").close()
+        os.symlink(old, os.path.join(self.env.base, "AI", "llamafile"))
+        RoutedHandler.routes = {"/llamafile-0.10.6": (200, {}, PAYLOAD)}
+        install.latest_llamafile = lambda: {"name": "llamafile-0.10.6", "url": self.base + "/llamafile-0.10.6",
+                                            "size": len(PAYLOAD), "sha256": PAYLOAD_SHA}
+        updates = install.collect_updates(self.env, "es")
+        self.assertEqual(len(updates), 1)
+        self.assertTrue(updates[0]['apply']())
+        link = os.path.join(self.env.base, "AI", "llamafile")
+        self.assertEqual(os.path.basename(os.path.realpath(link)), "llamafile-0.10.6")
+        self.assertFalse(os.path.exists(old))
+
+    def test_engine_with_bad_checksum_is_rejected(self):
+        RoutedHandler.routes = {"/llamafile-0.10.6": (200, {}, PAYLOAD)}
+        info = {"name": "llamafile-0.10.6", "url": self.base + "/llamafile-0.10.6", "size": 1, "sha256": "3" * 64}
+        self.assertFalse(install.install_llamafile(self.env, info))
+        self.assertFalse(os.path.exists(os.path.join(self.env.ai_dir, "llamafile-0.10.6")))
+
+    def test_kiwix_appimage_checked_against_md5(self):
+        import hashlib as h
+        old = os.path.join(self.env.apps_dir, "kiwix-desktop_x86_64_2.4.1.appimage")
+        open(old, "w").close()
+        name = "kiwix-desktop_x86_64_2.5.1.appimage"
+        RoutedHandler.routes = {f"/{name}": (200, {}, PAYLOAD),
+                                f"/{name}.md5": (200, {}, (h.md5(b"otra cosa").hexdigest() + f"  {name}\n").encode())}
+        self.assertFalse(install.update_kiwix_appimage(self.env, name, f"{self.base}/{name}"))
+        self.assertTrue(os.path.exists(old), "el AppImage que funcionaba se borro")
+        RoutedHandler.routes[f"/{name}.md5"] = (200, {}, (h.md5(PAYLOAD).hexdigest() + f"  {name}\n").encode())
+        self.assertTrue(install.update_kiwix_appimage(self.env, name, f"{self.base}/{name}"))
+        self.assertFalse(os.path.exists(old))
+        self.assertTrue(os.access(os.path.join(self.env.apps_dir, name), os.X_OK))
+
+
+class TestMapAndFlatpakUpdates(UpdaterCase):
+    TREE = {"v": 260527, "g": [{"id": "Spain", "g": [{"id": "Spain_Madrid", "s": 1}, {"id": "Spain_Galicia", "s": 1}]},
+                               {"id": "Andorra", "s": 1}]}
+
+    def test_regions_of_old_data_versions_are_migrated(self):
+        on_disk = {"260101": ["Andorra", "Spain_Madrid", "Gone_Region"], "260527": ["Andorra"]}
+        ids = [r['id'] for r in install.map_regions_to_migrate(self.TREE, on_disk)]
+        self.assertEqual(ids, ["Spain_Madrid"])
+
+    def test_old_map_folders_only_go_when_the_new_ones_are_complete(self):
+        maps = os.path.join(self.home, ".var", "app", install.ORGANIC_MAPS_ID, "data", "OMaps")
+        old = os.path.join(maps, "260101")
+        os.makedirs(old)
+        open(os.path.join(old, "Spain_Madrid.mwm"), "w").close()
+        saved_home = os.environ["HOME"]
+        saved_dl = install.download_map_regions
+        os.environ["HOME"] = self.home
+        install.map_version_dirs = self.saved["map_version_dirs"]
+        install.organic_maps_countries = lambda: self.TREE
+        try:
+            install.download_map_regions = lambda tree, regions: False
+            self.assertFalse(install.update_map_regions())
+            self.assertTrue(os.path.isdir(old), "se borraron mapas que funcionaban sin tener los nuevos")
+            install.download_map_regions = lambda tree, regions: True
+            self.assertTrue(install.update_map_regions())
+            self.assertFalse(os.path.isdir(old))
+        finally:
+            os.environ["HOME"] = saved_home
+            install.download_map_regions = saved_dl
+
+    def test_flatpak_update_sizes_are_parsed(self):
+        saved = install.get_cmd_output
+        install.get_cmd_output = lambda cmd: "app.organicmaps.desktop\t169,2 MB\norg.kiwix.desktop\t1.5 GB\n"
+        try:
+            self.assertEqual(self.saved["flatpak_updates"](), {"app.organicmaps.desktop": 169, "org.kiwix.desktop": 1536})
+        finally:
+            install.get_cmd_output = saved
+
+
+class TestRunUpdate(UpdaterCase):
+    """El flujo completo: lo que falla o no cabe se omite, el resto se aplica y se informa."""
+
+    def run_with(self, updates, free_mb):
+        saved = (install.collect_updates, install.fetch_url, install.shutil.disk_usage, install.sync_resources)
+        install.collect_updates = lambda env, lang: updates
+        install.fetch_url = lambda url: ""
+        install.shutil.disk_usage = lambda p: type("U", (), {"free": free_mb * 1024 * 1024})()
+        install.sync_resources = lambda *a: None
+        os.environ["HOME"] = self.home
+        try:
+            class Info:
+                lang = "es"
+            return install.run_update(FakeDialog(), Info())
+        finally:
+            install.collect_updates, install.fetch_url, install.shutil.disk_usage, install.sync_resources = saved
+
+    def test_failures_and_missing_space_are_reported(self):
+        done = []
+        updates = [
+            {"label": "bien", "size_mb": 10, "old_mb": 5, "apply": lambda: done.append("bien") or True},
+            {"label": "falla", "size_mb": 10, "old_mb": 5, "apply": lambda: False},
+            {"label": "enorme", "size_mb": 999999, "old_mb": 0, "apply": lambda: done.append("enorme") or True},
+        ]
+        FakeDialog.checklist_all = True
+        self.assertEqual(self.run_with(updates, 5000), 1)
+        self.assertEqual(done, ["bien"], "se intento aplicar una actualizacion que no cabia")
+
+    def test_nothing_to_update(self):
+        self.assertEqual(self.run_with([], 5000), 0)
 
 
 if __name__ == "__main__":

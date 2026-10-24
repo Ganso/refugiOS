@@ -129,8 +129,8 @@ export REPO_URL="$REPO_URL"
 # No basta con comprobar que /dev/tty exista: sin terminal de control el fichero
 # está ahí pero abrirlo falla, y la redirección tumbaría el instalador.
 if (exec < /dev/tty) 2>/dev/null; then
-    python3 "$PYTHON_SCRIPT" < /dev/tty
+    python3 "$PYTHON_SCRIPT" "$@" < /dev/tty
 else
     echo -e "\e[1;33m[!] $(t warning):\e[0m $(t no_tty)"
-    python3 "$PYTHON_SCRIPT"
+    python3 "$PYTHON_SCRIPT" "$@"
 fi

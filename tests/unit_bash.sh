@@ -192,6 +192,24 @@ check $? "C13: no queda ningun proceso de IA huerfano tras cerrar el lanzador"
 pkill -f "http.server $PORT" 2>/dev/null
 
 # ============================================================================
+# refugios-update.sh: lanzador del actualizador
+# ============================================================================
+echo "=> Actualizador: lanzador"
+
+mkdir -p "$WORK/upd/bin" "$WORK/upd/src"
+printf '#!/bin/bash\nexit 7\n' > "$WORK/upd/bin/curl"
+chmod +x "$WORK/upd/bin/curl"
+OUT=$(PATH="$WORK/upd/bin:/usr/bin:/bin" bash "$REPO_DIR/scripts/refugios-update.sh" < /dev/null 2>&1)
+STATUS=$?
+[ "$STATUS" -ne 0 ] && grep -qi "internet" <<<"$OUT"
+check $? "sin conexion avisa y termina con error (codigo $STATUS)"
+
+printf '#!/bin/bash\necho "INSTALADOR_LOCAL $*"\nexit 0\n' > "$WORK/upd/src/install.sh"
+OUT=$(REFUGIOS_SRC_DIR="$WORK/upd/src" PATH="$WORK/upd/bin:/usr/bin:/bin" bash "$REPO_DIR/scripts/refugios-update.sh" < /dev/null 2>&1)
+grep -q "INSTALADOR_LOCAL --update" <<<"$OUT"
+check $? "con una copia local lanza su install.sh en modo --update (obtenido: $OUT)"
+
+# ============================================================================
 # C17/C18 - test_boot.sh
 # ============================================================================
 echo "=> C17-C18: test_boot.sh"
