@@ -321,6 +321,24 @@ checks/installs deps (`python3 python3-dialog dialog aria2 pciutils wget curl ba
 rsync apt-utils flatpak`); runs `python3 install.py < /dev/tty` (forces interactive
 tty to fix `EOFError` from `curl|bash` pipes). `DEBUG=1` skips apt operations.
 
+### Updater — `install.py --update` + `scripts/refugios-update.sh`
+Desktop launcher "Update refugiOS" runs `refugios-update.sh`, which downloads the
+published `install.sh` and runs it with `--update` (with `REFUGIOS_SRC_DIR` set it uses
+that checkout instead). `install.sh` forwards its arguments to `install.py`, whose
+`main()` calls `run_update()` right after `SystemInfo()`, skipping the questionnaire.
+`collect_updates()` returns dicts (`label`, `size_mb`, `old_mb`, `apply`) for: new
+editions of installed catalog books (or the user-language book replacing an English
+fallback), the Kiwix AppImage (checked against the published `.md5`), llamafile (checked
+against the SHA-256 in the GitHub release asset `digest`), AI models whose published
+SHA-256 differs from the saved `.sha256`, pending Flatpak updates of Organic Maps, Kiwix
+and the translator, and map regions stored for an older Organic Maps data version.
+**Invariant: the old version is removed only after the new one is verified**
+(`update_book`, `update_kiwix_appimage`, `update_llamafile`, `update_model` writes to
+`<file>.new` and `os.replace`s it, `update_map_regions` removes old map folders only when
+every region is in place). Items whose size does not fit in the free space plus
+`UPDATE_SPACE_MARGIN_MB` are skipped. The normal installer also removes older editions of
+a book once the newest one is verified (`remove_older_zims`).
+
 ### `scripts/refugios-check.py` — offline self-check
 Desktop launcher "Check refugiOS". Checks without any connection that books, AI
 models and engine, Organic Maps regions, translator and vaults are complete and intact

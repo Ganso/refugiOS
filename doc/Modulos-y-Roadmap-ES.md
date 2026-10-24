@@ -60,6 +60,11 @@ Sistema de almacenamiento seguro y cifrado para datos sensibles.
 *   **Dos modos:** La comprobación rápida tarda unos segundos; la completa recalcula además las sumas de comprobación de cada fichero y puede tardar bastante en un pendrive lento.
 *   **Cuándo usarla:** Al terminar la instalación, antes de guardar el dispositivo y después de clonarlo a otra unidad.
 
+### 6b. Actualizar refugiOS
+*   **Qué hace:** Un icono del escritorio busca, con conexión, ediciones nuevas de los libros instalados (o el libro en tu idioma si tenías la versión inglesa), versiones nuevas de Kiwix, del motor de IA y de las aplicaciones, revisiones de los modelos de IA y datos de mapa más recientes para las regiones que ya tenías. Muestra la lista con lo que ocupa cada cosa y aplica lo que elijas.
+*   **Sin riesgo:** Cada versión nueva se descarga junto a la antigua y se verifica con su suma publicada; solo entonces se borra la anterior. Si una actualización falla o se corta, el dispositivo sigue exactamente como estaba y funcionando sin conexión. Las que no caben en el espacio libre se omiten.
+*   **Cuándo usarla:** De vez en cuando, mientras haya conexión. No hace falta en ningún momento para que refugiOS funcione.
+
 ### 7. Herramientas de Trabajo Estándar
 Programas esenciales para el día a día, adaptados para la máxima compatibilidad.
 *   **Ofimática y Multimedia:** [LibreOffice](https://www.libreoffice.org/), [VLC](https://www.videolan.org/), [Evince](https://wiki.gnome.org/Apps/Evince) (PDF).
@@ -101,7 +106,7 @@ Estamos trabajando para integrar estas potentes herramientas en próximas versio
 *   **Juegos:** Selección de juegos independientes de código abierto.
 
 ### 7. ❗ Mejoras técnicas
-*   **Actualizador automático:** Sistema para actualizar componentes y bases de datos de forma incremental (aunque a día de hoy el instalador se puede lanzar todas las veces que sea necesario).
+*   **Actualizador:** ✅ **Ya disponible** (icono *Actualizar refugiOS*, ver arriba). Pendiente: Avisar de forma automática de que hay actualizaciones cuando el equipo tiene conexión.
 *   **Imágenes pregeneradas:** ✅ **Ya disponible.** Distribución de imágenes de disco listas para usar en distintos idiomas para un despliegue instantáneo desde [refugios.ganso.org](https://refugios.ganso.org/).
 *   **Aceleración de IA por Hardware:** Optimización de GPU/NPU para modelos de IA locales.
 *   **Soporte de más Hardware:** Ampliar el soporte de hardware para incluir más dispositivos y arquitecturas, incluyendo dispositivos que pueda poseer el usuario y necesite utilizar en situaciones de emergencia (sistemas de comunicación, wereables, etc.)

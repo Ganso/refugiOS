@@ -177,6 +177,7 @@ See the **[Virtualization Guide](doc/Virtualization-Guide-EN.md)** for complete 
 *   **🤖 Private AI:** An assistant that works 100% locally, without Internet.
 *   **🗺️ Maps and GPS Navigation:** Offline maps of the entire world with Organic Maps, with the most common countries ready from the installer.
 *   **Offline Translator:** More than 40 languages with Firefox's neural models.
+*   **Safe Updates:** One icon brings books, maps, AI and applications up to date, and removes nothing old until the new version is verified.
 *   **Offline Self-Check:** One icon checks that books, AI, maps and vaults are complete and intact before you need them.
 *   **🔒 Secure File Vault:** Professional LUKS encryption to protect sensitive documents.
 *   **🌐 Adapted to Your Language:** The system automatically configures in English or Spanish.

@@ -59,6 +59,11 @@ Secure and encrypted storage system for sensitive data.
 *   **Two modes:** The quick check takes a few seconds; the full check also recomputes the checksum of every file and can take a while on a slow drive.
 *   **When to use it:** After the installation, before putting the device away, and after cloning it to another drive.
 
+### 6b. Update refugiOS
+*   **What it does:** A desktop icon looks, while online, for new editions of the installed books (or the book in your language if you had the English one), new versions of Kiwix, the AI engine and the applications, new revisions of the AI models, and newer map data for the regions you already had. It shows the list with the size of each item and applies the ones you choose.
+*   **No risk:** Every new version is downloaded next to the old one and verified against its published checksum; only then is the old one removed. If an update fails or is interrupted, the device stays exactly as it was and keeps working offline. Updates that do not fit in the free space are skipped.
+*   **When to use it:** Now and then, while there is a connection. refugiOS never needs it to keep working.
+
 ### 7. Standard Work Tools
 Essential programs for daily life, adapted for maximum compatibility.
 *   **Office and Multimedia:** [LibreOffice](https://www.libreoffice.org/), [VLC](https://www.videolan.org/), [Evince](https://wiki.gnome.org/Apps/Evince) (PDF).
@@ -100,7 +105,7 @@ We are working to integrate these powerful tools in upcoming versions:
 *   **Games:** Selection of open-source indie games.
 
 ### 7. ❗ Technical Improvements
-*   **Automatic Updater:** System for updating components and databases incrementally (although currently the installer can be launched as many times as necessary).
+*   **Updater:** ✅ **Now available** (*Update refugiOS* icon, see above). Pending: Notify automatically that updates exist when the computer is online.
 *   **Pre-generated Images:** ✅ **Now available.** Distribution of ready-to-use disk images in different languages for instant deployment from [refugios.ganso.org](https://refugios.ganso.org/).
 *   **Hardware IA Acceleration:** GPU/NPU optimization for local AI models.
 *   **More Hardware Support:** Expand hardware support to include more devices and architectures, including devices that the user may own and need to use in emergency situations (communication systems, wearables, etc.).

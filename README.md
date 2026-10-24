@@ -177,6 +177,7 @@ Consulta la **[Guía de Virtualización](doc/Guia-Virtualizacion-y-Pendrive-ES.m
 *   **🤖 Inteligencia Artificial Privada:** Asistente que funciona 100% en local, sin Internet.
 *   **🗺️ Mapas y Navegación GPS:** Mapas offline de todo el mundo con Organic Maps, con los países más habituales listos desde el instalador.
 *   **Traductor sin conexión:** Más de 40 idiomas con los modelos neuronales de Firefox.
+*   **Actualizable sin riesgo:** Un icono pone al día libros, mapas, IA y aplicaciones, y no borra nada antiguo hasta verificar lo nuevo.
 *   **Comprobación sin conexión:** Un icono revisa que libros, IA, mapas y bóvedas están completos e intactos antes de necesitarlos.
 *   **🔒 Bóveda de Archivos Segura:** Cifrado profesional LUKS para proteger documentos sensibles.
 *   **🌐 Adaptado a tu Idioma:** El sistema se configura automáticamente en español o inglés.
