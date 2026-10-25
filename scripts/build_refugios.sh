@@ -553,13 +553,13 @@ DESK_DIR="\$HOME/Desktop"
 [ -d "\$DESK_DIR" ] || DESK_DIR="\$HOME/Escritorio"
 [ -d "\$DESK_DIR" ] || exit 0
 
-for f in "\$DESK_DIR"/*.desktop; do
+for f in "\$DESK_DIR"/*.desktop "\$DESK_DIR"/*/*.desktop; do
     trust_file "\$f"
 done
 
 # Vigilar archivos .desktop nuevos durante 60 segundos
 if command -v inotifywait >/dev/null 2>&1; then
-    timeout 60 inotifywait -q -m -e create --format '%w%f' "\$DESK_DIR" 2>/dev/null | while read -r newfile; do
+    timeout 60 inotifywait -r -q -m -e create --format '%w%f' "\$DESK_DIR" 2>/dev/null | while read -r newfile; do
         case "\$newfile" in *.desktop) trust_file "\$newfile" ;; esac
     done
 fi

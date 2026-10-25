@@ -455,9 +455,10 @@ def certify_all_desktop_icons(desktop_dir):
     """
     if not os.path.isdir(desktop_dir):
         return
-    for fname in os.listdir(desktop_dir):
-        if fname.endswith('.desktop'):
-            certify_icon(os.path.join(desktop_dir, fname))
+    for root, _, files in os.walk(desktop_dir):
+        for fname in files:
+            if fname.endswith('.desktop'):
+                certify_icon(os.path.join(root, fname))
     run_cmd("xfdesktop --reload 2>/dev/null || true", quiet=True)
 
 OBSOLETE_EXEC_PATTERNS = [
@@ -1023,7 +1024,9 @@ Terminal=false
         run_cmd(f"ln -sf '{os.path.join(env.know_dir, best)}' '{link}'", quiet=True)
         folder = env.desktop if entry.get('desktop') else library_dir
         os.makedirs(folder, exist_ok=True)
-        write_launcher(os.path.join(folder, f"Knowledge_{entry['id']}.desktop"),
+        clean_title = re.sub(r'[/\\:*?"<>|]', '-', i18n.T(entry['title_key']))
+        launcher_fname = f"Knowledge_{entry['id']}.desktop" if entry.get('desktop') else f"{clean_title}.desktop"
+        write_launcher(os.path.join(folder, launcher_fname),
                        i18n.T(entry['title_key']), i18n.T('generic_zim_comment'), link)
 
     # 3. Remove obsolete Knowledge icons (old versions, removed resources, or the
@@ -1035,7 +1038,8 @@ Terminal=false
             continue
         for fname in os.listdir(folder):
             path = os.path.join(folder, fname)
-            if fname.startswith('Knowledge_') and fname.endswith('.desktop') and path not in valid_launchers:
+            is_stale = (fname.startswith('Knowledge_') or folder != env.desktop) and fname.endswith('.desktop') and path not in valid_launchers
+            if is_stale:
                 os.remove(path)
                 log_info(i18n.T('obsolete_icon').format(fname))
         if folder != env.desktop and not os.listdir(folder):

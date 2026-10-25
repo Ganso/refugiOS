@@ -8,7 +8,7 @@
 
 ## 🇪🇸 Español
 
-Cuarenta y dos capturas de refugiOS en funcionamiento, veintiuna en español y veintiuna en inglés,
+Cuarenta y ocho capturas de refugiOS en funcionamiento, veinticuatro en español y veinticuatro en inglés,
 tomadas sobre el sistema real arrancado en una máquina virtual a 1920×1080. Recorren la
 instalación completa y cada una de las aplicaciones principales.
 
@@ -52,12 +52,15 @@ para arrancar y `qemu_ctl.py` para navegar y capturar.
 | 19 | Gestor de bóvedas con una bóveda ya creada, su estado y su tamaño. | [es/19_bovedas_lista.png](es/19_bovedas_lista.png) | [en/19_vaults_list.png](en/19_vaults_list.png) |
 | 20 | Bóveda abierta: aparece montada en el escritorio como una carpeta normal. | [es/20_boveda_abierta.png](es/20_boveda_abierta.png) | [en/20_vault_open.png](en/20_vault_open.png) |
 | 21 | Traductor neuronal offline (LocalTranslate): traducción de textos entre múltiples idiomas sin red. | [es/21_traductor.png](es/21_traductor.png) | [en/21_translator.png](en/21_translator.png) |
+| 22 | Biblioteca de conocimiento: manuales prácticos, supervivencia, medicina y guías de reparación. | [es/22_biblioteca.png](es/22_biblioteca.png) | [en/22_library.png](en/22_library.png) |
+| 23 | Comprobar refugiOS: auditoría offline de la integridad del sistema, libros, IA y bóvedas. | [es/23_comprobacion.png](es/23_comprobacion.png) | [en/23_check.png](en/23_check.png) |
+| 24 | Actualizador de refugiOS: comprobación y descarga atómica de versiones nuevas. | [es/24_actualizador.png](es/24_actualizador.png) | [en/24_updater.png](en/24_updater.png) |
 
 ---
 
 ## 🇬🇧🇺🇸 English
 
-Forty-two screenshots of refugiOS in use, twenty-one in Spanish and twenty-one in English, taken on the
+Forty-eight screenshots of refugiOS in use, twenty-four in Spanish and twenty-four in English, taken on the
 real system booted in a virtual machine at 1920×1080. They walk through the full
 installation and each of the main applications.
 
@@ -101,6 +104,9 @@ The whole walkthrough was driven with the tools of the
 | 19 | Vault manager with a vault already created, its state and size. | [es/19_bovedas_lista.png](es/19_bovedas_lista.png) | [en/19_vaults_list.png](en/19_vaults_list.png) |
 | 20 | Vault opened: it appears mounted on the desktop as an ordinary folder. | [es/20_boveda_abierta.png](es/20_boveda_abierta.png) | [en/20_vault_open.png](en/20_vault_open.png) |
 | 21 | Offline neural translator (LocalTranslate): text translation across multiple languages without network. | [es/21_traductor.png](es/21_traductor.png) | [en/21_translator.png](en/21_translator.png) |
+| 22 | Knowledge library: practical manuals, survival, emergency medicine, and repair guides. | [es/22_biblioteca.png](es/22_biblioteca.png) | [en/22_library.png](en/22_library.png) |
+| 23 | Check refugiOS: offline integrity verification of system, books, AI models, and vaults. | [es/23_comprobacion.png](es/23_comprobacion.png) | [en/23_check.png](en/23_check.png) |
+| 24 | refugiOS updater: checking and atomic updates for editions and system components. | [es/24_actualizador.png](es/24_actualizador.png) | [en/24_updater.png](en/24_updater.png) |
 
 ---
 
