@@ -31,12 +31,12 @@ para arrancar y `qemu_ctl.py` para navegar y capturar.
 
 | # | Qué muestra | 🇪🇸 Español | 🇬🇧🇺🇸 English |
 | :--- | :--- | :--- | :--- |
-| 01 | Mensaje de bienvenida del primer arranque, con el tamaño real del dispositivo. | [es/01_bienvenida.png](es/01_bienvenida.png) | [en/01_welcome.png](en/01_welcome.png) |
+| 01 | Mensaje de bienvenida del primer arranque, con el tamaño real del dispositivo e instrucciones de configuración. | [es/01_bienvenida.png](es/01_bienvenida.png) | [en/01_welcome.png](en/01_welcome.png) |
 | 02 | Instalador: elección de idioma, preseleccionado según el sistema. | [es/02_instalador_idioma.png](es/02_instalador_idioma.png) | [en/02_installer_language.png](en/02_installer_language.png) |
 | 03 | Instalador: diagnóstico del equipo (RAM, disco, GPU) que condiciona las opciones ofrecidas. | [es/03_instalador_diagnostico.png](es/03_instalador_diagnostico.png) | [en/03_installer_diagnostics.png](en/03_installer_diagnostics.png) |
-| 04 | Instalador: elección de la edición de Wikipedia, de 73 MB a 38 GB. | [es/04_instalador_wikipedia.png](es/04_instalador_wikipedia.png) | [en/04_installer_wikipedia.png](en/04_installer_wikipedia.png) |
-| 05 | Instalador: bases de conocimiento adicionales (WikiMed, WikiHow). | [es/05_instalador_otras_wikis.png](es/05_instalador_otras_wikis.png) | [en/05_installer_other_wikis.png](en/05_installer_other_wikis.png) |
-| 06 | Instalador: módulo de cartografía offline con Organic Maps. | [es/06_instalador_mapas.png](es/06_instalador_mapas.png) | [en/06_installer_maps.png](en/06_installer_maps.png) |
+| 04 | Instalador: elección de la edición de Wikipedia, entre 5 niveles (de ligera a total). | [es/04_instalador_wikipedia.png](es/04_instalador_wikipedia.png) | [en/04_installer_wikipedia.png](en/04_installer_wikipedia.png) |
+| 05 | Instalador: biblioteca de conocimiento práctico y reparaciones (iFixit, Appropedia, energía...). | [es/05_instalador_otras_wikis.png](es/05_instalador_otras_wikis.png) | [en/05_installer_other_wikis.png](en/05_installer_other_wikis.png) |
+| 06 | Instalador: selección de regiones y países para cartografía offline en Organic Maps. | [es/06_instalador_mapas.png](es/06_instalador_mapas.png) | [en/06_installer_maps.png](en/06_installer_maps.png) |
 | 07 | Instalador: modelos de IA local, con el aviso de RAM necesaria para cada uno. | [es/07_instalador_ia.png](es/07_instalador_ia.png) | [en/07_installer_ai.png](en/07_installer_ai.png) |
 | 08 | Instalador: confirmación final con el espacio estimado. | [es/08_instalador_confirmacion.png](es/08_instalador_confirmacion.png) | [en/08_installer_confirmation.png](en/08_installer_confirmation.png) |
 | 09 | Instalador: resumen al terminar, con el espacio realmente ocupado. | [es/09_instalador_completado.png](es/09_instalador_completado.png) | [en/09_installer_finished.png](en/09_installer_finished.png) |
@@ -45,7 +45,7 @@ para arrancar y `qemu_ctl.py` para navegar y capturar.
 | 12 | Wikipedia offline: un artículo completo, sin conexión a Internet. | [es/12_wikipedia_articulo.png](es/12_wikipedia_articulo.png) | [en/12_wikipedia_article.png](en/12_wikipedia_article.png) |
 | 13 | Organic Maps: mapamundi vectorial listo para descargar regiones. | [es/13_mapas_mundo.png](es/13_mapas_mundo.png) | [en/13_maps_world.png](en/13_maps_world.png) |
 | 14 | Organic Maps: detalle con carreteras y topónimos en el idioma del sistema. | [es/14_mapas_detalle.png](es/14_mapas_detalle.png) | [en/14_maps_detail.png](en/14_maps_detail.png) |
-| 15 | Selector de IA local: muestra la RAM utilizable y qué modelos caben. | [es/15_ia_selector.png](es/15_ia_selector.png) | [en/15_ai_selector.png](en/15_ai_selector.png) |
+| 15 | Selector de IA local: detección de RAM utilizable, reserva de seguridad del SO y estado [OK]/[LOW_RAM]. | [es/15_ia_selector.png](es/15_ia_selector.png) | [en/15_ai_selector.png](en/15_ai_selector.png) |
 | 16 | IA local respondiendo sin conexión, con el recuento de tokens y la velocidad. | [es/16_ia_chat.png](es/16_ia_chat.png) | [en/16_ai_chat.png](en/16_ai_chat.png) |
 | 17 | Gestor de bóvedas cifradas: menú principal. | [es/17_bovedas_menu.png](es/17_bovedas_menu.png) | [en/17_vaults_menu.png](en/17_vaults_menu.png) |
 | 18 | Creación de una bóveda LUKS: la contraseña se pide dos veces para evitar erratas irreversibles. | [es/18_bovedas_creacion.png](es/18_bovedas_creacion.png) | [en/18_vault_creation.png](en/18_vault_creation.png) |
@@ -83,12 +83,12 @@ The whole walkthrough was driven with the tools of the
 
 | # | What it shows | 🇪🇸 Spanish | 🇬🇧🇺🇸 English |
 | :--- | :--- | :--- | :--- |
-| 01 | First-boot welcome message, showing the real device size. | [es/01_bienvenida.png](es/01_bienvenida.png) | [en/01_welcome.png](en/01_welcome.png) |
+| 01 | First-boot welcome message, showing device size and initial setup steps. | [es/01_bienvenida.png](es/01_bienvenida.png) | [en/01_welcome.png](en/01_welcome.png) |
 | 02 | Installer: language choice, preselected from the system. | [es/02_instalador_idioma.png](es/02_instalador_idioma.png) | [en/02_installer_language.png](en/02_installer_language.png) |
 | 03 | Installer: hardware diagnosis (RAM, disk, GPU) that shapes the options offered. | [es/03_instalador_diagnostico.png](es/03_instalador_diagnostico.png) | [en/03_installer_diagnostics.png](en/03_installer_diagnostics.png) |
-| 04 | Installer: choice of Wikipedia edition, from 73 MB to 38 GB. | [es/04_instalador_wikipedia.png](es/04_instalador_wikipedia.png) | [en/04_installer_wikipedia.png](en/04_installer_wikipedia.png) |
-| 05 | Installer: additional knowledge bases (WikiMed, WikiHow). | [es/05_instalador_otras_wikis.png](es/05_instalador_otras_wikis.png) | [en/05_installer_other_wikis.png](en/05_installer_other_wikis.png) |
-| 06 | Installer: offline cartography module with Organic Maps. | [es/06_instalador_mapas.png](es/06_instalador_mapas.png) | [en/06_installer_maps.png](en/06_installer_maps.png) |
+| 04 | Installer: choice of Wikipedia edition, across 5 tiers (from lite to complete). | [es/04_instalador_wikipedia.png](es/04_instalador_wikipedia.png) | [en/04_installer_wikipedia.png](en/04_installer_wikipedia.png) |
+| 05 | Installer: practical knowledge and repair library (iFixit, Appropedia, energy...). | [es/05_instalador_otras_wikis.png](es/05_instalador_otras_wikis.png) | [en/05_installer_other_wikis.png](en/05_installer_other_wikis.png) |
+| 06 | Installer: region and country selection for offline cartography in Organic Maps. | [es/06_instalador_mapas.png](es/06_instalador_mapas.png) | [en/06_installer_maps.png](en/06_installer_maps.png) |
 | 07 | Installer: local AI models, each with its RAM requirement. | [es/07_instalador_ia.png](es/07_instalador_ia.png) | [en/07_installer_ai.png](en/07_installer_ai.png) |
 | 08 | Installer: final confirmation with the estimated space. | [es/08_instalador_confirmacion.png](es/08_instalador_confirmacion.png) | [en/08_installer_confirmation.png](en/08_installer_confirmation.png) |
 | 09 | Installer: summary on completion, with the space actually used. | [es/09_instalador_completado.png](es/09_instalador_completado.png) | [en/09_installer_finished.png](en/09_installer_finished.png) |
@@ -97,7 +97,7 @@ The whole walkthrough was driven with the tools of the
 | 12 | Offline Wikipedia: a full article, with no Internet connection. | [es/12_wikipedia_articulo.png](es/12_wikipedia_articulo.png) | [en/12_wikipedia_article.png](en/12_wikipedia_article.png) |
 | 13 | Organic Maps: vector world map, ready to download regions. | [es/13_mapas_mundo.png](es/13_mapas_mundo.png) | [en/13_maps_world.png](en/13_maps_world.png) |
 | 14 | Organic Maps: detail with roads and place names in the system language. | [es/14_mapas_detalle.png](es/14_mapas_detalle.png) | [en/14_maps_detail.png](en/14_maps_detail.png) |
-| 15 | Local AI selector: shows usable RAM and which models fit. | [es/15_ia_selector.png](es/15_ia_selector.png) | [en/15_ai_selector.png](en/15_ai_selector.png) |
+| 15 | Local AI selector: usable RAM detection, OS safety reserve and [OK]/[LOW_RAM] status. | [es/15_ia_selector.png](es/15_ia_selector.png) | [en/15_ai_selector.png](en/15_ai_selector.png) |
 | 16 | Local AI answering offline, with token count and speed. | [es/16_ia_chat.png](es/16_ia_chat.png) | [en/16_ai_chat.png](en/16_ai_chat.png) |
 | 17 | Encrypted vault manager: main menu. | [es/17_bovedas_menu.png](es/17_bovedas_menu.png) | [en/17_vaults_menu.png](en/17_vaults_menu.png) |
 | 18 | Creating a LUKS vault: the password is asked twice to prevent an irreversible typo. | [es/18_bovedas_creacion.png](es/18_bovedas_creacion.png) | [en/18_vault_creation.png](en/18_vault_creation.png) |
