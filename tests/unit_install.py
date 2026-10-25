@@ -932,5 +932,55 @@ class TestSpaceEstimates(UpdaterCase):
         self.assertNotIn("[", install.entry_title(entry))
 
 
+class TestInstallPackageRpi(UpdaterCase):
+    """Pruebas de install_package en Raspberry Pi (ARM)."""
+
+    def test_rpi_prioritizes_apt_when_available(self):
+        commands_run = []
+        def fake_run(cmd, shell=True, check=True, quiet=False):
+            commands_run.append(cmd)
+            return True
+        saved = install.run_cmd
+        install.run_cmd = fake_run
+        try:
+            res = install.install_package(self.env, "TestApp", is_rpi=True, flatpak_id="org.test.App", apt_deps="test-pkg")
+            self.assertTrue(res)
+            self.assertTrue(any("apt-get install -y test-pkg" in cmd for cmd in commands_run))
+            self.assertFalse(any("flatpak install" in cmd for cmd in commands_run))
+        finally:
+            install.run_cmd = saved
+
+    def test_rpi_falls_back_to_flatpak_when_no_apt_deps(self):
+        commands_run = []
+        def fake_run(cmd, shell=True, check=True, quiet=False):
+            commands_run.append(cmd)
+            return True
+        saved = install.run_cmd
+        install.run_cmd = fake_run
+        try:
+            res = install.install_package(self.env, "Organic Maps", is_rpi=True, flatpak_id="app.organicmaps.desktop")
+            self.assertTrue(res)
+            self.assertTrue(any("flatpak install flathub app.organicmaps.desktop" in cmd for cmd in commands_run))
+        finally:
+            install.run_cmd = saved
+
+    def test_rpi_falls_back_to_flatpak_when_apt_fails(self):
+        commands_run = []
+        def fake_run(cmd, shell=True, check=True, quiet=False):
+            commands_run.append(cmd)
+            if "apt-get" in cmd:
+                return False
+            return True
+        saved = install.run_cmd
+        install.run_cmd = fake_run
+        try:
+            res = install.install_package(self.env, "Kiwix", is_rpi=True, flatpak_id="org.kiwix.desktop", apt_deps="kiwix")
+            self.assertTrue(res)
+            self.assertTrue(any("apt-get" in cmd for cmd in commands_run))
+            self.assertTrue(any("flatpak install flathub org.kiwix.desktop" in cmd for cmd in commands_run))
+        finally:
+            install.run_cmd = saved
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

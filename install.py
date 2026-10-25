@@ -1037,6 +1037,7 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
     
     ARM Hierarchy (Raspberry Pi):
        - Prioritizes APT or internal installation since many AppImages lack ARM binaries.
+       - Falls back to Flatpak when no native APT package exists (e.g. Organic Maps, Translator).
     """
     log_info(i18n.T('installing_package').format(name))
     
@@ -1047,7 +1048,17 @@ def install_package(env, name, is_rpi, appimage_url=None, appimage_name=None, fl
             if run_cmd(f"sudo apt-get install -y {apt_deps}", quiet=True):
                 log_success(i18n.T('installed_apt').format(name))
                 return True
-        log_info(f"No APT packages available for {name}. Skipping or using manual alternative.")
+            log_info(f"APT installation failed for {name}. Trying next method...")
+
+        if flatpak_id:
+            log_info(f"Raspberry Pi Mode: Trying Flatpak for '{name}'...")
+            run_cmd("sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo", quiet=True)
+            if run_cmd(f"sudo flatpak install flathub {flatpak_id} -y", quiet=True):
+                log_success(i18n.T('installed_flatpak').format(name))
+                return True
+            log_info(f"Flatpak installation failed for {name}.")
+
+        log_err(i18n.T('install_failed').format(name), fatal=False)
         return False
         
     # PC - Level 1: AppImage

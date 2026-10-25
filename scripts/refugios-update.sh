@@ -13,7 +13,9 @@ t() { echo "$1"; }
 
 finish() {
     echo
-    read -r -p "$(t press_enter)" _ < /dev/tty 2>/dev/null || true
+    if [ -t 0 ]; then
+        read -r -p "$(t press_enter)" _ 2>/dev/null || true
+    fi
     exit "$1"
 }
 
