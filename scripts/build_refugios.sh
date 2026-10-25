@@ -42,10 +42,12 @@ if [ "$REFUGIOS_LANG" = "en" ]; then
     REFUGIOS_LOCALE="en_US.UTF-8"
     REFUGIOS_KBD="us"
     REFUGIOS_LANGUAGE="en"
+    REFUGIOS_TZ="UTC"
     WELCOME_TITLE="Welcome to refugiOS!"
     WELCOME_BODY_START="Your system has been configured correctly on a device of"
     WELCOME_STEPS_LABEL="Recommended steps"
     WELCOME_STEP1="<b>Adjust screen resolution if needed</b> in:\n   <i>Applications → Settings → Display</i>"
+    WELCOME_STEP_TZ="<b>Adjust date and timezone if needed</b>:\n   <i>Right-click panel clock → Properties → Timezone</i>\n   (or run in terminal: <code>sudo dpkg-reconfigure tzdata</code>)"
     WELCOME_STEP2="<b>Connect to a WiFi or wired network</b>\n   (only needed during installation)\n   You can configure the network in:\n   <i>Applications → Settings → Advanced Network Configuration</i>"
     LAUNCHER_NAME="Complete refugiOS installation"
     WELCOME_STEP3="<b>Double-click the desktop icon</b>\n   «$LAUNCHER_NAME»\n   to finalize system configuration."
@@ -70,10 +72,12 @@ else
     REFUGIOS_LOCALE="es_ES.UTF-8"
     REFUGIOS_KBD="es"
     REFUGIOS_LANGUAGE="es"
+    REFUGIOS_TZ="Europe/Madrid"
     WELCOME_TITLE="¡Bienvenido a refugiOS!"
     WELCOME_BODY_START="Tu sistema se ha configurado correctamente en un dispositivo de"
     WELCOME_STEPS_LABEL="Pasos recomendados"
     WELCOME_STEP1="<b>Ajusta la resolución de pantalla si es necesario</b> en:\n   <i>Aplicaciones → Configuración → Pantalla</i>"
+    WELCOME_STEP_TZ="<b>Ajusta la zona horaria si difiere de tu región</b> en:\n   <i>Clic derecho en el reloj del panel → Propiedades → Zona horaria</i>\n   (o ejecutando en terminal: <code>sudo dpkg-reconfigure tzdata</code>)"
     WELCOME_STEP2="<b>Conéctate a una red WiFi o por cable de red</b>\n   (solo necesario durante la instalación)\n   Puedes configurar la red en:\n   <i>Aplicaciones → Configuración → Configuración de red avanzada</i>"
     LAUNCHER_NAME="Completar instalación de refugiOS"
     WELCOME_STEP3="<b>Haz doble clic en el icono del escritorio</b>\n   «$LAUNCHER_NAME»\n   para finalizar la configuración del sistema."
@@ -250,6 +254,10 @@ apt-get install -y linux-image-amd64 linux-headers-amd64 build-essential \
 sed -i "s/^# ${REFUGIOS_LOCALE}/${REFUGIOS_LOCALE}/" /etc/locale.gen
 locale-gen
 update-locale LANG=${REFUGIOS_LOCALE} LANGUAGE=${REFUGIOS_LANGUAGE}
+
+# Configurar zona horaria predeterminada
+ln -sf /usr/share/zoneinfo/${REFUGIOS_TZ} /etc/localtime
+echo "${REFUGIOS_TZ}" > /etc/timezone
 
 # Preconfigurar teclado para evitar diálogos interactivos
 debconf-set-selections << KBD_DEBCONF
@@ -599,7 +607,7 @@ fi
 
 echo "DISK_SIZE_GB=\$DISK_SIZE_GB" >> "\$LOG"
 
-WELCOME_TEXT="<b>$WELCOME_TITLE</b>\n\n$WELCOME_BODY_START <b>\${DISK_SIZE_GB} GB</b>.\n\n<b>$WELCOME_STEPS_LABEL:</b>\n\n1. $WELCOME_STEP1\n\n2. $WELCOME_STEP2\n\n3. $WELCOME_STEP3\n\n$WELCOME_FOOTER"
+WELCOME_TEXT="<b>$WELCOME_TITLE</b>\n\n$WELCOME_BODY_START <b>\${DISK_SIZE_GB} GB</b>.\n\n<b>$WELCOME_STEPS_LABEL:</b>\n\n1. $WELCOME_STEP1\n\n2. $WELCOME_STEP_TZ\n\n3. $WELCOME_STEP2\n\n4. $WELCOME_STEP3\n\n$WELCOME_FOOTER"
 echo "WELCOME_TEXT=\$WELCOME_TEXT" >> "\$LOG"
 
 zenity --info \\
