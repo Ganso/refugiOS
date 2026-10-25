@@ -42,7 +42,7 @@ La forma más fácil de tener refugiOS es descargar la imagen ya preparada, grab
 | 🇪🇸 **Español** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 2,9 GB comprimido (16 GB al descomprimir) |
 | 🇬🇧🇺🇸 **Inglés** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 2,9 GB comprimido (16 GB al descomprimir) |
 
-> **Última actualización de las imágenes: 10 de septiembre de 2026** (versión 0.26). Si descargaste una imagen anterior a esta fecha, sustitúyela para contar con todas las correcciones y soporte de aceleración gráfica.
+> **Última actualización de las imágenes: 25 de octubre de 2026** (versión 0.27). Si descargaste una imagen anterior a esta fecha, sustitúyela para contar con todas las correcciones, el actualizador, el traductor y la nueva biblioteca.
 
 Descomprime el `.zip` antes de grabarlo: en Windows, clic derecho → *Extraer todo*; en Linux o macOS, `unzip refugios-base-16G-es.img.zip`. Obtendrás el fichero `.img` que se graba en el USB.
 
@@ -220,55 +220,51 @@ Consulta el **[Roadmap y Aplicaciones](doc/Modulos-y-Roadmap-ES.md)** para ver e
 
 ## Historial de Versiones
 
-### [0.23] - 2026-07-28
+### [0.27] - 2026-10-25
 
 #### Añadido
-- **Carpeta [`media/`](media/README.md) con todo el material gráfico:** el logotipo en sus distintos formatos y cuarenta capturas de pantalla de las aplicaciones principales, en español y en inglés, tomadas sobre el sistema real.
-- **Documentación de la suite de tests en `doc/`**, en español e inglés, enlazada desde el índice de la wiki y desde las guías de construcción de imagen.
+- **Actualizador integrado (*Actualizar refugiOS*):** Búsqueda y descarga atómica de nuevas ediciones de libros, motor llamafile, modelos de IA y regiones de mapa; la versión antigua solo se sustituye cuando la nueva está descargada y verificada.
+- **Traductor neuronal offline (LocalTranslate):** Traducción entre más de 40 idiomas de forma 100% autónoma y privada gracias a modelos integrados.
+- **Biblioteca organizada por categorías:** Nuevos catálogos de salud y medicina, supervivencia y emergencias, conocimiento práctico y reparaciones, y educación/libros, accesibles desde la carpeta *Biblioteca refugiOS*.
+- **Auditoría de integridad (*Comprobar refugiOS*):** Script de autodiagnóstico sin red que verifica la integridad de libros, IA, mapas y bóvedas con opción de recálculo de sumas criptográficas.
+- **Descargas verificadas por defecto:** Descarga mediante metalinks multimirror y BitTorrent con verificación SHA-256 de cada recurso.
 
-#### Cambiado
-- **`logo/` pasa a ser `media/logo/`.** El instalador busca el fondo de escritorio en la ruta nueva y sigue aceptando la antigua en copias locales anteriores a esta versión.
+#### Corregido
+- **Soporte de Flatpaks en Raspberry Pi:** Permite instalar Organic Maps y LocalTranslate vía Flatpak en ARM64 si no hay paquete APT nativo disponible.
+- **Retirada de `light-locker`:** Previene bloqueos accidentales de sesión por inactividad en usuarios con autologin sin contraseña.
+- **Estimaciones de espacio exactas:** Ajustadas a mediciones reales de la imagen base y paquetes compartidos.
 
 → Consulta el [CHANGELOG.md](CHANGELOG.md) para el detalle completo de esta versión.
 
-### [0.22] - 2026-07-28
-
-Revisión crítica de los scripts del proyecto centrada en errores que rompían el comportamiento de forma silenciosa. Todas las correcciones respetan el modelo de seguridad existente y la capacidad de funcionamiento sin conexión.
+### [0.26] - 2026-09-10
 
 #### Corregido
-- **La construcción de la imagen daba por bueno un chroot fallido:** El heredoc de `chroot` en `scripts/build_refugios.sh` no llevaba `set -e`, así que un fallo de `apt-get`, `grub-install` o `locale-gen` no lo detenía y el build informaba de éxito generando una imagen que no arranca. Ahora aborta al primer fallo con un mensaje descriptivo. También se descartan los restos de construcciones anteriores y se hace `sync` antes de desasociar el dispositivo loop.
-- **La contraseña de las bóvedas no se confirmaba:** `cryptsetup luksFormat` se invocaba con `--batch-mode`, que es precisamente la opción que desactiva la verificación. El usuario tecleaba la contraseña una sola vez y, ante una errata, la bóveda quedaba inaccesible para siempre sin ningún aviso.
-- **Las descargas grandes no podían completarse en conexiones lentas:** Se borraba el fichero parcial ante cualquier fallo, lo que anulaba la reanudación: un modelo de varios GB reiniciaba desde cero en cada intento. Los parciales se conservan ahora y el `timeout` absoluto deja de ser un límite a la duración legítima de la descarga.
-- **El "Developer Mode" no tenía ningún efecto:** Ni en `install.sh` (los `wget` sobrescribían las copias locales) ni en `install.py` (`fetch_script` descargaba siempre desde GitHub). Ejecutar el instalador desde una copia del repositorio probaba en realidad el código publicado.
-- **El motor de IA quedaba consumiendo memoria** al cerrar el lanzador, y el navegador se abría contra un puerto muerto porque se esperaba un `sleep` fijo insuficiente para cargar un modelo grande.
-- **El idioma elegido por el usuario se ignoraba:** `scripts/i18n.sh` leía `~/.refugios_lang` y a continuación `$LANG` lo sobrescribía siempre.
-- **Otros:** `fetch_url()` sin timeout podía colgar el instalador indefinidamente; las versiones se comparaban como texto (2.9 por encima de 2.10); `sanitize_for_dialog()` no se aplicaba en los menús; el instalador terminaba con código 0 aunque fallaran módulos; y `scripts/test_boot.sh` nunca encontraba la imagen al pasarle un tamaño y pedía 8 GB de RAM fijos.
+- **Arranque universal limpio:** Retirada de módulos DKMS propietarios en la imagen base que provocaban bloqueos en `Loading initial ramdisk` en máquinas virtuales y equipos sin GPU NVIDIA reciente.
+- **Herramientas de instalación preinstaladas en la imagen:** Se incluyen de serie `dialog`, `aria2`, `jq`, `rsync`, etc., evitando fallos si se ejecuta el instalador sin red.
+- **Presets de IA adaptados a la RAM:** El instalador ya no recomienda modelos pesados a equipos con menos de 6 GB de RAM.
 
 #### Añadido
-- **Suite de tests automáticos (`tests/`):** Comprobación estática, tests unitarios de `install.py`, tests de los scripts Bash con dobles de los binarios externos, test del bootstrapper, test de bóvedas LUKS con ciclo completo y test de construcción de imagen con fallo inyectado. No requiere `sudo`: lo que necesita root se ejecuta en un contenedor Debian privilegiado. Se ejecuta con `bash tests/run_all.sh` y está documentada en la **[Suite de Tests Automáticos](doc/Suite-de-Tests-ES.md)**.
-- **Verificación de arranque por captura de pantalla:** `tests/qemu_boot_check.py` arranca una imagen sin interfaz gráfica y toma capturas en los instantes indicados, para comprobar el arranque completo sin intervención manual.
+- **Instalación asistida de drivers NVIDIA:** Detección interactiva para aceleración CUDA opcional.
 
 → Consulta el [CHANGELOG.md](CHANGELOG.md) para el detalle completo de esta versión.
 
 <details>
 <summary><b>Versiones anteriores</b></summary>
 
+### [0.25] - 2026-07-30
+- Portal web oficial y descargas en [https://refugios.ganso.org](https://refugios.ganso.org).
+
+### [0.24] - 2026-07-29
+- Corrección del enlace de autoexpansión de partición en primer arranque y validador de imágenes `tests/verify_image.sh`.
+
+### [0.23] - 2026-07-28
+- Carpeta [`media/`](media/README.md) con todo el material gráfico y documentación de la suite de tests en `doc/`.
+
+### [0.22] - 2026-07-28
+- Revisión crítica de scripts: confirmación de contraseña en bóvedas LUKS, reanudación de descargas parciales, corrección de Developer Mode y suite de tests automáticos.
+
 ### [0.21] - 2026-06-30
-
-#### Corregido
-- **`FileNotFoundError` del gestor de bóvedas:** El instalador no encontraba `refugios-vault.py` ni en local ni en remoto y fallaba durante el despliegue. Se ha añadido validación previa que comprueba la existencia del archivo en disco antes de referenciarlo o ejecutarlo; si no está disponible, registra un log descriptivo, muestra un aviso al usuario mediante `d.msgbox` y omite el icono del Vault, pero permite que el resto de la instalación continúe sin lanzar un traceback.
-- **`UnicodeEncodeError` (latin-1) en el resumen de instalación:** Al mostrar el resumen de errores mediante `d.msgbox`, el script fallaba al encontrar caracteres no compatibles con latin-1 (específicamente `•` U+2022), ya que la librería `dialog` codifica las cadenas en latin-1. Se ha sustituido el bullet por `-` y se han saneado los mensajes.
-- **Script de Kiwix ausente sin aviso:** La llamada a `fetch_script("refugios-kiwix.sh")` ignoraba el valor de retorno, por lo que si el script faltaba no se notificaba al usuario y los accesos directos de las bases de conocimiento quedaban rotos silenciosamente. Ahora se comprueba su existencia y se avisa de forma descriptiva.
-- **Script de IA ausente solo registrado en log:** Cuando faltaba `refugios-ai-selector.sh`, el aviso se registraba únicamente en el log sin notificación al usuario. Ahora se muestra también un diálogo descriptivo.
-
-#### Añadido
-- **Función `sanitize_for_dialog()`:** Nueva utilidad en `install.py` que reemplaza caracteres Unicode tipográficos (`•`, `–`, `—`, comillas tipográficas, `…`) por equivalentes ASCII y codifica el resto a latin-1 con modo `replace`, garantizando compatibilidad con la librería `dialog`.
-- **Validación previa de scripts críticos:** El instalador verifica ahora la existencia en disco de `refugios-vault.py`, `refugios-kiwix.sh` y `refugios-ai-selector.sh` tras intentar obtenerlos. Si alguno falta, se avisa al usuario (log + `d.msgbox`), se omite su icono de escritorio y la instalación continúa sin detenerse.
-- **Nuevas claves de i18n:** `vault_script_missing`, `kiwix_script_missing` y `ai_script_missing` (EN + ES) con mensajes descriptivos que indican la causa y sugieren volver a ejecutar el instalador más adelante.
-- **Limpieza de pantalla tras diálogos:** Se ejecuta `clear` en cada transición de diálogo a ejecución de comandos/instalación, en `install.py`, `scripts/refugios-vault.py` y `scripts/refugios-ai-selector.sh`, para que la salida de terminal quede más limpia entre fases.
-
-#### Cambiado
-- **Resumen de errores con guiones en vez de bullets:** La lista de componentes fallidos en el mensaje final usa ahora `-` en lugar de `•` para evitar el `UnicodeEncodeError` con `dialog`.
+- Robustez en diálogos latin-1 (`sanitize_for_dialog`) y comprobación previa de scripts de despliegue.
 
 </details>
 

@@ -42,7 +42,7 @@ The easiest way to get refugiOS is to download the ready-made image, flash it to
 | 🇬🇧🇺🇸 **English** | [refugios-base-16G-en.img.zip](https://refugios.ganso.org/refugios-base-16G-en.img.zip) | 2.9 GB compressed (16 GB once extracted) |
 | 🇪🇸 **Spanish** | [refugios-base-16G-es.img.zip](https://refugios.ganso.org/refugios-base-16G-es.img.zip) | 2.9 GB compressed (16 GB once extracted) |
 
-> **Images last updated: 10 September 2026** (version 0.26). If you downloaded an image before this date, replace it to get all bug fixes and graphics acceleration support.
+> **Images last updated: 25 October 2026** (version 0.27). If you downloaded an image before this date, replace it to get all bug fixes, the updater, the offline translator, and the new knowledge library.
 
 Extract the `.zip` before flashing it: on Windows, right-click → *Extract All*; on Linux or macOS, `unzip refugios-base-16G-en.img.zip`. You will get the `.img` file that goes onto the USB drive.
 
@@ -220,55 +220,51 @@ See the **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md)** for the current
 
 ## Version History
 
-### [0.23] - 2026-07-28
+### [0.27] - 2026-10-25
 
 #### Added
-- **[`media/`](media/README.md) folder with all the graphic material:** the logo in its various formats and forty screenshots of the main applications, in Spanish and English, taken on the real system.
-- **Test suite documentation in `doc/`**, in Spanish and English, linked from the wiki index and from the system image build guides.
+- **Integrated updater (*Update refugiOS*):** Online check and atomic downloads for new book editions, llamafile engine, AI models, and map regions; old versions are only replaced once new ones are fully verified.
+- **Offline neural translator (LocalTranslate):** Standalone, private text translation across 40+ languages powered by local neural models.
+- **Categorized knowledge library:** Curated collections for health/medicine, survival/emergencies, practical guides/repairs, and books/culture, accessible in the *Biblioteca refugiOS* desktop folder.
+- **Offline integrity self-check (*Check refugiOS*):** Offline diagnostic script verifying the health of installed books, AI models, maps, and vaults with cryptographic checksums.
+- **Verified downloads:** Metalink multi-mirror and BitTorrent downloads with SHA-256 integrity verification.
 
-#### Changed
-- **`logo/` becomes `media/logo/`.** The installer looks for the wallpaper at the new path and still accepts the old one in local copies from before this version.
+#### Fixed
+- **Flatpak support on Raspberry Pi:** Enables Organic Maps and LocalTranslate via Flatpak on ARM64 when no native APT package exists.
+- **Removed `light-locker`:** Eliminates accidental session lockouts on idle for passwordless autologin users.
+- **Space estimation revised:** Replaced estimates with empirical measurements from real disk images.
 
 → See [CHANGELOG.md](CHANGELOG.md) for the full detail of this version.
 
-### [0.22] - 2026-07-28
-
-Critical review of the project scripts, focused on errors that broke behaviour silently. Every fix respects the existing security model and the ability to run without a connection.
+### [0.26] - 2026-09-10
 
 #### Fixed
-- **The image build treated a failing chroot as successful:** The `chroot` heredoc in `scripts/build_refugios.sh` had no `set -e`, so a failing `apt-get`, `grub-install` or `locale-gen` did not stop it and the build reported success while producing an image that does not boot. It now aborts on the first failure with a descriptive message. Leftovers from previous builds are also discarded, and `sync` runs before detaching the loop device.
-- **The vault password was never confirmed:** `cryptsetup luksFormat` ran with `--batch-mode`, which is precisely the flag that disables passphrase verification. The password was typed once and a typo made the vault permanently unrecoverable, with no warning.
-- **Large downloads could never finish on slow links:** The partial file was deleted on any failure, cancelling out resumption: a multi-gigabyte model restarted from zero every time. Partials are now kept, and the absolute `timeout` is no longer a limit on how long a legitimate download may take.
-- **"Developer Mode" had no effect:** Neither in `install.sh` (the `wget` calls overwrote the local copies) nor in `install.py` (`fetch_script` always downloaded from GitHub). Running the installer from a checkout actually tested the published code.
-- **The AI engine stayed resident in memory** after closing the launcher, and the browser opened against a dead port because of a fixed `sleep` too short to load a large model.
-- **The language chosen by the user was ignored:** `scripts/i18n.sh` read `~/.refugios_lang` and then `$LANG` always overrode it.
-- **Others:** `fetch_url()` had no timeout and could hang the installer forever; versions were compared as text (2.9 above 2.10); `sanitize_for_dialog()` was not applied in the menus; the installer exited with code 0 even when modules failed; and `scripts/test_boot.sh` never found the image when given a size and asked for a fixed 8 GB of RAM.
+- **Clean universal boot:** Removed proprietary DKMS modules from the base image that caused hangs at `Loading initial ramdisk` in VMs and non-NVIDIA hardware.
+- **Preinstalled installer tools:** Bundled `dialog`, `aria2`, `jq`, `rsync`, etc. in the base image, preventing failures when launching the installer offline.
+- **RAM-aware AI presets:** Automatic recommendations now clamp to the minimal model on machines with under 6 GB of RAM.
 
 #### Added
-- **Automated test suite (`tests/`):** Static checks, unit tests for `install.py`, tests for the Bash scripts using doubles of the external binaries, a bootstrapper test, a LUKS vault test with a full cycle, and an image build test with an injected failure. No `sudo` needed: whatever requires root runs in a privileged Debian container. Run it with `bash tests/run_all.sh`; documented in the **[Automated Test Suite](doc/Test-Suite-EN.md)**.
-- **Boot verification by screenshot:** `tests/qemu_boot_check.py` boots an image headless and captures the screen at the given moments, to verify a full boot without manual intervention.
+- **Assisted NVIDIA driver installation:** Interactive hardware detection offering optional proprietary drivers for CUDA acceleration.
 
 → See [CHANGELOG.md](CHANGELOG.md) for the full detail of this version.
 
 <details>
 <summary><b>Previous versions</b></summary>
 
+### [0.25] - 2026-07-30
+- Official website and downloads at [https://refugios.ganso.org](https://refugios.ganso.org).
+
+### [0.24] - 2026-07-29
+- Fixed first-boot partition auto-expansion service link and introduced `tests/verify_image.sh`.
+
+### [0.23] - 2026-07-28
+- Added [`media/`](media/README.md) directory with screenshots and test documentation in `doc/`.
+
+### [0.22] - 2026-07-28
+- Critical script overhaul: LUKS passphrase confirmation, download resumption, Developer Mode fixes, and automated test suite.
+
 ### [0.21] - 2026-06-30
-
-#### Fixed
-- **`FileNotFoundError` of the vault manager:** The installer could not find `refugios-vault.py` either locally or remotely and crashed during deployment. A pre-validation step now checks the file exists on disk before referencing or executing it; if unavailable, it logs a descriptive message, shows a warning to the user via `d.msgbox`, skips the Vault desktop icon, and lets the rest of the installation continue without a traceback.
-- **`UnicodeEncodeError` (latin-1) in the installation summary:** When showing the error summary via `d.msgbox`, the script crashed on characters not representable in latin-1 (specifically `•` U+2022), since the `dialog` library encodes strings as latin-1. The bullet was replaced with `-` and messages are now sanitized.
-- **Missing Kiwix script with no warning:** The `fetch_script("refugios-kiwix.sh")` call ignored the return value, so if the script was missing the user was never notified and knowledge base shortcuts were left broken silently. Its existence is now checked and a descriptive warning is shown.
-- **Missing AI script only logged:** When `refugios-ai-selector.sh` was missing, the warning was only written to the log with no user notification. A descriptive dialog is now shown as well.
-
-#### Added
-- **`sanitize_for_dialog()` function:** New utility in `install.py` that replaces Unicode typographic characters (`•`, `–`, `—`, smart quotes, `…`) with ASCII equivalents and encodes the rest to latin-1 in `replace` mode, ensuring compatibility with the `dialog` library.
-- **Pre-validation of critical scripts:** The installer now verifies on disk the existence of `refugios-vault.py`, `refugios-kiwix.sh` and `refugios-ai-selector.sh` after attempting to fetch them. If any is missing, the user is warned (log + `d.msgbox`), its desktop icon is skipped, and the installation continues without stopping.
-- **New i18n keys:** `vault_script_missing`, `kiwix_script_missing` and `ai_script_missing` (EN + ES) with descriptive messages indicating the cause and suggesting to re-run the installer later.
-- **Screen clear after dialogs:** `clear` is now executed at every transition from dialog to command execution/installation, in `install.py`, `scripts/refugios-vault.py` and `scripts/refugios-ai-selector.sh`, for a cleaner terminal output between phases.
-
-#### Changed
-- **Error summary with dashes instead of bullets:** The list of failed components in the final message now uses `-` instead of `•` to avoid the `UnicodeEncodeError` with `dialog`.
+- Dialog latin-1 sanitization (`sanitize_for_dialog`) and script availability guards.
 
 </details>
 
