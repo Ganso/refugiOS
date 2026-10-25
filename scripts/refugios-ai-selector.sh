@@ -75,8 +75,8 @@ register_model() {
     MODEL_MIN_RAM+=("$4")
 }
 
-register_model "ia_min"   "minimal-model.gguf"   "Qwen3-0.6B (~380MB)"     1024
-register_model "ia_base"  "basic-model.gguf"     "Gemma-4-E4B-it (~4.7GB)" 6144
+register_model "ia_min"   "minimal-model.gguf"   "Qwen3.5-0.8B (~508MB)"   1024
+register_model "ia_base"  "basic-model.gguf"     "Qwen3.5-4B (~2.6GB)"     3072
 register_model "ia_med"   "intermediate-model.gguf" "Qwen3-8B (~4.8GB)"    6144
 register_model "ia_max"   "advanced-model.gguf"  "Qwen3-14B (~8.6GB)"      10240
 register_model "ia_ultra" "ultra-model.gguf"     "Gemma-4-26B-A4B (~16.2GB)" 18432

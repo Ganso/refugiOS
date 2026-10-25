@@ -9,7 +9,7 @@
 <p align="center">
   <img src="media/logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.26-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.27-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -23,7 +23,7 @@
 
 ## ¿Qué es refugiOS?
 
-**refugiOS** es un sistema operativo portátil pensado para funcionar sin conexión a Internet en situaciones de emergencia o de resiliencia personal. Se instala en un USB y arranca en cualquier PC o Raspberry Pi, llevando contigo Wikipedia completa, mapas offline de todo el mundo, una IA privada local, cifrado de archivos personales y guías de supervivencia, todo funcionando sin depender de ningún servidor ni nube.
+**refugiOS** es un sistema operativo portátil pensado para funcionar sin conexión a Internet en situaciones de emergencia o de resiliencia personal. Se instala en un USB y arranca en cualquier PC de 64 bits (con soporte dual tanto para UEFI moderno como para BIOS tradicional) o Raspberry Pi, llevando contigo Wikipedia completa, mapas offline de todo el mundo, una IA privada local, cifrado de archivos personales y guías de supervivencia, todo funcionando sin depender de ningún servidor ni nube.
 
 La idea es sencilla: **prepáralo hoy en casa, úsalo cuando no haya Internet.**
 
@@ -110,7 +110,7 @@ La imagen pregenerada es la forma más rápida y sencilla, pero si lo necesitas,
 <details>
 <summary><strong>💻 Montar refugiOS sobre un Live-USB de Xubuntu</strong></summary>
 
-Si prefieres usar una ISO de Xubuntu como base, puedes crear un USB live con persistencia y después instalar refugiOS sobre él. Este método ofrece compatibilidad con hardware antiguo (BIOS/MBR) y un esquema dual (sistema inmutable + capa de persistencia).
+Si prefieres usar una ISO de Xubuntu como base, puedes crear un USB live con persistencia y después instalar refugiOS sobre él. Este método ofrece un esquema dual alternativo (sistema inmutable + capa de persistencia). (Nota: la imagen pregenerada oficial de refugiOS ya incluye soporte nativo tanto para UEFI como para BIOS tradicional).
 
 1. Descarga [Xubuntu Minimal](https://xubuntu.org/) y créalo como USB persistente con [Rufus](https://rufus.ie/) o [mkusb](https://help.ubuntu.com/community/mkusb).
 2. Arranca desde el USB y ejecuta el instalador:

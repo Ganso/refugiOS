@@ -33,8 +33,8 @@ Detailed vector maps with offline search and routing.
 
 ### 3. Artificial Intelligence Assistant ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
 Private smart assistant that works 100% on your local computer. Available in five levels according to device capacity:
-*   ⚪ **Minimal:** [Qwen3-0.6B](https://huggingface.co/unsloth/Qwen3-0.6B-GGUF) (0.6B, Q4_K_M) — ~380 MB. For devices with limited resources (min. 4 GB RAM).
-*   🟢 **Basic:** [Gemma-4-E4B-it](https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF) (4B, Q4_K_M) — ~4.7 GB. For PCs with 8 GB of RAM.
+*   ⚪ **Minimal:** [Qwen3.5-0.8B](https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF) (0.8B, Q4_K_M) — ~508 MB. For devices with limited resources (min. 4 GB RAM).
+*   🟢 **Basic:** [Qwen3.5-4B](https://huggingface.co/unsloth/Qwen3.5-4B-GGUF) (4B, Q4_K_M) — ~2.6 GB. For modest PCs with 6 GB of RAM.
 *   🟡 **Intermediate:** [Qwen3-8B](https://huggingface.co/unsloth/Qwen3-8B-GGUF) (8B, Q4_K_M) — ~4.8 GB. For modern laptops with 8 GB of RAM.
 *   🔴 **Advanced:** [Qwen3-14B](https://huggingface.co/unsloth/Qwen3-14B-GGUF) (14B, Q4_K_M) — ~8.6 GB. For powerful PCs with 16 GB of RAM.
 *   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. For workstations with 32 GB of RAM.
@@ -73,7 +73,7 @@ Essential programs for daily life, adapted for maximum compatibility.
 *   **Language:** 🌐 **Multilingual.** All applications are installed with the selected local language support.
 
 ### 8. Hardware Support
-*   **Standard PC:** Optimized for x86_64 architectures (Intel/AMD) through AppImages and Flatpaks.
+*   **Standard PC:** Optimized for x86_64 architectures (Intel/AMD) with dual-boot support for both modern **UEFI** and **Legacy BIOS (MBR)** via hybrid partitioning.
 *   **Raspberry Pi:** 🍓 **Official Support.** The installer automatically detects Raspberry Pi devices and uses native ARM packages to guarantee performance.
 
 ---

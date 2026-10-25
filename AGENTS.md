@@ -19,7 +19,7 @@ Internet dependency.
   (Wikipedia tier, AI model, maps, etc.). After that, the device operates 100% offline.
 - **License:** GNU AGPL-3.0 (`LICENSE`).
 - **Status:** First Beta, actively developed.
-- **Current version:** `0.26` (see `CHANGELOG.md`). Versioning follows
+- **Current version:** `0.27` (see `CHANGELOG.md`). Versioning follows
   [Semantic Versioning](https://semver.org/spec/v2.0.0.html); the changelog follows
   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository:** `https://github.com/Ganso/refugiOS.git` (branch `main`).
@@ -105,8 +105,8 @@ commit them.
 - **Display server:** Both X11 and Wayland supported; detected via `$XDG_SESSION_TYPE`.
 
 ### Target hardware
-- **PC (x86_64):** Any Intel/AMD PC, boots from USB via UEFI (and BIOS/MBR via the
-  Xubuntu method). Uses AppImages + Flatpaks + APT.
+- **PC (x86_64):** Any Intel/AMD PC (64-bit), boots from USB via both UEFI and Legacy BIOS
+  (hybrid GPT with BIOS boot partition). Uses AppImages + Flatpaks + APT.
 - **Raspberry Pi (ARM):** Certified on **RPi 3B+** (1 GB RAM) with Raspberry Pi OS
   64-bit. RPi 4/5 and Zero 2W theoretically functional but untested. The installer
   auto-detects ARM via `/proc/device-tree/model` and switches to native APT packages;
@@ -222,8 +222,8 @@ module is imported before the user picks a language.
 - **`AI_MODEL_CONFIG`** — 5 LLM GGUF models, all from `huggingface.co/unsloth`:
   | id | model | size | symlink |
   |---|---|---|---|
-  | `ia_min` | Qwen3-0.6B-Q4_K_M | ~380 MB | minimal-model.gguf |
-  | `ia_base` | gemma-4-E4B-it-Q4_K_M | ~4.7 GB | basic-model.gguf |
+  | `ia_min` | Qwen3.5-0.8B-Q4_K_M | ~508 MB | minimal-model.gguf |
+  | `ia_base` | Qwen3.5-4B-Q4_K_M | ~2.6 GB | basic-model.gguf |
   | `ia_med` | Qwen3-8B-Q4_K_M | ~4.8 GB | intermediate-model.gguf |
   | `ia_max` | Qwen3-14B-Q4_K_M | ~8.6 GB | advanced-model.gguf |
   | `ia_ultra` | gemma-4-26B-A4B-it-UD-Q4_K_M | ~16.2 GB | ultra-model.gguf |

@@ -5,7 +5,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Sin publicar]
+## [0.27] - 2026-10-25
 
 ### Añadido
 - **Actualizador (icono *Actualizar refugiOS*):** Con conexión, busca ediciones nuevas de los libros instalados (o el libro en el idioma del usuario si se tenía el inglés), versiones nuevas del AppImage de Kiwix, del motor llamafile y de las aplicaciones Flatpak de refugiOS, revisiones de los modelos de IA publicadas con el mismo nombre y datos de mapa nuevos para las regiones ya descargadas. Muestra lo que ocupa cada actualización y el espacio necesario, y aplica las elegidas. Cada versión nueva se descarga junto a la antigua y se verifica con su suma publicada (SHA-256, MD5 del AppImage o SHA-1 de los mapas) antes de borrar la anterior, de modo que una actualización fallida o interrumpida deja el dispositivo como estaba. Las que no caben en el espacio libre se omiten.
@@ -37,6 +37,8 @@ y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Mirror de WikiHow retirado:** El servidor de Debian ya no ofrece WikiHow; se ha sustituido por el archivo oficial de Kiwix.
 
 ### Cambiado
+- **Modelos de IA reescalonados y actualizados:** Se sustituye el modelo básico (que con Gemma-4B ocupaba 4,7 GB y solapaba al intermedio de 4,8 GB) por **Qwen3.5-4B-Q4_K_M (~2,6 GB)**, ofreciendo un escalón intermedio real para ordenadores con 4 a 6 GB de RAM. El modelo mínimo se actualiza a **Qwen3.5-0.8B-Q4_K_M (~508 MB)** con mejor seguimiento de instrucciones y coherencia.
+- **Documentación de compatibilidad BIOS/MBR:** Se aclara que la imagen pregenerada de Debian incluye arranque dual híbrido de serie tanto para sistemas UEFI como para BIOS tradicionales (Legacy BIOS/MBR), sin requerir el método alternativo de Xubuntu.
 - **Documentación al día:** Se han corregido las referencias a modelos de IA retirados (Phi-4-mini, Qwen2.5), la afirmación de que el instalador solo existía en español, los tamaños de la Wikipedia y la tabla de capacidades de las guías de elección de medio y de Raspberry Pi.
 
 ## [0.26] - 2026-09-10

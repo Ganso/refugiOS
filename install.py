@@ -228,18 +228,18 @@ AI_MODEL_CONFIG = [
     {
         "id": "ia_min",
         "label_key": "ia_min_label",
-        "filename": "Qwen3-0.6B-Q4_K_M.gguf",
-        "url": "https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q4_K_M.gguf",
+        "filename": "Qwen3.5-0.8B-Q4_K_M.gguf",
+        "url": "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf",
         "symlink": "minimal-model.gguf",
-        "size_mb": 380
+        "size_mb": 508
     },
     {
         "id": "ia_base",
         "label_key": "ia_base_label",
-        "filename": "gemma-4-E4B-it-Q4_K_M.gguf",
-        "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/main/gemma-4-E4B-it-Q4_K_M.gguf",
+        "filename": "Qwen3.5-4B-Q4_K_M.gguf",
+        "url": "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf",
         "symlink": "basic-model.gguf",
-        "size_mb": 4750
+        "size_mb": 2614
     },
     {
         "id": "ia_med",
@@ -247,7 +247,7 @@ AI_MODEL_CONFIG = [
         "filename": "Qwen3-8B-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf",
         "symlink": "intermediate-model.gguf",
-        "size_mb": 4800
+        "size_mb": 4795
     },
     {
         "id": "ia_max",
@@ -255,7 +255,7 @@ AI_MODEL_CONFIG = [
         "filename": "Qwen3-14B-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/Qwen3-14B-GGUF/resolve/main/Qwen3-14B-Q4_K_M.gguf",
         "symlink": "advanced-model.gguf",
-        "size_mb": 8600
+        "size_mb": 8585
     },
     {
         "id": "ia_ultra",
@@ -263,7 +263,7 @@ AI_MODEL_CONFIG = [
         "filename": "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
         "url": "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
         "symlink": "ultra-model.gguf",
-        "size_mb": 16200
+        "size_mb": 16162
     }
 ]
 

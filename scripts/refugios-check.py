@@ -56,7 +56,7 @@ TRANSLATOR_ID = "dev.ters.LocalTranslate"
 # Keep in sync with the register_model calls in refugios-ai-selector.sh.
 MODEL_MIN_USABLE_MB = {
     "minimal-model.gguf": 1024,
-    "basic-model.gguf": 6144,
+    "basic-model.gguf": 3072,
     "intermediate-model.gguf": 6144,
     "advanced-model.gguf": 10240,
     "ultra-model.gguf": 18432,

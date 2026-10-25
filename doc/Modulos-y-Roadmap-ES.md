@@ -33,8 +33,8 @@ Mapas vectoriales detallados con búsqueda y rutas offline.
 
 ### 3. Asistente de Inteligencia Artificial ([Llamafile](https://github.com/Mozilla-Ocho/llamafile))
 Asistente inteligente privado que funciona 100% en tu ordenador local. Disponible en cinco niveles según la capacidad del dispositivo:
-*   ⚪ **Mínimo:** [Qwen3-0.6B](https://huggingface.co/unsloth/Qwen3-0.6B-GGUF) (0.6B, Q4_K_M) — ~380 MB. Para dispositivos con recursos limitados (min. 4 GB RAM).
-*   🟢 **Básico:** [Gemma-4-E4B-it](https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF) (4B, Q4_K_M) — ~4.7 GB. Para PCs con 8 GB de RAM.
+*   ⚪ **Mínimo:** [Qwen3.5-0.8B](https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF) (0.8B, Q4_K_M) — ~508 MB. Para dispositivos con recursos limitados (min. 4 GB RAM).
+*   🟢 **Básico:** [Qwen3.5-4B](https://huggingface.co/unsloth/Qwen3.5-4B-GGUF) (4B, Q4_K_M) — ~2.6 GB. Para PCs modestos con 6 GB de RAM.
 *   🟡 **Intermedio:** [Qwen3-8B](https://huggingface.co/unsloth/Qwen3-8B-GGUF) (8B, Q4_K_M) — ~4.8 GB. Para portátiles modernos con 8 GB de RAM.
 *   🔴 **Avanzado:** [Qwen3-14B](https://huggingface.co/unsloth/Qwen3-14B-GGUF) (14B, Q4_K_M) — ~8.6 GB. Para PCs potentes con 16 GB de RAM.
 *   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. Para estaciones de trabajo con 32 GB de RAM.
@@ -74,7 +74,7 @@ Programas esenciales para el día a día, adaptados para la máxima compatibilid
 *   **Idioma:** 🌐 **Multilingüe.** Todas las aplicaciones se instalan con el soporte de idioma local seleccionado.
 
 ### 8. Soporte de Hardware
-*   **PC Estándar:** Optimizado para arquitecturas x86_64 (Intel/AMD) mediante AppImages y Flatpaks.
+*   **PC Estándar:** Optimizado para arquitecturas x86_64 (Intel/AMD) con soporte de arranque dual tanto en **UEFI** moderno como en **Legacy BIOS (MBR)** mediante particionado híbrido.
 *   **Raspberry Pi:** 🍓 **Soporte Oficial.** El instalador detecta automáticamente dispositivos Raspberry Pi y utiliza paquetes nativos ARM para garantizar el rendimiento.
 
 ---
