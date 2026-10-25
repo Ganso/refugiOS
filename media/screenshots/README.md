@@ -8,7 +8,7 @@
 
 ## 🇪🇸 Español
 
-Cuarenta capturas de refugiOS en funcionamiento, veinte en español y veinte en inglés,
+Cuarenta y dos capturas de refugiOS en funcionamiento, veintiuna en español y veintiuna en inglés,
 tomadas sobre el sistema real arrancado en una máquina virtual a 1920×1080. Recorren la
 instalación completa y cada una de las aplicaciones principales.
 
@@ -51,12 +51,13 @@ para arrancar y `qemu_ctl.py` para navegar y capturar.
 | 18 | Creación de una bóveda LUKS: la contraseña se pide dos veces para evitar erratas irreversibles. | [es/18_bovedas_creacion.png](es/18_bovedas_creacion.png) | [en/18_vault_creation.png](en/18_vault_creation.png) |
 | 19 | Gestor de bóvedas con una bóveda ya creada, su estado y su tamaño. | [es/19_bovedas_lista.png](es/19_bovedas_lista.png) | [en/19_vaults_list.png](en/19_vaults_list.png) |
 | 20 | Bóveda abierta: aparece montada en el escritorio como una carpeta normal. | [es/20_boveda_abierta.png](es/20_boveda_abierta.png) | [en/20_vault_open.png](en/20_vault_open.png) |
+| 21 | Traductor neuronal offline (LocalTranslate): traducción de textos entre múltiples idiomas sin red. | [es/21_traductor.png](es/21_traductor.png) | [en/21_translator.png](en/21_translator.png) |
 
 ---
 
 ## 🇬🇧🇺🇸 English
 
-Forty screenshots of refugiOS in use, twenty in Spanish and twenty in English, taken on the
+Forty-two screenshots of refugiOS in use, twenty-one in Spanish and twenty-one in English, taken on the
 real system booted in a virtual machine at 1920×1080. They walk through the full
 installation and each of the main applications.
 
@@ -99,6 +100,7 @@ The whole walkthrough was driven with the tools of the
 | 18 | Creating a LUKS vault: the password is asked twice to prevent an irreversible typo. | [es/18_bovedas_creacion.png](es/18_bovedas_creacion.png) | [en/18_vault_creation.png](en/18_vault_creation.png) |
 | 19 | Vault manager with a vault already created, its state and size. | [es/19_bovedas_lista.png](es/19_bovedas_lista.png) | [en/19_vaults_list.png](en/19_vaults_list.png) |
 | 20 | Vault opened: it appears mounted on the desktop as an ordinary folder. | [es/20_boveda_abierta.png](es/20_boveda_abierta.png) | [en/20_vault_open.png](en/20_vault_open.png) |
+| 21 | Offline neural translator (LocalTranslate): text translation across multiple languages without network. | [es/21_traductor.png](es/21_traductor.png) | [en/21_translator.png](en/21_translator.png) |
 
 ---
 
