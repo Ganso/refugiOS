@@ -52,6 +52,17 @@ if [ "$DEV_MODE" == "1" ]; then
     REFUGIOS_SRC_DIR="$(cd "$LOCAL_SCRIPTS" && pwd)"
     export REFUGIOS_SRC_DIR
 else
+    # Sync system clock via HTTP port 80 if skewed (prevents SSL certificate errors on cold boots)
+    if command -v curl >/dev/null 2>&1; then
+        for srv in "http://deb.debian.org" "http://www.google.com" "http://cloudflare.com"; do
+            HTTP_DATE=$(curl -sI --max-time 3 "$srv" 2>/dev/null | grep -i '^date:' | head -n 1 | sed 's/^[Dd]ate: //')
+            if [ -n "$HTTP_DATE" ]; then
+                sudo date -u -s "$HTTP_DATE" >/dev/null 2>&1 || true
+                break
+            fi
+        done
+    fi
+
     # Download localization system
     log_info "Fetching latest localization system..."
     wget -q "$REPO_URL/scripts/i18n.sh?nocache=$RANDOM" -O "$I18N_SH" || true

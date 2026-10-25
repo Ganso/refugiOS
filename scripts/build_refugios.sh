@@ -73,8 +73,8 @@ else
     WELCOME_TITLE="¡Bienvenido a refugiOS!"
     WELCOME_BODY_START="Tu sistema se ha configurado correctamente en un dispositivo de"
     WELCOME_STEPS_LABEL="Pasos recomendados"
-    WELCOME_STEP1="<b>Ajusta la resolución de pantalla si es necesario</b> en:\n   <i>Applications → Settings → Display</i>"
-    WELCOME_STEP2="<b>Conéctate a una red WiFi o por cable de red</b>\n   (solo necesario durante la instalación)\n   Puedes configurar la red en:\n   <i>Applications → Settings → Advanced Network Configuration</i>"
+    WELCOME_STEP1="<b>Ajusta la resolución de pantalla si es necesario</b> en:\n   <i>Aplicaciones → Configuración → Pantalla</i>"
+    WELCOME_STEP2="<b>Conéctate a una red WiFi o por cable de red</b>\n   (solo necesario durante la instalación)\n   Puedes configurar la red en:\n   <i>Aplicaciones → Configuración → Configuración de red avanzada</i>"
     LAUNCHER_NAME="Completar instalación de refugiOS"
     WELCOME_STEP3="<b>Haz doble clic en el icono del escritorio</b>\n   «$LAUNCHER_NAME»\n   para finalizar la configuración del sistema."
     WELCOME_FOOTER="¡Disfruta de refugiOS!"
@@ -239,7 +239,7 @@ SOURCES
 apt-get update
 apt-get install -y linux-image-amd64 linux-headers-amd64 build-essential \
                    grub-efi-amd64 grub-pc-bin sudo network-manager network-manager-gnome xfce4-goodies \
-                   xfce4 xfce4-terminal curl cloud-guest-utils zenity lightdm \
+                   xfce4 xfce4-terminal curl cloud-guest-utils zenity lightdm systemd-timesyncd \
                    epiphany-browser locales keyboard-configuration flatpak libglib2.0-bin libfuse2t64 \
                    python3 python3-dialog dialog aria2 pciutils wget jq rsync apt-utils \
                    firmware-iwlwifi firmware-brcm80211 firmware-atheros \
@@ -412,6 +412,7 @@ RemainAfterExit=yes
 WantedBy=multi-user.target
 EXPAND_SVC
 systemctl enable refugios-expand.service
+systemctl enable systemd-timesyncd || true
 # El enlace es lo único que hace que el disco se expanda al tamaño real del
 # dispositivo. Se comprueba y se crea a mano si falta: sin él la imagen arranca
 # con normalidad y el usuario no tiene forma de saber que se ha quedado en 16 GB.
@@ -427,9 +428,41 @@ echo "=== refugios-install-wrapper.sh iniciado: \$(date) ===" >> "\$LOG"
 echo "=> $WRAPPER_PING"
 if ping -c 1 -W 3 github.com >/dev/null 2>&1; then
     echo "=> $WRAPPER_OK"
-    echo "Conexión OK, lanzando instalador..." >> "\$LOG"
-    curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh 2>>"\$LOG" | bash
-    echo "Instalador finalizado con código: \$?" >> "\$LOG"
+    echo "Conexión OK, sincronizando reloj si es necesario..." >> "\$LOG"
+
+    # Sincronizar fecha y hora con un servidor HTTP por puerto 80 si el reloj está desfasado (evita fallo SSL)
+    for srv in "http://deb.debian.org" "http://www.google.com" "http://cloudflare.com"; do
+        HTTP_DATE=\$(curl -sI --max-time 3 "\$srv" 2>/dev/null | grep -i '^date:' | head -n 1 | sed 's/^[Dd]ate: //')
+        if [ -n "\$HTTP_DATE" ]; then
+            sudo date -u -s "\$HTTP_DATE" >/dev/null 2>&1 || true
+            break
+        fi
+    done
+
+    TMP_INSTALL=\$(mktemp /tmp/refugios-install.XXXXXX.sh)
+    echo "Descargando instalador..." >> "\$LOG"
+    if curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh -o "\$TMP_INSTALL" 2>>"\$LOG"; then
+        echo "Lanzando instalador..." >> "\$LOG"
+        bash "\$TMP_INSTALL"
+        RET_CODE=\$?
+        rm -f "\$TMP_INSTALL"
+        echo "Instalador finalizado con código: \$RET_CODE" >> "\$LOG"
+    else
+        CURL_ERR=\$?
+        echo "ERROR: Falló la descarga del instalador (código \$CURL_ERR)." >> "\$LOG"
+        echo ""
+        echo "=========================================================="
+        echo " $WRAPPER_CONSOLE_ERR"
+        echo "=========================================================="
+        echo " $WRAPPER_CONSOLE_TEXT1"
+        echo ""
+        echo " Detalle del error:"
+        tail -n 6 "\$LOG"
+        echo "=========================================================="
+        echo ""
+        echo "$WRAPPER_CONSOLE_PROMPT"
+        read -r
+    fi
 else
     # Si hay sesión de X11 y zenity está instalado, mostrar cuadro de diálogo gráfico
     if [ -n "\$DISPLAY" ] && command -v zenity >/dev/null 2>&1; then
@@ -448,7 +481,7 @@ else
         echo "=========================================================="
         echo ""
         echo "$WRAPPER_CONSOLE_PROMPT"
-        read
+        read -r
     fi
 fi
 echo "=== refugios-install-wrapper.sh finalizado ===" >> "\$LOG"

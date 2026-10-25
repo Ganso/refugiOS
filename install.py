@@ -515,9 +515,41 @@ echo "=== refugios-install-wrapper.sh iniciado: $(date) ===" >> "$LOG"
 echo "=> {ping_msg}"
 if ping -c 1 -W 3 github.com > /dev/null 2>&1; then
     echo "=> {ok_msg}"
-    echo "Conexión OK, lanzando instalador..." >> "$LOG"
-    curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh 2>>"$LOG" | bash
-    echo "Instalador finalizado con código: $?" >> "$LOG"
+    echo "Conexión OK, sincronizando reloj si es necesario..." >> "$LOG"
+
+    # Sincronizar fecha y hora con un servidor HTTP por puerto 80 si el reloj está desfasado (evita fallo SSL)
+    for srv in "http://deb.debian.org" "http://www.google.com" "http://cloudflare.com"; do
+        HTTP_DATE=$(curl -sI --max-time 3 "$srv" 2>/dev/null | grep -i '^date:' | head -n 1 | sed 's/^[Dd]ate: //')
+        if [ -n "$HTTP_DATE" ]; then
+            sudo date -u -s "$HTTP_DATE" >/dev/null 2>&1 || true
+            break
+        fi
+    done
+
+    TMP_INSTALL=$(mktemp /tmp/refugios-install.XXXXXX.sh)
+    echo "Descargando instalador..." >> "$LOG"
+    if curl -fsSL https://raw.githubusercontent.com/Ganso/refugiOS/main/install.sh -o "$TMP_INSTALL" 2>>"$LOG"; then
+        echo "Lanzando instalador..." >> "$LOG"
+        bash "$TMP_INSTALL"
+        RET_CODE=$?
+        rm -f "$TMP_INSTALL"
+        echo "Instalador finalizado con código: $RET_CODE" >> "$LOG"
+    else
+        CURL_ERR=$?
+        echo "ERROR: Falló la descarga del instalador (código $CURL_ERR)." >> "$LOG"
+        echo ""
+        echo "=========================================================="
+        echo " {console_err}"
+        echo "=========================================================="
+        echo " {console_text1}"
+        echo ""
+        echo " Detalle del error:"
+        tail -n 6 "$LOG"
+        echo "=========================================================="
+        echo ""
+        echo "{console_prompt}"
+        read -r
+    fi
 else
     if [ -n "$DISPLAY" ] && command -v zenity > /dev/null 2>&1; then
         zenity --error \\
@@ -535,7 +567,7 @@ else
         echo "=========================================================="
         echo ""
         echo "{console_prompt}"
-        read
+        read -r
     fi
 fi
 echo "=== refugios-install-wrapper.sh finalizado ===" >> "$LOG"
