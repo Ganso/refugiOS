@@ -9,7 +9,7 @@
 <p align="center">
   <img src="media/logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.27-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.28-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -219,6 +219,14 @@ Consulta el **[Roadmap y Aplicaciones](doc/Modulos-y-Roadmap-ES.md)** para ver e
 ---
 
 ## Historial de Versiones
+
+### [0.28] - 2026-11-01
+
+#### Eliminado
+- **WikEM retirado del catálogo:** El archivo ZIM de WikEM no está publicado en los servidores de Kiwix (receta en pausa por bloqueos de origen), evitando fallos en la instalación. Se conservan WikiMed y los manuales de medicina de campaña.
+
+#### Corregido
+- **Mensaje de componente ZIM no encontrado:** Mensaje en `i18n.py` clarificado (*"No fue posible encontrar ninguna edición publicada de..."*), eliminando el término erróneo "rastreador".
 
 ### [0.27] - 2026-10-25
 

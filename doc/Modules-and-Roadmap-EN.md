@@ -17,7 +17,7 @@ These components are installed automatically or through the welcome wizard:
 Access to massive databases using the ZIM format.
 *   **Wikipedia in five tiers:** Lite (top articles, summarised), Essentials (top articles in full, no images), Essentials with images, NoPics (all articles, no images) and **Total with images and multimedia**. In English they take ~290 MB, ~2.6 GB, ~6.5 GB, ~49 GB and ~119 GB; the Spanish ones are much smaller (~34 GB the complete one). The installer preselects the largest one that comfortably fits on your drive.
 *   **Library by category:** Besides Wikipedia, the installer offers a library organised in four menus, with freely available content published by Kiwix:
-    *   **Health and medicine:** [WikiMed](https://www.kiwix.org/) (Wikipedia's medical articles), [WikEM](https://wikem.org/) (emergency medicine) and first aid and field medicine manuals.
+    *   **Health and medicine:** [WikiMed](https://www.kiwix.org/) (Wikipedia's medical articles) and first aid and field medicine manuals.
     *   **Emergencies and survival:** Post-disaster guides, drinking water, food preparation, knots, Q&A on outdoor survival and [WikiHow](https://wikihow.com/).
     *   **Practical knowledge and repairs:** [iFixit](https://www.ifixit.com/), [Appropedia](https://www.appropedia.org/) (appropriate technology), [Energypedia](https://energypedia.info/) (solar and off-grid energy), gardening, home repairs, vehicle mechanics and amateur radio.
     *   **Language, books and education:** [Wiktionary](https://en.wiktionary.org/) (dictionary), [Wikivoyage](https://en.wikivoyage.org/) (with phrasebooks for other languages), Wikibooks, Wikisource and the [PhET](https://phet.colorado.edu/) science simulations.

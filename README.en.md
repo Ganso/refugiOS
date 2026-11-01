@@ -9,7 +9,7 @@
 <p align="center">
   <img src="media/logo/refugiOS.png" alt="refugiOS logo" width="200"><br />
   <img src="https://img.shields.io/badge/Status-Development-green.svg" alt="Project Status">
-  <img src="https://img.shields.io/badge/Version-0.27-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.28-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/Paradigm-Offline_First-orange.svg" alt="Offline First">
   <img src="https://img.shields.io/badge/AI-Llamafile_(Local)-purple.svg" alt="Offline AI">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certified-red.svg" alt="Raspberry Pi">
@@ -219,6 +219,14 @@ See the **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md)** for the current
 ---
 
 ## Version History
+
+### [0.28] - 2026-11-01
+
+#### Removed
+- **WikEM removed from catalog:** The WikEM ZIM file is not published on Kiwix servers (upstream scraper is on hold), preventing installation errors. WikiMed and field medicine manuals are kept.
+
+#### Fixed
+- **ZIM component not found message:** Clarified string in `i18n.py` ("Could not find any published edition for..."), eliminating the confusing "tracker" terminology.
 
 ### [0.27] - 2026-10-25
 

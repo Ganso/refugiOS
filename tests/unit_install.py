@@ -411,9 +411,9 @@ class TestLocalDetection(unittest.TestCase):
                          "wikivoyage_es_all_maxi_2026-01.zim")
 
     def test_english_fallback_found(self):
-        self.touch("wikem_en_all_maxi_2026-10.zim")
-        self.assertEqual(install.find_local_zim(self.dir, {"stem": "wikem_en_all_maxi"}, "es"),
-                         "wikem_en_all_maxi_2026-10.zim")
+        self.touch("zimgit-medicine_en_2024-08.zim")
+        self.assertEqual(install.find_local_zim(self.dir, {"stem": "zimgit-medicine_en"}, "es"),
+                         "zimgit-medicine_en_2024-08.zim")
 
     def test_ai_symlink_never_points_to_partial(self):
         base = tempfile.mkdtemp()
@@ -454,7 +454,7 @@ class TestLibraryLaunchers(unittest.TestCase):
         library = os.path.join(env.desktop, i18n.T('library_folder'))
         self.assertTrue(os.path.isfile(os.path.join(env.desktop, "Knowledge_wikipedia.desktop")))
         self.assertTrue(os.path.isfile(os.path.join(env.desktop, "Knowledge_wikimed.desktop")))
-        self.assertTrue(os.path.isfile(os.path.join(library, "Knowledge_water.desktop")))
+        self.assertTrue(os.path.isfile(os.path.join(library, f"{i18n.T('lib_water_title')}.desktop")))
         self.assertEqual(os.path.realpath(os.path.join(base, "Knowledge", "water.zim")),
                          os.path.realpath(os.path.join(env.know_dir, "zimgit-water_en_2024-08.zim")))
 

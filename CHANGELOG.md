@@ -5,6 +5,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28] - 2026-11-01
+
+### Eliminado
+- **WikEM retirado del catálogo del instalador:** El archivo ZIM de WikEM no está publicado en los servidores de Kiwix (su receta en openZIM permanece pausada debido a bloqueos de origen), provocando un fallo al intentar descargarlo. Se mantienen WikiMed y los manuales de medicina de campaña.
+
+### Corregido
+- **Mensaje de componente ZIM no encontrado:** Se clarifica la cadena en `i18n.py` (*"No fue posible encontrar ninguna edición publicada de..."*) corrigiendo la confusa traducción de *tracker* como "rastreador".
+
 ## [0.27] - 2026-10-25
 
 ### Añadido
