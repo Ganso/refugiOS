@@ -5,6 +5,12 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 y este proyecto se rige por [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29] - 2026-11-09
+
+### Corregido
+- **El asistente de IA responde en lugar de quedarse razonando:** Los modelos Qwen3.5 traen activado el modo de razonamiento y la versión 0.10 de llamafile lo respeta. El modelo mínimo agotaba los 4096 tokens de contexto razonando, en inglés, y nunca llegaba a contestar; el básico tardaba varios minutos en hacerlo en equipos sin GPU. El lanzador arranca ahora el motor con `--reasoning off` y todos los modelos responden en segundos. Solo se pasa la opción si el motor la anuncia en su ayuda, para que un llamafile anterior siga arrancando.
+- **El actualizador renueva los lanzadores:** *Actualizar refugiOS* sustituye ahora los scripts ya instalados en `~/refugiOS/Scripts` (asistente de IA, Kiwix, mapas, bóvedas, comprobación y el propio actualizador) por su versión publicada. Hasta ahora solo se renovaban con el instalador completo, de modo que las correcciones de los lanzadores no llegaban a quien solo actualizaba. Si una descarga falla se conserva el script anterior.
+
 ## [0.28] - 2026-11-01
 
 ### Eliminado

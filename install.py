@@ -1894,6 +1894,37 @@ def update_map_regions():
     remove_old_map_versions(str(tree['v']))
     return True
 
+DEPLOYED_SCRIPTS = ["refugios-ai-selector.sh", "refugios-kiwix.sh", "refugios-maps.sh",
+                    "refugios-vault.py", "refugios-check.py", "refugios-update.sh"]
+
+def refresh_scripts(env):
+    """
+    Replaces the launcher scripts already deployed in ~/refugiOS/Scripts with the
+    current ones (the local checkout in Developer Mode). A failed download keeps the
+    old script. Returns the names that were refreshed.
+    """
+    repo_url = os.environ.get("REPO_URL", "https://raw.githubusercontent.com/Ganso/refugiOS/main")
+    refreshed = []
+    for name in DEPLOYED_SCRIPTS:
+        dest = os.path.join(env.scripts_dir, name)
+        if not os.path.isfile(dest):
+            continue
+        tmp = dest + ".new"
+        local = os.path.join(source_dir(), "scripts", name)
+        if os.path.isfile(local):
+            shutil.copy(local, tmp)
+        elif not download_with_aria2(f"{repo_url}/scripts/{name}?{random.randint(1000, 9999)}",
+                                     tmp, timeout=30, keep_partial=False):
+            remove_file_and_sidecars(tmp)
+            continue
+        if not os.path.isfile(tmp) or os.path.getsize(tmp) == 0:
+            remove_file_and_sidecars(tmp)
+            continue
+        os.chmod(tmp, 0o755)
+        os.replace(tmp, dest)
+        refreshed.append(name)
+    return refreshed
+
 def run_update(d, sys_info):
     """Interactive updater: lists pending updates, applies the chosen ones safely."""
     base_dir = os.path.join(os.environ['HOME'], "refugiOS")
@@ -1912,6 +1943,9 @@ def run_update(d, sys_info):
     except Exception:
         d.msgbox(sanitize_for_dialog(i18n.T('update_no_connection')), title=i18n.T('update_title'))
         return 1
+
+    for name in refresh_scripts(env):
+        log_success(i18n.T('update_script_refreshed').format(name))
 
     updates = collect_updates(env, sys_info.lang)
     if not updates:

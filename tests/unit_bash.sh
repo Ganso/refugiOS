@@ -142,9 +142,13 @@ check $? "C15: se avisa al usuario con un mensaje de dialog"
 PORT=18080
 cat > "$AI_DIR/llamafile" <<EOF
 #!/bin/bash
-# Motor reciente: anuncia --webui-config-file en su ayuda
+# Motor reciente: anuncia --webui-config-file y --reasoning en su ayuda
 for a in "\$@"; do
-    [ "\$a" == "--help" ] && { echo "  --webui-config-file FNAME"; exit 0; }
+    [ "\$a" == "--help" ] && {
+        echo "--ui-config-file, --webui-config-file PATH"
+        echo "-rea,  --reasoning [on|off|auto]        Use reasoning/thinking in the chat"
+        exit 0
+    }
 done
 echo "ARGS: \$*" > "$WORK/llamafile_args.log"
 # Simula la carga lenta de un modelo grande: 8 segundos antes de servir
@@ -182,6 +186,8 @@ jq -e '.systemMessage | test("refugiOS")' "$AI_DIR/webui-config.json" >/dev/null
 check $? "la configuracion lleva el mensaje de sistema de refugiOS"
 grep -q -- "--port $PORT" "$WORK/llamafile_args.log" 2>/dev/null
 check $? "el motor escucha en el puerto que luego se abre en el navegador"
+grep -q -- "--reasoning off" "$WORK/llamafile_args.log" 2>/dev/null
+check $? "el razonamiento se desactiva en un motor que lo admite"
 
 # C13: al terminar el selector no puede quedar el motor de IA en memoria
 kill "$SELECTOR_PID" 2>/dev/null
@@ -190,6 +196,20 @@ pgrep -f "http.server $PORT" >/dev/null
 [ $? -ne 0 ]
 check $? "C13: no queda ningun proceso de IA huerfano tras cerrar el lanzador"
 pkill -f "http.server $PORT" 2>/dev/null
+
+# Un motor antiguo rechazaria --reasoning y no arrancaria: solo se pasa si lo anuncia
+cat > "$AI_DIR/llamafile" <<EOF
+#!/bin/bash
+for a in "\$@"; do
+    [ "\$a" == "--help" ] && { echo "  --ctx-size N"; exit 0; }
+done
+echo "ARGS: \$*" > "$WORK/llamafile_args.log"
+EOF
+: > "$WORK/llamafile_args.log"
+REFUGIOS_AI_PORT=$PORT REFUGIOS_AI_WAIT=5 \
+    PATH="$WORK/bin:/usr/bin:/bin" bash "$REPO_DIR/scripts/refugios-ai-selector.sh" >/dev/null 2>&1
+grep -q "ARGS:" "$WORK/llamafile_args.log" && ! grep -q -- "--reasoning" "$WORK/llamafile_args.log"
+check $? "un motor sin --reasoning arranca sin esa opcion"
 
 # ============================================================================
 # refugios-update.sh: lanzador del actualizador

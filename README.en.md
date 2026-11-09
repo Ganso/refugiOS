@@ -9,7 +9,7 @@
 <p align="center">
   <img src="media/logo/refugiOS.png" alt="refugiOS logo" width="200"><br />
   <img src="https://img.shields.io/badge/Status-Development-green.svg" alt="Project Status">
-  <img src="https://img.shields.io/badge/Version-0.28-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.29-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/Paradigm-Offline_First-orange.svg" alt="Offline First">
   <img src="https://img.shields.io/badge/AI-Llamafile_(Local)-purple.svg" alt="Offline AI">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certified-red.svg" alt="Raspberry Pi">
@@ -219,6 +219,12 @@ See the **[Modules and Roadmap](doc/Modules-and-Roadmap-EN.md)** for the current
 ---
 
 ## Version History
+
+### [0.29] - 2026-11-09
+
+#### Fixed
+- **The AI assistant answers instead of getting stuck reasoning:** The engine starts with reasoning turned off. The minimal model used up the whole context reasoning without ever answering, and the basic one took minutes on computers without a GPU; now every model answers in seconds.
+- **The updater refreshes the launchers:** *Update refugiOS* also replaces the installed scripts (AI, Kiwix, maps, vaults, self-check), keeping the old one if the download fails.
 
 ### [0.28] - 2026-11-01
 
