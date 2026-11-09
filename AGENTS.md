@@ -19,7 +19,7 @@ Internet dependency.
   (Wikipedia tier, AI model, maps, etc.). After that, the device operates 100% offline.
 - **License:** GNU AGPL-3.0 (`LICENSE`).
 - **Status:** First Beta, actively developed.
-- **Current version:** `0.28` (see `CHANGELOG.md`). Versioning follows
+- **Current version:** `0.29` (see `CHANGELOG.md`). Versioning follows
   [Semantic Versioning](https://semver.org/spec/v2.0.0.html); the changelog follows
   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Repository:** `https://github.com/Ganso/refugiOS.git` (branch `main`).
@@ -332,6 +332,10 @@ fallback), the Kiwix AppImage (checked against the published `.md5`), llamafile 
 against the SHA-256 in the GitHub release asset `digest`), AI models whose published
 SHA-256 differs from the saved `.sha256`, pending Flatpak updates of Organic Maps, Kiwix
 and the translator, and map regions stored for an older Organic Maps data version.
+Before collecting updates, `refresh_scripts()` replaces the launchers already deployed in
+`~/refugiOS/Scripts` (`DEPLOYED_SCRIPTS`) with the published ones (the local checkout in
+Developer Mode), via `<file>.new` + `os.replace`; it never adds a launcher the user did not
+have. `install.sh` already refreshes `i18n.sh`/`i18n.py` on every run.
 **Invariant: the old version is removed only after the new one is verified**
 (`update_book`, `update_kiwix_appimage`, `update_llamafile`, `update_model` writes to
 `<file>.new` and `os.replace`s it, `update_map_regions` removes old map folders only when
@@ -371,7 +375,9 @@ margin to avoid USB swap freeze); registers 5 models with `min_usable_mb` thresh
 builds `dialog` menu showing only installed models with `[OK]`/`[LOW_RAM]` status and
 auto-preselecting the most powerful fitting model; on launch sets `-ngl 99` (full GPU
 offload) if dedicated GPU, `-ngl 0` if no AVX2 (avoids crashes on old/ARM CPUs); starts
-`llamafile --server` on port 8080; opens `epiphany-browser` (or `xdg-open`) to the chat
+`llamafile --server` on port 8080 with `--reasoning off` (only when the engine's `--help`
+announces it: Qwen3.5 otherwise reasons until the 4096-token context is exhausted and never
+answers; older engines reject the flag); opens `epiphany-browser` (or `xdg-open`) to the chat
 UI. Runs `clear` after the dialog before launching llamafile.
 
 ### `scripts/refugios-kiwix.sh` (55 lines)

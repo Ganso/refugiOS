@@ -894,6 +894,50 @@ class TestRunUpdate(UpdaterCase):
     def test_nothing_to_update(self):
         self.assertEqual(self.run_with([], 5000), 0)
 
+    def test_deployed_launchers_are_refreshed(self):
+        selector = os.path.join(self.env.scripts_dir, "refugios-ai-selector.sh")
+        with open(selector, "w") as f:
+            f.write("#!/bin/bash\necho viejo\n")
+        saved = os.environ.get("REFUGIOS_SRC_DIR")
+        os.environ["REFUGIOS_SRC_DIR"] = REPO_DIR
+        try:
+            self.run_with([], 5000)
+        finally:
+            if saved is None:
+                os.environ.pop("REFUGIOS_SRC_DIR", None)
+            else:
+                os.environ["REFUGIOS_SRC_DIR"] = saved
+        with open(selector) as f, open(os.path.join(REPO_DIR, "scripts", "refugios-ai-selector.sh")) as g:
+            self.assertEqual(f.read(), g.read(), "el actualizador deja el lanzador de IA antiguo")
+        self.assertFalse(os.path.exists(os.path.join(self.env.scripts_dir, "refugios-maps.sh")),
+                         "se instalo un lanzador que el usuario no tenia")
+
+
+class TestScriptRefresh(UpdaterCase):
+    """Un lanzador solo se sustituye por uno nuevo y completo."""
+
+    def test_failed_download_keeps_the_old_script(self):
+        selector = os.path.join(self.env.scripts_dir, "refugios-ai-selector.sh")
+        with open(selector, "w") as f:
+            f.write("viejo")
+        no_scripts = tempfile.mkdtemp()
+        open(os.path.join(no_scripts, "install.py"), "w").close()
+        saved_env = os.environ.get("REFUGIOS_SRC_DIR")
+        saved_dl = install.download_with_aria2
+        os.environ["REFUGIOS_SRC_DIR"] = no_scripts
+        install.download_with_aria2 = lambda *a, **k: False
+        try:
+            self.assertEqual(install.refresh_scripts(self.env), [])
+        finally:
+            install.download_with_aria2 = saved_dl
+            if saved_env is None:
+                os.environ.pop("REFUGIOS_SRC_DIR", None)
+            else:
+                os.environ["REFUGIOS_SRC_DIR"] = saved_env
+        with open(selector) as f:
+            self.assertEqual(f.read(), "viejo")
+        self.assertFalse(os.path.exists(selector + ".new"))
+
 
 class TestSpaceEstimates(UpdaterCase):
     """Las estimaciones descuentan lo que ya esta en disco."""

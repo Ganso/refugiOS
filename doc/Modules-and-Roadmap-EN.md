@@ -40,6 +40,7 @@ Private smart assistant that works 100% on your local computer. Available in fiv
 *   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. For workstations with 32 GB of RAM.
 *   **Smart Selector:** When launching the assistant, a script detects total RAM and GPU VRAM (NVIDIA/AMD), reserves a strict 2 GB safety margin for the OS (prevents USB swap), and shows an interactive menu with only installed models, automatically preselecting the most powerful one the hardware can run.
 *   **Emergency context:** The chat interface starts with a system message in your language asking for clear, short and practical answers, putting urgent steps first in medical or safety matters and reminding that the assistant has no Internet access.
+*   **Direct answers:** The engine starts with the models' internal reasoning turned off. On computers without a GPU that reasoning delayed every answer by several minutes and could use up the context without ever answering.
 *   **Language:** 🌐 **Multilingual.** All models understand and respond in more than 20 languages.
 
 ### 4. Cryptographic Vaults (LUKS)
@@ -60,7 +61,7 @@ Secure and encrypted storage system for sensitive data.
 *   **When to use it:** After the installation, before putting the device away, and after cloning it to another drive.
 
 ### 6b. Update refugiOS
-*   **What it does:** A desktop icon looks, while online, for new editions of the installed books (or the book in your language if you had the English one), new versions of Kiwix, the AI engine and the applications, new revisions of the AI models, and newer map data for the regions you already had. It shows the list with the size of each item and applies the ones you choose.
+*   **What it does:** A desktop icon looks, while online, for new editions of the installed books (or the book in your language if you had the English one), new versions of Kiwix, the AI engine and the applications, new revisions of the AI models, and newer map data for the regions you already had. It also refreshes the desktop launchers, so their fixes arrive without reinstalling. It shows the list with the size of each item and applies the ones you choose.
 *   **No risk:** Every new version is downloaded next to the old one and verified against its published checksum; only then is the old one removed. If an update fails or is interrupted, the device stays exactly as it was and keeps working offline. Updates that do not fit in the free space are skipped.
 *   **When to use it:** Now and then, while there is a connection. refugiOS never needs it to keep working.
 

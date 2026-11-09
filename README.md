@@ -9,7 +9,7 @@
 <p align="center">
   <img src="media/logo/refugiOS.png" alt="logo de refugiOS" width="200"><br />
   <img src="https://img.shields.io/badge/Estado-Desarrollo-green.svg" alt="Estado del Proyecto">
-  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.28-blue.svg" alt="Versión">
+  <img src="https://img.shields.io/badge/Versi%C3%B3n-0.29-blue.svg" alt="Versión">
   <img src="https://img.shields.io/badge/Paradigma-Offline_First-orange.svg" alt="Sin Conexión">
   <img src="https://img.shields.io/badge/IA-Llamafile_(Local)-purple.svg" alt="IA Offline">
   <img src="https://img.shields.io/badge/Raspberry_Pi-Certificado-red.svg" alt="Raspberry Pi">
@@ -219,6 +219,12 @@ Consulta el **[Roadmap y Aplicaciones](doc/Modulos-y-Roadmap-ES.md)** para ver e
 ---
 
 ## Historial de Versiones
+
+### [0.29] - 2026-11-09
+
+#### Corregido
+- **El asistente de IA responde en lugar de quedarse razonando:** El motor arranca con el razonamiento desactivado. El modelo mínimo agotaba el contexto razonando sin llegar a contestar y el básico tardaba minutos en equipos sin GPU; ahora todos responden en segundos.
+- **El actualizador renueva los lanzadores:** *Actualizar refugiOS* sustituye también los scripts instalados (IA, Kiwix, mapas, bóvedas, comprobación), conservando el anterior si la descarga falla.
 
 ### [0.28] - 2026-11-01
 

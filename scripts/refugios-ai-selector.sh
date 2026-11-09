@@ -194,19 +194,28 @@ fi
 AI_PORT="${REFUGIOS_AI_PORT:-8080}"
 AI_URL="http://localhost:${AI_PORT}"
 
+ENGINE_HELP=$(timeout 30 ./llamafile --server --help 2>/dev/null)
+
 # Default system message of the chat UI: answer in the user's language, with the
 # emergency context in mind. Only for engines that accept a Web UI config file.
 WEBUI_FLAGS=()
 WEBUI_CONFIG="$AI_DIR/webui-config.json"
-if command -v jq >/dev/null 2>&1 \
-    && timeout 30 ./llamafile --server --help 2>/dev/null | grep -q -- "--webui-config-file"; then
+if command -v jq >/dev/null 2>&1 && grep -q -- "--webui-config-file" <<< "$ENGINE_HELP"; then
     if jq -n --arg msg "$(t ai_system_prompt)" '{systemMessage: $msg}' > "$WEBUI_CONFIG"; then
         WEBUI_FLAGS=(--webui-config-file "$WEBUI_CONFIG")
     fi
 fi
 
+# Thinking models (Qwen3.5) can spend the whole context reasoning and never answer,
+# and on a CPU the reasoning takes minutes. Older engines reject the flag.
+REASONING_FLAGS=()
+if grep -qE -- "--reasoning \[?on" <<< "$ENGINE_HELP"; then
+    REASONING_FLAGS=(--reasoning off)
+fi
+
 # Start llamafile server
-./llamafile -m "$SELECTED_SYMLINK" --ctx-size 4096 $NGL_FLAG --server --port "$AI_PORT" "${WEBUI_FLAGS[@]}" &
+./llamafile -m "$SELECTED_SYMLINK" --ctx-size 4096 $NGL_FLAG --server --port "$AI_PORT" \
+    "${WEBUI_FLAGS[@]}" "${REASONING_FLAGS[@]}" &
 LLAMA_PID=$!
 
 # Never leave the model resident in RAM if this script goes away

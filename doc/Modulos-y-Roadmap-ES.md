@@ -40,6 +40,7 @@ Asistente inteligente privado que funciona 100% en tu ordenador local. Disponibl
 *   ⚫ **Ultra:** [Gemma-4-26B-A4B-it](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) (26B MoE, Q4_K_M) — ~16.2 GB. Para estaciones de trabajo con 32 GB de RAM.
 *   **Selector inteligente:** Al lanzar el asistente, un script detecta la RAM total y la VRAM de la GPU (NVIDIA/AMD), reserva un margen de seguridad estricto de 2 GB para el sistema operativo (evita swap a USB), y muestra un menú interactivo con solo los modelos instalados, preseleccionando automáticamente el más potente que el hardware puede ejecutar.
 *   **Contexto de emergencia:** La interfaz de chat arranca con un mensaje de sistema en tu idioma que pide respuestas claras, breves y prácticas, prioriza los pasos urgentes en temas médicos o de seguridad y recuerda que el asistente no tiene acceso a Internet.
+*   **Respuestas directas:** El motor arranca con el razonamiento interno de los modelos desactivado. En equipos sin GPU, ese razonamiento retrasaba varios minutos cada respuesta y podía agotar el contexto sin llegar a contestar.
 *   **Idioma:** 🌐 **Multilingüe.** Todos los modelos entienden y responden en más de 20 idiomas.
 
 ### 4. Bóvedas Criptográficas (LUKS)
@@ -61,7 +62,7 @@ Sistema de almacenamiento seguro y cifrado para datos sensibles.
 *   **Cuándo usarla:** Al terminar la instalación, antes de guardar el dispositivo y después de clonarlo a otra unidad.
 
 ### 6b. Actualizar refugiOS
-*   **Qué hace:** Un icono del escritorio busca, con conexión, ediciones nuevas de los libros instalados (o el libro en tu idioma si tenías la versión inglesa), versiones nuevas de Kiwix, del motor de IA y de las aplicaciones, revisiones de los modelos de IA y datos de mapa más recientes para las regiones que ya tenías. Muestra la lista con lo que ocupa cada cosa y aplica lo que elijas.
+*   **Qué hace:** Un icono del escritorio busca, con conexión, ediciones nuevas de los libros instalados (o el libro en tu idioma si tenías la versión inglesa), versiones nuevas de Kiwix, del motor de IA y de las aplicaciones, revisiones de los modelos de IA y datos de mapa más recientes para las regiones que ya tenías. También renueva los lanzadores del escritorio, para que sus correcciones lleguen sin reinstalar. Muestra la lista con lo que ocupa cada cosa y aplica lo que elijas.
 *   **Sin riesgo:** Cada versión nueva se descarga junto a la antigua y se verifica con su suma publicada; solo entonces se borra la anterior. Si una actualización falla o se corta, el dispositivo sigue exactamente como estaba y funcionando sin conexión. Las que no caben en el espacio libre se omiten.
 *   **Cuándo usarla:** De vez en cuando, mientras haya conexión. No hace falta en ningún momento para que refugiOS funcione.
 
